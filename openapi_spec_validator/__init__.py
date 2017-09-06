@@ -9,7 +9,7 @@ from openapi_spec_validator.factories import JSONSpecValidatorFactory
 __author__ = 'Artur Maciąg'
 __email__ = 'maciag.artur@gmail.com'
 __version__ = '0.0.1'
-__url__ = 'https://github.com/p1c2u/openapi_spec_validator'
+__url__ = 'https://github.com/p1c2u/openapi-spec-validator'
 __license__ = 'Apache License, Version 2.0'
 
 __all__ = ['openapi_v3_validator', 'validate_spec', 'validate_spec_url']
