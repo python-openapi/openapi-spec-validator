@@ -1,0 +1,34 @@
+language: python
+sudo: false
+matrix:
+  include:
+  - python: 2.7
+  - python: 3.2
+  - python: 3.3
+  - python: 3.4
+  - python: 3.5
+  - python: 3.6
+  - python: nightly
+  - python: pypy
+  - python: pypy3
+  allow_failures:
+  - python: 3.2
+  - python: nightly
+before_install:
+- if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install 'coverage<4.0.0'; fi
+- pip install codecov
+install:
+- pip install -e .
+- pip install -r requirements_dev.txt
+script:
+- python setup.py test
+after_success:
+- codecov
+deploy:
+  provider: pypi
+  user: p1c2u
+  password:
+    secure: iZWZuDMIWyFtJf5cLDPwA82d7DVi+/8yBQJVowctJwkioz4PEZBrf4N7cKyFc7JlhsS0/gqPJ9nw1FBqHwlTFwikpCYjudcfVijzibwKBbTbYTbTY1xEYiv+2/Q2UGoGjGmf2qdqM9SBaQwvax+KgMO6e4I4vrX4cm3kMx4LHt0Z2ArORlhZ0oKxyi6azcFiZYwlOlp31PuV0iNpBkroBf+gQ20S35hD+GIm1U6D4zqkN0HmZ0LxlpZLXsHZ0FrEE57KU06RowWfkAFBkGjMBjr+phiZ/XRe88SFaiB3HVZaJm+ZPTJKnxryuGt5th54Q10DKLZ3KUien33saBYVziamHZ8ZYS01ztahEhqLKlQVB1e+p1M8mYXKVodqLgytOsddixIBmibq2rDJmLSPwro8RBwLhLdGZdRsH2kii06OQxPrzlUrOwtErozxvdNjS47hwjJ4ZVm4ZGcnOXZut4qwkiEEUMWUd54V+zDNnRxOf+hi/mEx3u8CmkV26XFJ7WHpr/E1T9XHuRh7YVP8MXrM3gjoL86g1swalpH/QBjf0UaF2BlTvWJ3j52uThH7MFUlCBgpYer1giJayyNjFw4+qUVMCyByD87V7x6/3glA7t4Kh0LiMq0Zo23PPbhuJOmJmDy6GTtjkXZEJ6XnNPV9+VR8LApmppevBDKafgA=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
