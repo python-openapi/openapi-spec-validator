@@ -1,6 +1,6 @@
 # OpenAPI Spec validator
 
-[![Package Version](https://badge.fury.io/py/openapi-spec-validator.png)](https://pypi.python.org/pypi/openapi-spec-validator)
+[![Package Version](hhttps://img.shields.io/pypi/v/openapi-spec-validator.svg)](https://pypi.python.org/pypi/openapi-spec-validator)
 [![Build Status](https://travis-ci.org/p1c2u/openapi-spec-validator.svg?branch=master)](https://travis-ci.org/p1c2u/openapi-spec-validator)
 [![Code Coverage](https://img.shields.io/codecov/c/github/p1c2u/openapi-spec-validator/master.svg?style=flat)](https://codecov.io/github/p1c2u/openapi-spec-validator?branch=master)
 [![PyPI Version](https://img.shields.io/pypi/pyversions/openapi-spec-validator.svg)](https://pypi.python.org/pypi/openapi-spec-validator)
