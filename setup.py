@@ -59,6 +59,7 @@ setup(
     author_email=metadata['email'],
     url=metadata['url'],
     license=metadata['license'],
+    long_description=read_file('README.md'),
     packages=find_packages(include=('openapi_spec_validator*',)),
     package_data={
         'openapi_spec_validator': [
