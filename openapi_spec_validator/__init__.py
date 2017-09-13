@@ -5,6 +5,7 @@ from openapi_spec_validator.shortcuts import (
 from openapi_spec_validator.handlers import UrlHandler
 from openapi_spec_validator.schemas import get_openapi_schema
 from openapi_spec_validator.factories import JSONSpecValidatorFactory
+from openapi_spec_validator.validators import SpecValidator
 
 __author__ = 'Artur Maciąg'
 __email__ = 'maciag.artur@gmail.com'
@@ -25,8 +26,11 @@ openapi_v3_validator_factory = JSONSpecValidatorFactory(
     schema_v3, schema_v3_url,
     resolver_handlers=default_handlers,
 )
+openapi_v3_spec_validator = SpecValidator(
+    openapi_v3_validator_factory,
+    resolver_handlers=default_handlers,
+)
 # shortcuts
-validate_spec = validate_spec_factory(
-    openapi_v3_validator_factory.create)
+validate_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
 validate_spec_url = validate_spec_url_factory(
-    openapi_v3_validator_factory.create, default_handlers)
+    openapi_v3_spec_validator.validate, default_handlers)

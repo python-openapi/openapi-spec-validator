@@ -39,10 +39,9 @@ If you want to iterate through validation errors:
 
 ```python
 
-from openapi_spec_validator import openapi_v3_validator_factory
+from openapi_spec_validator import openapi_v3_spec_validator
 
-validator = openapi_v3_validator_factory.create(spec)
-errors_iterator = validator.iter_errors(spec)
+errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
 ```
 
 ## License
