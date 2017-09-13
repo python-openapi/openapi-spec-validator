@@ -4,6 +4,8 @@ import pytest
 from six.moves.urllib import request
 from yaml import safe_load
 
+from openapi_spec_validator import openapi_v3_spec_validator
+
 
 def spec_from_file(spec_file):
     directory = path.abspath(path.dirname(__file__))
@@ -28,3 +30,8 @@ def factory():
         spec_from_file=spec_from_file,
         spec_from_url=spec_from_url,
     )
+
+
+@pytest.fixture
+def validator():
+    return openapi_v3_spec_validator

@@ -2,14 +2,12 @@ language: python
 sudo: false
 matrix:
   include:
-  - python: 2.7
   - python: 3.2
   - python: 3.3
   - python: 3.4
   - python: 3.5
   - python: 3.6
   - python: nightly
-  - python: pypy
   - python: pypy3
   allow_failures:
   - python: 3.2

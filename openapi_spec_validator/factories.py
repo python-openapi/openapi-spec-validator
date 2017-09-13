@@ -50,18 +50,14 @@ class JSONSpecValidatorFactory:
     def schema_resolver(self):
         return self._get_resolver(self.schema_url, self.schema)
 
-    def create(self, spec, spec_url=''):
-        """Creates json documents validator from spec.
-        :param spec: json document in the form of a list or dict.
-        :param spec_url: base uri to use when creating a
-            RefResolver for the passed in spec_dict.
+    def create(self, spec_resolver):
+        """Creates json documents validator from spec resolver.
+        :param spec_resolver: reference resolver.
 
         :return: RefResolver for spec with cached remote $refs used during
             validation.
         :rtype: :class:`jsonschema.RefResolver`
         """
-        spec_resolver = self._get_resolver(spec_url, spec)
-
         validator_cls = self.spec_validator_factory.from_resolver(
             spec_resolver)
 
