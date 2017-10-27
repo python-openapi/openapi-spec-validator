@@ -32,7 +32,7 @@ Add `spec_url` to validate spec with relative files:
 
 from openapi_spec_validator import validate_spec
 
-validate_spec(spec_dict,spec_url='file:///path/to/spec/openapi.yaml')
+validate_spec(spec_dict, spec_url='file:///path/to/spec/openapi.yaml')
 ```
 
 You can also validate spec from url:
