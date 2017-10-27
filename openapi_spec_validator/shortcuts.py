@@ -3,8 +3,8 @@ from six.moves.urllib import parse
 
 
 def validate_spec_factory(validator_callable):
-    def validate(spec):
-        return validator_callable(spec)
+    def validate(spec, spec_url=''):
+        return validator_callable(spec, spec_url=spec_url)
     return validate
 
 

@@ -5,15 +5,23 @@ from jsonschema.exceptions import ValidationError
 
 class BaseTestValidOpeAPIv3Validator(object):
 
-    def test_valid(self, validator, spec):
-        return validator.validate(spec)
+    @pytest.fixture
+    def spec_url(self):
+        return ''
+
+    def test_valid(self, validator, spec, spec_url):
+        return validator.validate(spec, spec_url=spec_url)
 
 
 class BaseTestFailedOpeAPIv3Validator(object):
 
-    def test_failed(self, validator, spec):
+    @pytest.fixture
+    def spec_url(self):
+        return ''
+
+    def test_failed(self, validator, spec, spec_url):
         with pytest.raises(ValidationError):
-            validator.validate(spec)
+            validator.validate(spec, spec_url=spec_url)
 
 
 class TestLocalEmptyExample(BaseTestFailedOpeAPIv3Validator):
@@ -28,6 +36,19 @@ class TestLocalPetstoreExample(BaseTestValidOpeAPIv3Validator):
     @pytest.fixture
     def spec(self, factory):
         return factory.spec_from_file("data/v3.0/petstore.yaml")
+
+
+class TestLocalPetstoreSeparateExample(BaseTestValidOpeAPIv3Validator):
+
+    spec_file = "data/v3.0/petstore-separate/spec/openapi.yaml"
+
+    @pytest.fixture
+    def spec_url(self, factory):
+        return factory.spec_url(self.spec_file)
+
+    @pytest.fixture
+    def spec(self, factory):
+        return factory.spec_from_file(self.spec_file)
 
 
 class TestPetstoreExample(BaseTestValidOpeAPIv3Validator):
