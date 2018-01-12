@@ -53,6 +53,10 @@ from openapi_spec_validator import openapi_v3_spec_validator
 errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
 ```
 
+## Related projects
+
+* [openapi-core](https://github.com/p1c2u/openapi-core) is a Python library that adds client-side and server-side support for the OpenAPI.
+
 ## License
 
 Copyright (c) 2017, Artur Maciag, All rights reserved.
