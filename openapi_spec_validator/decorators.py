@@ -18,7 +18,8 @@ class DerefValidatorDecorator:
     def __call__(self, func):
         def wrapped(validator, schema_element, instance, schema):
             if not isinstance(instance, dict) or '$ref' not in instance:
-                return func(validator, schema_element, instance, schema)
+                yield from func(validator, schema_element, instance, schema)
+                return
 
             ref = instance['$ref']
 
@@ -29,7 +30,7 @@ class DerefValidatorDecorator:
             self._attach_scope(instance)
             with self.visiting.visit(ref):
                 with self.instance_resolver.resolving(ref) as target:
-                    return func(validator, schema_element, target, schema)
+                    yield from func(validator, schema_element, target, schema)
 
         return wrapped
 
