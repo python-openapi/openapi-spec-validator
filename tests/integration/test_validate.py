@@ -51,6 +51,19 @@ class TestLocalPetstoreSeparateExample(BaseTestValidOpeAPIv3Validator):
         return factory.spec_from_file(self.spec_file)
 
 
+class TestLocalParentReferenceExample(BaseTestValidOpeAPIv3Validator):
+
+    spec_file = "data/v3.0/parent-reference/openapi.yaml"
+
+    @pytest.fixture
+    def spec_url(self, factory):
+        return factory.spec_url(self.spec_file)
+
+    @pytest.fixture
+    def spec(self, factory):
+        return factory.spec_from_file(self.spec_file)
+
+
 class TestPetstoreExample(BaseTestValidOpeAPIv3Validator):
 
     @pytest.fixture
