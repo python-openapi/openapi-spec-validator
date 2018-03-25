@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 import sys
 
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
+
+meta = {}
+exec(open('./openapi_spec_validator/version.py').read(), meta)
 
 
 def read_requirements(filename):
@@ -18,11 +20,6 @@ def read_file(filename):
     path = os.path.join(os.path.dirname(__file__), filename)
     with open(path) as f:
         return f.read()
-
-
-def get_metadata(init_file):
-    """Read metadata from a given file and return a dictionary of them"""
-    return dict(re.findall("__([a-z]+)__ = '([^']+)'", init_file))
 
 
 class PyTest(TestCommand):
@@ -47,18 +44,13 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-init_path = os.path.join('openapi_spec_validator', '__init__.py')
-init_py = read_file(init_path)
-metadata = get_metadata(init_py)
-
-
 setup(
     name='openapi-spec-validator',
-    version=metadata['version'],
-    author=metadata['author'],
-    author_email=metadata['email'],
-    url=metadata['url'],
-    license=metadata['license'],
+    version=meta['__version__'],
+    author='Artur Maciąg',
+    author_email='maciag.artur@gmail.com',
+    url='https://github.com/p1c2u/openapi-spec-validator',
+    license='Apache License, Version 2.0',
     long_description=read_file('README.md'),
     packages=find_packages(include=('openapi_spec_validator*',)),
     package_data={
