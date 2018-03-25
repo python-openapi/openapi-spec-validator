@@ -67,6 +67,11 @@ setup(
         ],
     },
     include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'openapi-spec-validator = openapi_spec_validator.__main__:main'
+        ]
+    },
     install_requires=read_requirements('requirements.txt'),
     tests_require=read_requirements('requirements_dev.txt'),
     cmdclass={'test': PyTest},
