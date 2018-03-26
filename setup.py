@@ -7,12 +7,6 @@ from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 
-def read_requirements(filename):
-    """Open a requirements file and return list of its lines."""
-    contents = read_file(filename).strip('\n')
-    return contents.split('\n') if contents else []
-
-
 def read_file(filename):
     """Open and a file, read it and return its contents."""
     path = os.path.join(os.path.dirname(__file__), filename)
@@ -67,8 +61,19 @@ setup(
         ],
     },
     include_package_data=True,
-    install_requires=read_requirements('requirements.txt'),
-    tests_require=read_requirements('requirements_dev.txt'),
+    install_requires=[
+        "jsonschema",
+        "pyaml",
+        "six",
+    ],
+    tests_require=[
+        "mock",
+        "pytest",
+        "pytest-pep8",
+        "pytest-flakes",
+        "pytest-cov",
+        "tox",
+    ],
     cmdclass={'test': PyTest},
     classifiers=[
         "Development Status :: 4 - Beta",

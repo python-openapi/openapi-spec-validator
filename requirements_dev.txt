@@ -1,6 +1,6 @@
-mock
-pytest
-pytest-pep8
-pytest-flakes
-pytest-cov
-tox
+mock==2.0.0
+pytest==3.5.0
+pytest-pep8==1.0.6
+pytest-flakes==2.0.0
+pytest-cov==2.5.1
+tox==3.0.0rc4
