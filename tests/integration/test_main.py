@@ -10,7 +10,8 @@ def test_nonexisting_file(mock_sys):
     # we can insert a dummy here
     testargs = ['progname', 'i_dont_exist.yaml']
     with mock.patch('sys.argv', testargs):
-        assert mock_sys.exit.assert_called
+        main()
+        assert not mock_sys.exit.called
 
 
 @mock.patch('openapi_spec_validator.__main__.sys')
