@@ -32,5 +32,6 @@ def main():
     else:
         print('OK')
 
+
 if __name__ == '__main__':
     main()
