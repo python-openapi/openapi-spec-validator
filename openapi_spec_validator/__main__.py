@@ -1,5 +1,5 @@
 import logging
-import optparse
+import argparse
 import os
 import sys
 
@@ -14,12 +14,10 @@ logging.basicConfig(
 
 
 def main():
-    usage = 'Usage: %prog filename'
-    parser = optparse.OptionParser(usage)
-    (options, args) = parser.parse_args()
-    if len(args) != 1:
-        parser.error('You must provide a filename to validate')
-    filename = args[0]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename', help="Absolute or relative path to file")
+    args = parser.parse_args()
+    filename = args.filename
     filename = os.path.abspath(filename)
     try:
         validate_spec_url('file://'+filename)
