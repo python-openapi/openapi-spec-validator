@@ -30,7 +30,22 @@ openapi_v3_spec_validator = SpecValidator(
     openapi_v3_validator_factory,
     resolver_handlers=default_handlers,
 )
+
+schema_v2, schema_v2_url = get_openapi_schema('2.0')
+openapi_v2_validator_factory = JSONSpecValidatorFactory(
+    schema_v2, schema_v2_url,
+    resolver_handlers=default_handlers,
+)
+openapi_v2_spec_validator = SpecValidator(
+    openapi_v2_validator_factory,
+    resolver_handlers=default_handlers,
+)
+
 # shortcuts
+validate_v2_spec = validate_spec_factory(openapi_v2_spec_validator.validate)
+validate_v2_spec_url = validate_spec_url_factory(
+    openapi_v2_spec_validator.validate, default_handlers)
+
 validate_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
 validate_spec_url = validate_spec_url_factory(
     openapi_v3_spec_validator.validate, default_handlers)
