@@ -31,6 +31,14 @@ def test_schema_unknown():
         main(testargs)
 
 
+def test_validation_error():
+    """SystemExit on running with ValidationError."""
+    testargs = ['--schema', '3.0.0',
+                './tests/integration/data/v2.0/petstore.yaml']
+    with pytest.raises(SystemExit):
+        main(testargs)
+
+
 def test_nonexisting_file():
     """Calling with non-existing file should sys.exit."""
     testargs = ['i_dont_exist.yaml']
