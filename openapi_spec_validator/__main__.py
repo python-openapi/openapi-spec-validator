@@ -13,10 +13,10 @@ logging.basicConfig(
 )
 
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', help="Absolute or relative path to file")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     filename = args.filename
     filename = os.path.abspath(filename)
     try:
