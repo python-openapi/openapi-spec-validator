@@ -3,7 +3,7 @@ import argparse
 import os
 import sys
 
-from openapi_spec_validator import validate_spec_url
+from openapi_spec_validator import validate_spec_url, validate_v2_spec_url
 from openapi_spec_validator.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
@@ -16,11 +16,24 @@ logging.basicConfig(
 def main(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', help="Absolute or relative path to file")
+    parser.add_argument(
+        '--schema',
+        help="OpenAPI schema (default: 3.0.0)",
+        type=str,
+        choices=['2.0', '3.0.0'],
+        default='3.0.0'
+    )
     args = parser.parse_args(args)
     filename = args.filename
     filename = os.path.abspath(filename)
+    # choose the validator
+    if args.schema == '2.0':
+        validate_url = validate_v2_spec_url
+    elif args.schema == '3.0.0':
+        validate_url = validate_spec_url
+    # validate
     try:
-        validate_spec_url('file://'+filename)
+        validate_url('file://'+filename)
     except ValidationError as e:
         print(e)
         sys.exit(1)
