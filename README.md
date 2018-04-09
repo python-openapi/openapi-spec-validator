@@ -17,11 +17,21 @@ OpenAPI Spec Validator is a Python library that validates OpenAPI Specs against 
 
 ## Usage
 
-Command Line Interface:
+### Command Line Interface
+
+Straight forward way:
 
 ```bash
-$ openapi_spec_validator some.yaml
+$ openapi-spec-validator some.yaml
 ```
+
+or more pythonic way:
+
+```bash
+$ python -m openapi_spec_validator some.yaml
+```
+
+### Examples
 
 Validate spec:
 
