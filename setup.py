@@ -61,6 +61,11 @@ setup(
         ],
     },
     include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'openapi-spec-validator = openapi_spec_validator.__main__:main'
+        ]
+    },
     install_requires=[
         "jsonschema",
         "pyaml",
