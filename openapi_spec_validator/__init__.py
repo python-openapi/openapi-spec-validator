@@ -13,7 +13,11 @@ __version__ = '0.1.2'
 __url__ = 'https://github.com/p1c2u/openapi-spec-validator'
 __license__ = 'Apache License, Version 2.0'
 
-__all__ = ['openapi_v3_validator', 'validate_spec', 'validate_spec_url']
+__all__ = [
+    'openapi_v2_spec_validator', 'openapi_v3_spec_validator',
+    'validate_v2_spec', 'validate_v3_spec', 'validate_spec',
+    'validate_v2_spec_url', 'validate_v3_spec_url', 'validate_spec_url',
+]
 
 default_handlers = {
     '<all_urls>': UrlHandler('http', 'https', 'file'),
@@ -21,16 +25,8 @@ default_handlers = {
     'https': UrlHandler('https'),
     'file': UrlHandler('file'),
 }
-schema_v3, schema_v3_url = get_openapi_schema('3.0.0')
-openapi_v3_validator_factory = JSONSpecValidatorFactory(
-    schema_v3, schema_v3_url,
-    resolver_handlers=default_handlers,
-)
-openapi_v3_spec_validator = SpecValidator(
-    openapi_v3_validator_factory,
-    resolver_handlers=default_handlers,
-)
 
+# v2.0 spec
 schema_v2, schema_v2_url = get_openapi_schema('2.0')
 openapi_v2_validator_factory = JSONSpecValidatorFactory(
     schema_v2, schema_v2_url,
@@ -41,11 +37,26 @@ openapi_v2_spec_validator = SpecValidator(
     resolver_handlers=default_handlers,
 )
 
+# v3.0.0 spec
+schema_v3, schema_v3_url = get_openapi_schema('3.0.0')
+openapi_v3_validator_factory = JSONSpecValidatorFactory(
+    schema_v3, schema_v3_url,
+    resolver_handlers=default_handlers,
+)
+openapi_v3_spec_validator = SpecValidator(
+    openapi_v3_validator_factory,
+    resolver_handlers=default_handlers,
+)
+
 # shortcuts
 validate_v2_spec = validate_spec_factory(openapi_v2_spec_validator.validate)
 validate_v2_spec_url = validate_spec_url_factory(
     openapi_v2_spec_validator.validate, default_handlers)
 
-validate_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
-validate_spec_url = validate_spec_url_factory(
+validate_v3_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
+validate_v3_spec_url = validate_spec_url_factory(
     openapi_v3_spec_validator.validate, default_handlers)
+
+# aliases to the latest version
+validate_spec = validate_v3_spec
+validate_spec_url = validate_v3_spec_url
