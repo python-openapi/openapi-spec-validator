@@ -39,21 +39,24 @@ class SpecValidator(object):
         self.resolver_handlers = resolver_handlers
 
     def validate(self, spec, spec_url=''):
-        for error in self.iter_errors(spec, spec_url=spec_url):
-            raise error
+        for err in self.iter_errors(spec, spec_url=spec_url):
+            raise err
 
     def iter_errors(self, spec, spec_url=''):
         spec_resolver = self._get_resolver(spec_url, spec)
         dereferencer = self._get_dereferencer(spec_resolver)
 
         validator = self._get_validator(spec_resolver)
-        yield from validator.iter_errors(spec)
+        for err in validator.iter_errors(spec):
+            yield err
 
         paths = spec.get('paths', {})
-        yield from self._iter_paths_errors(paths, dereferencer)
+        for err in self._iter_paths_errors(paths, dereferencer):
+            yield err
 
         components = spec.get('components', {})
-        yield from self._iter_components_errors(components, dereferencer)
+        for err in self._iter_components_errors(components, dereferencer):
+            yield err
 
     def _get_resolver(self, base_uri, referrer):
         return RefResolver(
@@ -81,7 +84,8 @@ class ComponentsValidator(object):
         components_deref = self.dereferencer.dereference(components)
 
         schemas = components_deref.get('schemas', {})
-        yield from self._iter_schemas_errors(schemas)
+        for err in self._iter_schemas_errors(schemas):
+            yield err
 
     def _iter_schemas_errors(self, schemas):
         return SchemasValidator(self.dereferencer).iter_errors(schemas)
@@ -95,7 +99,8 @@ class SchemasValidator(object):
     def iter_errors(self, schemas):
         schemas_deref = self.dereferencer.dereference(schemas)
         for name, schema in iteritems(schemas_deref):
-            yield from self._iter_schem_errors(schema)
+            for err in self._iter_schem_errors(schema):
+                yield err
 
     def _iter_schem_errors(self, schema):
         return SchemaValidator(self.dereferencer).iter_errors(schema)
@@ -111,7 +116,8 @@ class SchemaValidator(object):
 
         if 'allOf' in schema_deref:
             for inner_schema in schema_deref['allOf']:
-                yield from self.iter_errors(inner_schema)
+                for err in self.iter_errors(inner_schema):
+                    yield err
 
         required = schema_deref.get('required', [])
         properties = schema_deref.get('properties', {}).keys()
@@ -132,7 +138,8 @@ class PathsValidator(object):
     def iter_errors(self, paths):
         paths_deref = self.dereferencer.dereference(paths)
         for url, path_item in iteritems(paths_deref):
-            yield from self._iter_path_errors(url, path_item)
+            for err in self._iter_path_errors(url, path_item):
+                yield err
 
     def _iter_path_errors(self, url, path_item):
         return PathValidator(self.dereferencer).iter_errors(url, path_item)
@@ -146,7 +153,8 @@ class PathValidator(object):
     def iter_errors(self, url, path_item):
         path_item_deref = self.dereferencer.dereference(path_item)
 
-        yield from self._iter_path_item_errors(url, path_item_deref)
+        for err in self._iter_path_item_errors(url, path_item_deref):
+            yield err
 
     def _iter_path_item_errors(self, url, path_item):
         return PathItemValidator(self.dereferencer).iter_errors(url, path_item)
@@ -165,14 +173,16 @@ class PathItemValidator(object):
         path_item_deref = self.dereferencer.dereference(path_item)
 
         parameters = path_item_deref.get('parameters', [])
-        yield from self._iter_parameters_errors(parameters)
+        for err in self._iter_parameters_errors(parameters):
+            yield err
 
         for field_name, operation in iteritems(path_item):
             if field_name not in self.OPERATIONS:
                 continue
 
-            yield from self._iter_operation_errors(
-                url, field_name, operation, parameters)
+            for err in self._iter_operation_errors(
+                    url, field_name, operation, parameters):
+                yield err
 
     def _iter_operation_errors(self, url, name, operation, path_parameters):
         return OperationValidator(self.dereferencer).iter_errors(
@@ -192,7 +202,8 @@ class OperationValidator(object):
         operation_deref = self.dereferencer.dereference(operation)
 
         parameters = operation_deref.get('parameters', [])
-        yield from self._iter_parameters_errors(parameters)
+        for err in self._iter_parameters_errors(parameters):
+            yield err
 
         all_params = list(set(
             list(self._get_path_param_names(path_parameters)) +
@@ -205,8 +216,7 @@ class OperationValidator(object):
                     "Path parameter '{0}' for '{1}' operation in '{2}' "
                     "was not resolved".format(path, name, url)
                 )
-
-        return []
+        return
 
     def _get_path_param_names(self, params):
         for param in params:
