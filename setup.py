@@ -58,6 +58,7 @@ setup(
     package_data={
         'openapi_spec_validator': [
             'openapi_spec_validator/resources/schemas/v3.0.0/*',
+            'openapi_spec_validator/resources/schemas/v2.0/*',
         ],
     },
     include_package_data=True,
