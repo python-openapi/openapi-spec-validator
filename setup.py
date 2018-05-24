@@ -58,6 +58,7 @@ setup(
     package_data={
         'openapi_spec_validator': [
             'openapi_spec_validator/resources/schemas/v3.0.0/*',
+            'openapi_spec_validator/resources/schemas/v2.0/*',
         ],
     },
     include_package_data=True,
@@ -85,6 +86,7 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
