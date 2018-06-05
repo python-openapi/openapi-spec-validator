@@ -10,10 +10,12 @@ matrix:
   - python: nightly
   - python: pypy3
   allow_failures:
-  - python: 3.2
+  - python: 3.2  # EOL
+  - python: 3.3  # EOL
   - python: nightly
 before_install:
 - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install 'coverage<4.0.0'; fi
+- if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then pip install 'pyflakes<2.0.0'; fi
 - pip install codecov
 install:
 - pip install -r requirements.txt
