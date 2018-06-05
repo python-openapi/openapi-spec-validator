@@ -433,7 +433,15 @@
           "content": {
             "$ref": "#/definitions/mediaTypes"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": [ "schema" ]
+          },
+          {
+            "required": [ "content" ]
+          }
+        ]
       },
       "requestBody": {
         "type": "object",
@@ -665,7 +673,15 @@
           "content": {
             "$ref": "#/definitions/mediaTypes"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": [ "schema" ]
+          },
+          {
+            "required": [ "content" ]
+          }
+        ]
       },
       "tag": {
         "type": "object",

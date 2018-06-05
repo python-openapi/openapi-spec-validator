@@ -61,10 +61,16 @@ class TestSpecValidatorIterErrors(object):
                         {
                             'name': 'param1',
                             'in': 'query',
+                            'schema': {
+                              'type': 'integer',
+                            },
                         },
                         {
                             'name': 'param1',
                             'in': 'path',
+                            'schema': {
+                              'type': 'integer',
+                            },
                         },
                     ],
                 },
@@ -120,6 +126,9 @@ class TestSpecValidatorIterErrors(object):
                         {
                             'name': 'param1',
                             'in': 'path',
+                            'schema': {
+                                'type': 'integer',
+                            },
                         },
                     ],
                 },
