@@ -4,6 +4,7 @@ import contextlib
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.request import urlopen
 from yaml import safe_load
+import json
 
 
 class UrlHandler:
@@ -16,4 +17,4 @@ class UrlHandler:
         assert urlparse(url).scheme in self.allowed_schemes
 
         with contextlib.closing(urlopen(url, timeout=timeout)) as fh:
-            return safe_load(fh)
+            return json.loads(json.dumps(safe_load(fh)))
