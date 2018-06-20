@@ -82,6 +82,40 @@ class TestSpecValidatorIterErrors(object):
         errors_list = list(errors)
         assert errors_list == []
 
+    def test_allow_allof_required_no_properties(self, validator):
+        spec = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {},
+            'components': {
+                'schemas': {
+                    'Credit': {
+                        'type': 'object',
+                        'properties': {
+                            'clientId': {'type': 'string'},
+                        }
+                    },
+                    'CreditCreate': {
+                        'allOf': [
+                            {
+                                '$ref': '#/components/schemas/Credit'
+                            },
+                            {
+                                'required': ['clientId']
+                            }
+                        ]
+                    }
+                },
+            },
+        }
+
+        errors = validator.iter_errors(spec)
+        errors_list = list(errors)
+        assert errors_list == []
+
     def test_extra_parameters_in_required(self, validator):
         spec = {
             'openapi': '3.0.0',

@@ -111,18 +111,21 @@ class SchemaValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
-    def iter_errors(self, schema):
+    def iter_errors(self, schema, require_properties=True):
         schema_deref = self.dereferencer.dereference(schema)
 
         if 'allOf' in schema_deref:
             for inner_schema in schema_deref['allOf']:
-                for err in self.iter_errors(inner_schema):
+                for err in self.iter_errors(
+                    inner_schema,
+                    require_properties=False
+                ):
                     yield err
 
         required = schema_deref.get('required', [])
         properties = schema_deref.get('properties', {}).keys()
         extra_properties = list(set(required) - set(properties))
-        if extra_properties:
+        if extra_properties and require_properties:
             yield ExtraParametersError(
                 "Required list has not defined properties: {0}".format(
                     extra_properties
