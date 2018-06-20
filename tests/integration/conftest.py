@@ -6,6 +6,7 @@ from six.moves.urllib.parse import urlunparse
 from yaml import safe_load
 
 from openapi_spec_validator import openapi_v3_spec_validator
+from openapi_spec_validator.schemas import read_yaml_file
 
 
 def spec_url(spec_file, schema='file'):
@@ -17,8 +18,7 @@ def spec_url(spec_file, schema='file'):
 def spec_from_file(spec_file):
     directory = path.abspath(path.dirname(__file__))
     path_full = path.join(directory, spec_file)
-    with open(path_full) as fh:
-        return safe_load(fh)
+    return read_yaml_file(path_full)
 
 
 def spec_from_url(spec_url):
