@@ -3,7 +3,9 @@ import os
 
 from pkg_resources import resource_filename
 from six.moves.urllib import parse, request
-from yaml import safe_load
+from yaml import load
+
+from openapi_spec_validator.loaders import ExtendedSafeLoader
 
 
 def get_openapi_schema(version):
@@ -15,7 +17,7 @@ def get_openapi_schema(version):
     return schema, schema_url
 
 
-def read_yaml_file(path):
+def read_yaml_file(path, loader=ExtendedSafeLoader):
     """Open a file, read it and return its contents."""
     with open(path) as fh:
-        return safe_load(fh)
+        return load(fh, loader)
