@@ -177,3 +177,65 @@ class TestSpecValidatorIterErrors(object):
             "Path parameter 'param2' for 'get' operation in "
             "'/test/{param1}/{param2}' was not resolved"
         )
+
+    def test_default_value_wrong_type(self, validator):
+        spec = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {},
+            'components': {
+                'schemas': {
+                    'test': {
+                        'type': 'integer',
+                        'default': 'invaldtype',
+                    },
+                },
+            },
+        }
+
+        errors = validator.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert len(errors_list) == 1
+        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].message == (
+            "'invaldtype' is not of type 'integer'"
+        )
+
+    def test_parameter_default_value_wrong_type(self, validator):
+        spec = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {
+                '/test/{param1}': {
+                    'get': {
+                        'responses': {},
+                    },
+                    'parameters': [
+                        {
+                            'name': 'param1',
+                            'in': 'path',
+                            'schema': {
+                                'type': 'integer',
+                                'default': 'invaldtype',
+                            },
+                        },
+                    ],
+                },
+            },
+        }
+
+        errors = validator.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert len(errors_list) == 1
+        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].message == (
+            "'invaldtype' is not of type 'integer'"
+        )

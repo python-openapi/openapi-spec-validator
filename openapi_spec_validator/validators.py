@@ -7,6 +7,7 @@ from six import iteritems
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
 )
+from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
 from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
@@ -99,10 +100,10 @@ class SchemasValidator(object):
     def iter_errors(self, schemas):
         schemas_deref = self.dereferencer.dereference(schemas)
         for name, schema in iteritems(schemas_deref):
-            for err in self._iter_schem_errors(schema):
+            for err in self._iter_schema_errors(schema):
                 yield err
 
-    def _iter_schem_errors(self, schema):
+    def _iter_schema_errors(self, schema):
         return SchemaValidator(self.dereferencer).iter_errors(schema)
 
 
@@ -131,6 +132,19 @@ class SchemaValidator(object):
                     extra_properties
                 )
             )
+
+        if 'default' in schema_deref:
+            default = schema_deref['default']
+            nullable = schema_deref.get('nullable', False)
+            if default is not None or nullable is not True:
+                for err in self._iter_value_errors(schema_deref, default):
+                    yield err
+
+    def _iter_value_errors(self, schema, value):
+        resolver = RefResolver.from_schema(schema)
+        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
+        for err in validator(schema, resolver=resolver).iter_errors(value):
+            yield err
 
 
 class PathsValidator(object):
@@ -245,9 +259,31 @@ class ParametersValidator(object):
         seen = set()
         for parameter in parameters:
             parameter_deref = self.dereferencer.dereference(parameter)
+            for err in self._iter_parameter_errors(parameter_deref):
+                yield err
+
             key = (parameter_deref['name'], parameter_deref['in'])
             if key in seen:
                 yield ParameterDuplicateError(
                     "Duplicate parameter `{0}`".format(parameter_deref['name'])
                 )
             seen.add(key)
+
+    def _iter_parameter_errors(self, parameter):
+        return ParameterValidator(self.dereferencer).iter_errors(parameter)
+
+
+class ParameterValidator(object):
+
+    def __init__(self, dereferencer):
+        self.dereferencer = dereferencer
+
+    def iter_errors(self, parameter):
+        if 'schema' in parameter:
+            schema = parameter['schema']
+            schema_deref = self.dereferencer.dereference(schema)
+            for err in self._iter_schema_errors(schema_deref):
+                yield err
+
+    def _iter_schema_errors(self, schema):
+        return SchemaValidator(self.dereferencer).iter_errors(schema)
