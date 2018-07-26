@@ -285,5 +285,18 @@ class ParameterValidator(object):
             for err in self._iter_schema_errors(schema_deref):
                 yield err
 
+        if 'default' in parameter:
+            # only possible in swagger 2.0
+            default = parameter['default']
+            if default is not None:
+                for err in self._iter_value_errors(parameter, default):
+                    yield err
+
+    def _iter_value_errors(self, schema, value):
+        resolver = RefResolver.from_schema(schema)
+        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
+        for err in validator(schema, resolver=resolver).iter_errors(value):
+            yield err
+
     def _iter_schema_errors(self, schema):
         return SchemaValidator(self.dereferencer).iter_errors(schema)
