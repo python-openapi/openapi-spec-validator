@@ -2,6 +2,7 @@ import logging
 import string
 
 from jsonschema.validators import RefResolver
+from jsonschema.exceptions import ValidationError
 from six import iteritems, raise_from
 
 from openapi_spec_validator.exceptions import (
@@ -42,7 +43,11 @@ class SpecValidator(object):
 
     def validate(self, spec, spec_url=''):
         for err in self.iter_errors(spec, spec_url=spec_url):
-            raise_from(OpenAPIValidationError(repr(err)), err)
+            if isinstance(err, ValidationError):
+                # wrap jsonschema exceptions with library specific version
+                raise raise_from(OpenAPIValidationError.create_from(err), err)
+            else:
+                raise err
 
     def iter_errors(self, spec, spec_url=''):
         spec_resolver = self._get_resolver(spec_url, spec)
