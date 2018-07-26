@@ -1,9 +1,8 @@
 import pytest
 
-from jsonschema.exceptions import ValidationError
-
 from openapi_spec_validator import validate_spec, validate_spec_url
 from openapi_spec_validator import validate_v2_spec, validate_v2_spec_url
+from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 
 class BaseTestValidValidteV2Spec:
@@ -15,7 +14,7 @@ class BaseTestValidValidteV2Spec:
 class BaseTestFaliedValidateV2Spec:
 
     def test_failed(self, spec):
-        with pytest.raises(ValidationError):
+        with pytest.raises(OpenAPIValidationError):
             validate_v2_spec(spec)
 
 
@@ -28,7 +27,7 @@ class BaseTestValidValidteSpec:
 class BaseTestFaliedValidateSpec:
 
     def test_failed(self, spec):
-        with pytest.raises(ValidationError):
+        with pytest.raises(OpenAPIValidationError):
             validate_spec(spec)
 
 
@@ -41,7 +40,7 @@ class BaseTestValidValidteV2SpecUrl:
 class BaseTestFaliedValidateV2SpecUrl:
 
     def test_failed(self, spec_url):
-        with pytest.raises(ValidationError):
+        with pytest.raises(OpenAPIValidationError):
             validate_v2_spec_url(spec_url)
 
 
@@ -54,7 +53,7 @@ class BaseTestValidValidteSpecUrl:
 class BaseTestFaliedValidateSpecUrl:
 
     def test_failed(self, spec_url):
-        with pytest.raises(ValidationError):
+        with pytest.raises(OpenAPIValidationError):
             validate_spec_url(spec_url)
 
 

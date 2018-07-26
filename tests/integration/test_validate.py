@@ -1,6 +1,6 @@
 import pytest
 
-from jsonschema.exceptions import ValidationError
+from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 
 class BaseTestValidOpeAPIv3Validator(object):
@@ -20,7 +20,7 @@ class BaseTestFailedOpeAPIv3Validator(object):
         return ''
 
     def test_failed(self, validator, spec, spec_url):
-        with pytest.raises(ValidationError):
+        with pytest.raises(OpenAPIValidationError):
             validator.validate(spec, spec_url=spec_url)
 
 

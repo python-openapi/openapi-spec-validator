@@ -2,10 +2,11 @@ import logging
 import string
 
 from jsonschema.validators import RefResolver
-from six import iteritems
+from six import iteritems, raise_from
 
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
+    OpenAPIValidationError
 )
 from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
 from openapi_spec_validator.managers import ResolverManager
@@ -41,7 +42,7 @@ class SpecValidator(object):
 
     def validate(self, spec, spec_url=''):
         for err in self.iter_errors(spec, spec_url=spec_url):
-            raise err
+            raise_from(OpenAPIValidationError(repr(err)), err)
 
     def iter_errors(self, spec, spec_url=''):
         spec_resolver = self._get_resolver(spec_url, spec)
