@@ -6,11 +6,15 @@ from six import iteritems
 
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
+    OpenAPIValidationError
 )
+from openapi_spec_validator.decorators import ValidationErrorWrapper
 from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
 from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
+
+wraps_errors = ValidationErrorWrapper(OpenAPIValidationError)
 
 
 def is_ref(spec):
@@ -43,6 +47,7 @@ class SpecValidator(object):
         for err in self.iter_errors(spec, spec_url=spec_url):
             raise err
 
+    @wraps_errors
     def iter_errors(self, spec, spec_url=''):
         spec_resolver = self._get_resolver(spec_url, spec)
         dereferencer = self._get_dereferencer(spec_resolver)
@@ -81,6 +86,7 @@ class ComponentsValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, components):
         components_deref = self.dereferencer.dereference(components)
 
@@ -97,6 +103,7 @@ class SchemasValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, schemas):
         schemas_deref = self.dereferencer.dereference(schemas)
         for name, schema in iteritems(schemas_deref):
@@ -112,6 +119,7 @@ class SchemaValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, schema, require_properties=True):
         schema_deref = self.dereferencer.dereference(schema)
 
@@ -152,6 +160,7 @@ class PathsValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, paths):
         paths_deref = self.dereferencer.dereference(paths)
         for url, path_item in iteritems(paths_deref):
@@ -167,6 +176,7 @@ class PathValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, url, path_item):
         path_item_deref = self.dereferencer.dereference(path_item)
 
@@ -186,6 +196,7 @@ class PathItemValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, url, path_item):
         path_item_deref = self.dereferencer.dereference(path_item)
 
@@ -214,6 +225,7 @@ class OperationValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, url, name, operation, path_parameters=None):
         path_parameters = path_parameters or []
         operation_deref = self.dereferencer.dereference(operation)
@@ -255,6 +267,7 @@ class ParametersValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, parameters):
         seen = set()
         for parameter in parameters:
@@ -278,6 +291,7 @@ class ParameterValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    @wraps_errors
     def iter_errors(self, parameter):
         if 'schema' in parameter:
             schema = parameter['schema']

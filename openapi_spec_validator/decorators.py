@@ -1,4 +1,5 @@
 """OpenAPI spec validator decorators module."""
+from functools import wraps
 import logging
 
 from openapi_spec_validator.managers import VisitingManager
@@ -43,3 +44,21 @@ class DerefValidatorDecorator:
             return
 
         instance['x-scope'] = list(self.instance_resolver._scopes_stack)
+
+
+class ValidationErrorWrapper(object):
+
+    def __init__(self, error_class):
+        self.error_class = error_class
+
+    def __call__(self, f):
+        @wraps(f)
+        def wrapper(*args, **kwds):
+            errors = f(*args, **kwds)
+            for err in errors:
+                if not isinstance(err, self.error_class):
+                    # wrap other exceptions with library specific version
+                    yield self.error_class.create_from(err)
+                else:
+                    yield err
+        return wrapper

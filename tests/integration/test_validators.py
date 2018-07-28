@@ -1,7 +1,5 @@
-from jsonschema.exceptions import ValidationError
-
 from openapi_spec_validator.exceptions import (
-    ExtraParametersError, UnresolvableParameterError,
+    ExtraParametersError, UnresolvableParameterError, OpenAPIValidationError,
 )
 
 
@@ -13,11 +11,11 @@ class TestSpecValidatorIterErrors(object):
         errors = validator.iter_errors(spec)
 
         errors_list = list(errors)
-        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == "'openapi' is a required property"
-        assert errors_list[1].__class__ == ValidationError
+        assert errors_list[1].__class__ == OpenAPIValidationError
         assert errors_list[1].message == "'info' is a required property"
-        assert errors_list[2].__class__ == ValidationError
+        assert errors_list[2].__class__ == OpenAPIValidationError
         assert errors_list[2].message == "'paths' is a required property"
 
     def test_info_empty(self, validator):
@@ -30,7 +28,7 @@ class TestSpecValidatorIterErrors(object):
         errors = validator.iter_errors(spec)
 
         errors_list = list(errors)
-        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == "'title' is a required property"
 
     def test_minimalistic(self, validator):
@@ -200,7 +198,7 @@ class TestSpecValidatorIterErrors(object):
 
         errors_list = list(errors)
         assert len(errors_list) == 1
-        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
             "'invaldtype' is not of type 'integer'"
         )
@@ -235,7 +233,7 @@ class TestSpecValidatorIterErrors(object):
 
         errors_list = list(errors)
         assert len(errors_list) == 1
-        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
             "'invaldtype' is not of type 'integer'"
         )
