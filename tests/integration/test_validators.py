@@ -272,7 +272,7 @@ class TestSpecValidatorIterErrors(object):
 
         errors_list = list(errors)
         assert len(errors_list) == 1
-        assert errors_list[0].__class__ == ValidationError
+        assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
             "'invaldtype' is not of type 'integer'"
         )
