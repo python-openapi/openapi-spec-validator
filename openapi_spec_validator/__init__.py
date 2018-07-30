@@ -7,7 +7,7 @@ from openapi_spec_validator.schemas import get_openapi_schema
 from openapi_spec_validator.factories import JSONSpecValidatorFactory
 from openapi_spec_validator.validators import SpecValidator
 
-__author__ = 'Artur Maciąg'
+__author__ = 'Artur Maciag'
 __email__ = 'maciag.artur@gmail.com'
 __version__ = '0.2.3'
 __url__ = 'https://github.com/p1c2u/openapi-spec-validator'
