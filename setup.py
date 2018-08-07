@@ -27,8 +27,7 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
         self.test_args = [
             '-sv',
-            '--pep8',
-            '--flakes',
+            '--flake8',
             '--cov', 'openapi_spec_validator',
             '--cov-report', 'term-missing',
         ]
@@ -75,8 +74,7 @@ setup(
     tests_require=[
         "mock",
         "pytest",
-        "pytest-pep8",
-        "pytest-flakes",
+        "pytest-flake8",
         "pytest-cov",
         "tox",
     ],
