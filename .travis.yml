@@ -8,6 +8,9 @@ matrix:
   - python: 3.4
   - python: 3.5
   - python: 3.6
+  - python: 3.7
+    dist: xenial
+    sudo: true
   - python: nightly
   - python: pypy3
   allow_failures:
