@@ -53,6 +53,7 @@ setup(
     url=metadata['url'],
     license=metadata['license'],
     long_description=read_file('README.md'),
+    long_description_content_type='text/markdown',
     packages=find_packages(include=('openapi_spec_validator*',)),
     package_data={
         'openapi_spec_validator': [
