@@ -69,7 +69,7 @@ setup(
     },
     install_requires=[
         "jsonschema",
-        "PyYAML",
+        "PyYAML>=4.2b1",
         "six",
     ],
     tests_require=[
