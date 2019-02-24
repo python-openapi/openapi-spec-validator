@@ -71,6 +71,7 @@ setup(
         "jsonschema",
         "PyYAML>=4.2b1",
         "six",
+        'pathlib;python_version=="2.7"',
     ],
     tests_require=[
         "mock",

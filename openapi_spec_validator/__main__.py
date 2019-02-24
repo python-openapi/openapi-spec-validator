@@ -1,7 +1,9 @@
 import logging
 import argparse
 import os
+import pathlib
 import sys
+
 
 from openapi_spec_validator import validate_spec_url, validate_v2_spec_url
 from openapi_spec_validator.exceptions import ValidationError
@@ -33,7 +35,7 @@ def main(args=None):
         validate_url = validate_spec_url
     # validate
     try:
-        validate_url('file://'+filename)
+        validate_url(pathlib.Path(filename).as_uri())
     except ValidationError as e:
         print(e)
         sys.exit(1)
