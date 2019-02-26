@@ -69,6 +69,21 @@ from openapi_spec_validator import openapi_v3_spec_validator
 errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
 ```
 
+## Security Note
+
+PyYAML, a requirement of this project, has a
+[security vulnerability](https://nvd.nist.gov/vuln/detail/CVE-2017-18342)
+in the default implementation of `yaml.load()`, which allows execution
+of arbitrary code while loading a target file or stream.  OpenAPI Spec
+Validator uses a safe loader to ensure that only Python objects
+marked as safe can be executed.  Thus, you are not exposed to this
+vulnerability by using this package.
+
+If you use `PyYAML` directly, be sure to use `yaml.safe_load()` to
+avoid inadvertantly exposing youself to potentially malicous data.  The
+[PyYAML docs](https://pyyaml.org/wiki/PyYAMLDocumentation#loading-yaml)
+describe this issue in detail.
+
 ## Related projects
 
 * [openapi-core](https://github.com/p1c2u/openapi-core) is a Python library that adds client-side and server-side support for the OpenAPI.
