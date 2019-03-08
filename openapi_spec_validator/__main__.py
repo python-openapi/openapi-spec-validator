@@ -1,7 +1,10 @@
 import logging
 import argparse
 import os
-import pathlib
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
 import sys
 
 
