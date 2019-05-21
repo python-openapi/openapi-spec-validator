@@ -1,4 +1,7 @@
+import mock
+
 import pytest
+from six import StringIO
 
 from openapi_spec_validator.__main__ import main
 
@@ -39,8 +42,32 @@ def test_validation_error():
         main(testargs)
 
 
+@mock.patch(
+    'openapi_spec_validator.__main__.openapi_v3_spec_validator.validate',
+    side_effect=Exception,
+)
+def test_unknown_error(m_validate):
+    """SystemExit on running with unknown error."""
+    testargs = ['--schema', '3.0.0',
+                './tests/integration/data/v2.0/petstore.yaml']
+    with pytest.raises(SystemExit):
+        main(testargs)
+
+
 def test_nonexisting_file():
     """Calling with non-existing file should sys.exit."""
     testargs = ['i_dont_exist.yaml']
     with pytest.raises(SystemExit):
+        main(testargs)
+
+
+def test_schema_stdin():
+    """Test schema from STDIN"""
+    spes_path = './tests/integration/data/v3.0/petstore.yaml'
+    with open(spes_path, 'r') as spec_file:
+        spec_lines = spec_file.readlines()
+    spec_io = StringIO("".join(spec_lines))
+
+    testargs = ['-']
+    with mock.patch('openapi_spec_validator.__main__.sys.stdin', spec_io):
         main(testargs)

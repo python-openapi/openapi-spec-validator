@@ -2,7 +2,7 @@
 from openapi_spec_validator.shortcuts import (
     validate_spec_factory, validate_spec_url_factory,
 )
-from openapi_spec_validator.handlers import UrlHandler
+from openapi_spec_validator.handlers import UrlHandler, FileObjectHandler
 from openapi_spec_validator.schemas import get_openapi_schema
 from openapi_spec_validator.factories import JSONSpecValidatorFactory
 from openapi_spec_validator.validators import SpecValidator
@@ -19,8 +19,10 @@ __all__ = [
     'validate_v2_spec_url', 'validate_v3_spec_url', 'validate_spec_url',
 ]
 
+file_object_handler = FileObjectHandler()
+all_urls_handler = UrlHandler('http', 'https', 'file')
 default_handlers = {
-    '<all_urls>': UrlHandler('http', 'https', 'file'),
+    '<all_urls>': all_urls_handler,
     'http': UrlHandler('http'),
     'https': UrlHandler('https'),
     'file': UrlHandler('file'),
