@@ -25,6 +25,12 @@ Straight forward way:
 $ openapi-spec-validator some.yaml
 ```
 
+pipes way:
+
+```bash
+$ cat some.yaml | openapi-spec-validator -
+```
+
 or more pythonic way:
 
 ```bash
