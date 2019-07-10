@@ -1,25 +1,25 @@
 """OpenAPI spec validator factories module."""
 from jsonschema import validators
-from jsonschema.validators import Draft4Validator, RefResolver
+from jsonschema.validators import Draft7Validator, RefResolver
 
 from openapi_spec_validator.generators import (
     SpecValidatorsGeneratorFactory,
 )
 
 
-class Draft4ExtendedValidatorFactory(Draft4Validator):
-    """Draft4Validator with extra validators factory that follows $refs
+class Draft7ExtendedValidatorFactory(Draft7Validator):
+    """Draft7Validator with extra validators factory that follows $refs
     in the schema being validated."""
 
     @classmethod
     def from_resolver(cls, spec_resolver):
-        """Creates a customized Draft4ExtendedValidator.
+        """Creates a customized Draft7ExtendedValidator.
 
         :param spec_resolver: resolver for the spec
         :type resolver: :class:`jsonschema.RefResolver`
         """
         spec_validators = cls._get_spec_validators(spec_resolver)
-        return validators.extend(Draft4Validator, spec_validators)
+        return validators.extend(Draft7Validator, spec_validators)
 
     @classmethod
     def _get_spec_validators(cls, spec_resolver):
@@ -36,8 +36,8 @@ class JSONSpecValidatorFactory:
     :param schema_url: schema base uri.
     """
 
-    schema_validator_class = Draft4Validator
-    spec_validator_factory = Draft4ExtendedValidatorFactory
+    schema_validator_class = Draft7Validator
+    spec_validator_factory = Draft7ExtendedValidatorFactory
 
     def __init__(self, schema, schema_url='', resolver_handlers=None):
         self.schema = schema

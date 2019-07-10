@@ -9,7 +9,7 @@ from openapi_spec_validator.exceptions import (
     OpenAPIValidationError
 )
 from openapi_spec_validator.decorators import ValidationErrorWrapper
-from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
+from openapi_spec_validator.factories import Draft7ExtendedValidatorFactory
 from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
@@ -150,7 +150,7 @@ class SchemaValidator(object):
 
     def _iter_value_errors(self, schema, value):
         resolver = RefResolver.from_schema(schema)
-        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
+        validator = Draft7ExtendedValidatorFactory.from_resolver(resolver)
         for err in validator(schema, resolver=resolver).iter_errors(value):
             yield err
 
@@ -308,7 +308,7 @@ class ParameterValidator(object):
 
     def _iter_value_errors(self, schema, value):
         resolver = RefResolver.from_schema(schema)
-        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
+        validator = Draft7ExtendedValidatorFactory.from_resolver(resolver)
         for err in validator(schema, resolver=resolver).iter_errors(value):
             yield err
 

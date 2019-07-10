@@ -68,7 +68,7 @@ setup(
         ]
     },
     install_requires=[
-        "jsonschema",
+        "jsonschema>=3.0.1",
         "PyYAML>=5.1",
         "six",
         'pathlib2;python_version=="2.7"',
