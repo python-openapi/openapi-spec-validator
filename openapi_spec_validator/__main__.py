@@ -47,7 +47,7 @@ def main(args=None):
 
     # choose source
     reader = read_from_filename
-    if args.filename == '-':
+    if args.filename in ['-', '/-']:
         reader = read_from_stdin
 
     # read source
