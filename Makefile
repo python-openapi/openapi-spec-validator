@@ -6,6 +6,8 @@ VERSION=`git describe --abbrev=0`
 
 DOCKER_REGISTRY=p1c2u
 
+PYTHONDONTWRITEBYTECODE=1
+
 params:
 	@echo "Project name: ${PROJECT_NAME}"
 	@echo "Package name: ${PACKAGE_NAME}"
