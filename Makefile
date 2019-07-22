@@ -4,6 +4,8 @@ PROJECT_NAME=openapi-spec-validator
 PACKAGE_NAME=$(subst -,_,${PROJECT_NAME})
 VERSION=`git describe --abbrev=0`
 
+DOCKER_REGISTRY=p1c2u
+
 params:
 	@echo "Project name: ${PROJECT_NAME}"
 	@echo "Package name: ${PACKAGE_NAME}"
@@ -30,3 +32,12 @@ reports-cleanup:
 test-cleanup: test-cache-cleanup reports-cleanup
 
 cleanup: dist-cleanup test-cleanup
+
+docker-build:
+	@docker build --no-cache --build-arg OPENAPI_SPEC_VALIDATOR_VERSION=${VERSION} -t ${PROJECT_NAME}:${VERSION} .
+
+docker-tag:
+	@docker tag ${PROJECT_NAME}:${VERSION} ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
+
+docker-push:
+	@docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
