@@ -28,8 +28,10 @@ class PyTest(TestCommand):
         self.test_args = [
             '-sv',
             '--flake8',
+            '--junitxml', 'reports/junit.xml',
             '--cov', 'openapi_spec_validator',
             '--cov-report', 'term-missing',
+            '--cov-report', 'xml:reports/coverage.xml',
         ]
         self.test_suite = True
 
