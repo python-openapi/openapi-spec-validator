@@ -31,6 +31,12 @@ pipes way:
 $ cat some.yaml | openapi-spec-validator -
 ```
 
+docker way:
+
+```bash
+$ docker run -v path/to/some.yaml:/some.yaml --rm p1c2u/openapi-spec-validator /some.yaml
+```
+
 or more pythonic way:
 
 ```bash
