@@ -75,6 +75,11 @@ setup(
         "six",
         'pathlib2;python_version=="2.7"',
     ],
+    extras_require={
+        'dev': [
+            'pre-commit'
+        ]
+    },
     tests_require=[
         "mock",
         "pytest",
