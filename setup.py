@@ -54,6 +54,7 @@ setup(
     author_email=metadata['email'],
     url=metadata['url'],
     license=metadata['license'],
+    description='OpenAPI 2.0 (aka Swagger) and OpenAPI 3.0.0 spec validator',
     long_description=read_file('README.md'),
     long_description_content_type='text/markdown',
     packages=find_packages(include=('openapi_spec_validator*',)),
