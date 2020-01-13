@@ -1,0 +1,6 @@
+- id: openapi-spec-validator
+  name: openapi-spec-validator
+  entry: openapi-spec-validator
+  description: Hook to validate Open API specs.
+  language: python
+  files: .*openapi.*\.(json|yaml|yml)
