@@ -311,3 +311,48 @@ class TestSpecValidatorIterErrors(object):
         assert errors_list[0].message == (
             "'invaldtype' is not of type 'integer'"
         )
+
+    def test_parameter_default_value_with_reference(self, validator):
+        spec = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {
+                '/test/': {
+                    'get': {
+                        'responses': {
+                            '200': {
+                                'description': 'OK',
+                                'schema': {'type': 'object'},
+                            },
+                        },
+                        'parameters': [
+                            {
+                                'name': 'param1',
+                                'in': 'query',
+                                'schema': {
+                                    'allOf':[{
+                                        '$ref': '#/components/schemas/type',
+                                    }],
+                                    'default': 1,
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+            'components': {
+                'schemas': {
+                    'type': {
+                        'type': 'integer',
+                    }
+                },
+            },
+        }
+
+        errors = validator.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert errors_list == []
