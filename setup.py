@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
+"""OpenAPI spec validator setup module"""
 import os
 import re
 import sys
-
-from setuptools import find_packages, setup
-from setuptools.command.test import test as TestCommand
+try:
+    from setuptools import setup
+except ImportError:
+    from ez_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup
+finally:
+    from setuptools.command.test import test as TestCommand
 
 
 def read_file(filename):
@@ -20,25 +26,16 @@ def get_metadata(init_file):
 
 
 class PyTest(TestCommand):
-
     """Command to run unit tests after in-place build."""
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = [
-            '-sv',
-            '--flake8',
-            '--junitxml', 'reports/junit.xml',
-            '--cov', 'openapi_spec_validator',
-            '--cov-report', 'term-missing',
-            '--cov-report', 'xml:reports/coverage.xml',
-        ]
-        self.test_suite = True
+        self.pytest_args = []
 
     def run_tests(self):
         # Importing here, `cause outside the eggs aren't loaded.
         import pytest
-        errno = pytest.main(self.test_args)
+        errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
 
@@ -46,59 +43,13 @@ init_path = os.path.join('openapi_spec_validator', '__init__.py')
 init_py = read_file(init_path)
 metadata = get_metadata(init_py)
 
-
-setup(
-    name='openapi-spec-validator',
-    version=metadata['version'],
-    author=metadata['author'],
-    author_email=metadata['email'],
-    url=metadata['url'],
-    license=metadata['license'],
-    description='OpenAPI 2.0 (aka Swagger) and OpenAPI 3.0.0 spec validator',
-    long_description=read_file('README.md'),
-    long_description_content_type='text/markdown',
-    packages=find_packages(include=('openapi_spec_validator*',)),
-    package_data={
-        'openapi_spec_validator': [
-            'openapi_spec_validator/resources/schemas/v3.0.0/*',
-            'openapi_spec_validator/resources/schemas/v2.0/*',
-        ],
-    },
-    include_package_data=True,
-    entry_points={
-        'console_scripts': [
-            'openapi-spec-validator = openapi_spec_validator.__main__:main'
-        ]
-    },
-    install_requires=[
-        "jsonschema",
-        "PyYAML>=5.1",
-        "six",
-        'pathlib2;python_version=="2.7"',
-    ],
-    extras_require={
-        'dev': [
-            'pre-commit'
-        ]
-    },
-    tests_require=[
-        "mock",
-        "pytest",
-        "pytest-flake8",
-        "pytest-cov",
-        "tox",
-    ],
-    cmdclass={'test': PyTest},
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-    ],
-)
+if __name__ == '__main__':
+    setup(
+        version=metadata['version'],
+        author=metadata['author'],
+        author_email=metadata['email'],
+        url=metadata['url'],
+        license=metadata['license'],
+        cmdclass={'test': PyTest},
+        setup_cfg=True,
+    )
