@@ -33,6 +33,13 @@ Installation
 
     $ pip install openapi-spec-validator
 
+Alternatively you can download the code and install from the repository:
+
+.. code-block:: bash
+
+   $ pip install -e git+https://github.com/p1c2u/openapi-spec-validator.git#egg=openapi_spec_validator
+
+
 Usage
 #####
 
@@ -43,25 +50,25 @@ Straight forward way:
 
 .. code:: bash
 
-    $ openapi-spec-validator some.yaml
+    $ openapi-spec-validator openapi.yaml
 
 pipes way:
 
 .. code:: bash
 
-    $ cat some.yaml | openapi-spec-validator -
+    $ cat openapi.yaml | openapi-spec-validator -
 
 docker way:
 
 .. code:: bash
 
-    $ docker run -v path/to/some.yaml:/some.yaml --rm p1c2u/openapi-spec-validator /some.yaml
+    $ docker run -v path/to/openapi.yaml:/openapi.yaml --rm p1c2u/openapi-spec-validator /openapi.yaml
 
 or more pythonic way:
 
 .. code:: bash
 
-    $ python -m openapi_spec_validator some.yaml
+    $ python -m openapi_spec_validator openapi.yaml
 
 Examples
 ********
@@ -70,17 +77,23 @@ Validate spec:
 
 .. code:: python
 
-
     from openapi_spec_validator import validate_spec
+    from openapi_spec_validator.readers import read_from_filename
 
+    spec_dict, spec_url = read_from_filename('openapi.yaml')
+
+    # If no exception is raised by validate_spec(), the spec is valid.
     validate_spec(spec_dict)
+
+    validate_spec({})
+
+    Traceback (most recent call last):
+        ...
+    OpenAPIValidationError: 'openapi' is a required property
 
 Add ``spec_url`` to validate spec with relative files:
 
 .. code:: python
-
-
-    from openapi_spec_validator import validate_spec
 
     validate_spec(spec_dict, spec_url='file:///path/to/spec/openapi.yaml')
 
@@ -88,15 +101,14 @@ You can also validate spec from url:
 
 .. code:: python
 
-
     from openapi_spec_validator import validate_spec_url
 
+    # If no exception is raised by validate_spec_url(), the spec is valid.
     validate_spec_url('http://example.com/openapi.json')
 
 If you want to iterate through validation errors:
 
 .. code:: python
-
 
     from openapi_spec_validator import openapi_v3_spec_validator
 

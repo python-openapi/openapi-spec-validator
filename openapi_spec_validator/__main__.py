@@ -1,36 +1,18 @@
 import logging
 import argparse
-import os
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
 import sys
 
 from openapi_spec_validator import (
-    openapi_v2_spec_validator, openapi_v3_spec_validator, all_urls_handler,
-    file_object_handler,
+    openapi_v2_spec_validator, openapi_v3_spec_validator,
 )
 from openapi_spec_validator.exceptions import ValidationError
+from openapi_spec_validator.readers import read_from_stdin, read_from_filename
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     format='%(asctime)s %(levelname)s %(name)s %(message)s',
     level=logging.WARNING
 )
-
-
-def read_from_stdin(filename):
-    return file_object_handler(sys.stdin), ''
-
-
-def read_from_filename(filename):
-    if not os.path.isfile(filename):
-        raise SystemError("No such file {0}".format(filename))
-
-    filename = os.path.abspath(filename)
-    uri = pathlib.Path(filename).as_uri()
-    return all_urls_handler(uri), uri
 
 
 def main(args=None):
