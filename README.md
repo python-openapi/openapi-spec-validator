@@ -84,6 +84,7 @@ errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
 ## Related projects
 
 * [openapi-core](https://github.com/p1c2u/openapi-core) is a Python library that adds client-side and server-side support for the OpenAPI.
+* [openapi-schema-validator](https://github.com/p1c2u/openapi-schema-validator) is a Python library that validates schema against the OpenAPI Schema Specification v3.0.
 
 ## License
 
