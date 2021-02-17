@@ -87,5 +87,5 @@ errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
 
 ## License
 
-Copyright (c) 2017, Artur Maciag, All rights reserved.
+Copyright (c) 2017-2021, Artur Maciag, All rights reserved.
 Apache v2
