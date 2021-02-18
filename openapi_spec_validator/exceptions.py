@@ -15,3 +15,7 @@ class ParameterDuplicateError(OpenAPIValidationError):
 
 class UnresolvableParameterError(OpenAPIValidationError):
     pass
+
+
+class DuplicateOperationIDError(OpenAPIValidationError):
+    pass

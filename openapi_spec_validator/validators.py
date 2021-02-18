@@ -6,7 +6,7 @@ from six import iteritems
 
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
-    OpenAPIValidationError
+    OpenAPIValidationError, DuplicateOperationIDError,
 )
 from openapi_spec_validator.decorators import ValidationErrorWrapper
 from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
@@ -157,8 +157,10 @@ class SchemaValidator(object):
 
 class PathsValidator(object):
 
-    def __init__(self, dereferencer):
+    def __init__(self, dereferencer, operation_ids_registry=None):
         self.dereferencer = dereferencer
+        self.operation_ids_registry = [] if operation_ids_registry is None \
+            else operation_ids_registry
 
     @wraps_errors
     def iter_errors(self, paths):
@@ -168,13 +170,17 @@ class PathsValidator(object):
                 yield err
 
     def _iter_path_errors(self, url, path_item):
-        return PathValidator(self.dereferencer).iter_errors(url, path_item)
+        return PathValidator(
+            self.dereferencer, self.operation_ids_registry).iter_errors(
+                url, path_item)
 
 
 class PathValidator(object):
 
-    def __init__(self, dereferencer):
+    def __init__(self, dereferencer, operation_ids_registry=None):
         self.dereferencer = dereferencer
+        self.operation_ids_registry = [] if operation_ids_registry is None \
+            else operation_ids_registry
 
     @wraps_errors
     def iter_errors(self, url, path_item):
@@ -184,7 +190,9 @@ class PathValidator(object):
             yield err
 
     def _iter_path_item_errors(self, url, path_item):
-        return PathItemValidator(self.dereferencer).iter_errors(url, path_item)
+        return PathItemValidator(
+            self.dereferencer, self.operation_ids_registry).iter_errors(
+                url, path_item)
 
 
 class PathItemValidator(object):
@@ -193,8 +201,10 @@ class PathItemValidator(object):
         'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace',
     ]
 
-    def __init__(self, dereferencer):
+    def __init__(self, dereferencer, operation_ids_registry=None):
         self.dereferencer = dereferencer
+        self.operation_ids_registry = [] if operation_ids_registry is None \
+            else operation_ids_registry
 
     @wraps_errors
     def iter_errors(self, url, path_item):
@@ -213,8 +223,9 @@ class PathItemValidator(object):
                 yield err
 
     def _iter_operation_errors(self, url, name, operation, path_parameters):
-        return OperationValidator(self.dereferencer).iter_errors(
-            url, name, operation, path_parameters)
+        return OperationValidator(
+            self.dereferencer, self.operation_ids_registry).iter_errors(
+                url, name, operation, path_parameters)
 
     def _iter_parameters_errors(self, parameters):
         return ParametersValidator(self.dereferencer).iter_errors(parameters)
@@ -222,13 +233,22 @@ class PathItemValidator(object):
 
 class OperationValidator(object):
 
-    def __init__(self, dereferencer):
+    def __init__(self, dereferencer, seen_ids=None):
         self.dereferencer = dereferencer
+        self.seen_ids = [] if seen_ids is None else seen_ids
 
     @wraps_errors
     def iter_errors(self, url, name, operation, path_parameters=None):
         path_parameters = path_parameters or []
         operation_deref = self.dereferencer.dereference(operation)
+
+        operation_id = operation_deref.get('operationId')
+        if operation_id is not None and operation_id in self.seen_ids:
+            yield DuplicateOperationIDError(
+                "Operation ID '{0}' for '{1}' in '{2}' is not unique".format(
+                    operation_id, name, url)
+            )
+        self.seen_ids.append(operation_id)
 
         parameters = operation_deref.get('parameters', [])
         for err in self._iter_parameters_errors(parameters):
