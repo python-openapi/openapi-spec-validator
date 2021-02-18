@@ -1,8 +1,13 @@
 import pytest
 
-from openapi_spec_validator import validate_spec, validate_spec_url
-from openapi_spec_validator import validate_v2_spec, validate_v2_spec_url
+from openapi_spec_validator import (
+    validate_spec, validate_spec_url,
+    validate_v2_spec, validate_v2_spec_url,
+    validate_spec_url_factory,
+    openapi_v2_spec_validator, openapi_v3_spec_validator,
+)
 from openapi_spec_validator.exceptions import OpenAPIValidationError
+from openapi_spec_validator.handlers.urllib import UrllibHandler
 
 
 class BaseTestValidValidteV2Spec:
@@ -31,10 +36,31 @@ class BaseTestFaliedValidateSpec:
             validate_spec(spec)
 
 
-class BaseTestValidValidteV2SpecUrl:
+class BaseTestValidValidateSpecUrl:
+
+    @pytest.fixture
+    def urllib_handlers(self):
+        all_urls_handler = UrllibHandler('http', 'https', 'file')
+        return {
+            '<all_urls>': all_urls_handler,
+            'http': UrllibHandler('http'),
+            'https': UrllibHandler('https'),
+            'file': UrllibHandler('file'),
+        }
+
+
+class BaseTestValidValidateV2SpecUrl(BaseTestValidValidateSpecUrl):
+
+    @pytest.fixture
+    def validate_spec_url_callable(self, urllib_handlers):
+        return validate_spec_url_factory(
+            openapi_v2_spec_validator.validate, urllib_handlers)
 
     def test_valid(self, spec_url):
         validate_v2_spec_url(spec_url)
+
+    def test_urllib_valid(self, validate_spec_url_callable, spec_url):
+        validate_spec_url_callable(spec_url)
 
 
 class BaseTestFaliedValidateV2SpecUrl:
@@ -44,10 +70,18 @@ class BaseTestFaliedValidateV2SpecUrl:
             validate_v2_spec_url(spec_url)
 
 
-class BaseTestValidValidteSpecUrl:
+class BaseTestValidValidateV3SpecUrl(BaseTestValidValidateSpecUrl):
 
-    def test_valid(self, spec_url):
+    @pytest.fixture
+    def validate_spec_url_callable(self, urllib_handlers):
+        return validate_spec_url_factory(
+            openapi_v3_spec_validator.validate, urllib_handlers)
+
+    def test_default_valid(self, spec_url):
         validate_spec_url(spec_url)
+
+    def test_urllib_valid(self, validate_spec_url_callable, spec_url):
+        validate_spec_url_callable(spec_url)
 
 
 class BaseTestFaliedValidateSpecUrl:
@@ -78,7 +112,7 @@ class TestLocalPetstoreExample(BaseTestValidValidteSpec):
         return factory.spec_from_file("data/v3.0/petstore.yaml")
 
 
-class TestPetstoreV2Example(BaseTestValidValidteV2SpecUrl):
+class TestPetstoreV2Example(BaseTestValidValidateV2SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
@@ -89,7 +123,7 @@ class TestPetstoreV2Example(BaseTestValidValidteV2SpecUrl):
         )
 
 
-class TestApiV2WithExampe(BaseTestValidValidteV2SpecUrl):
+class TestApiV2WithExampe(BaseTestValidValidateV2SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
@@ -100,7 +134,7 @@ class TestApiV2WithExampe(BaseTestValidValidteV2SpecUrl):
         )
 
 
-class TestPetstoreV2ExpandedExample(BaseTestValidValidteV2SpecUrl):
+class TestPetstoreV2ExpandedExample(BaseTestValidValidateV2SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
@@ -111,7 +145,7 @@ class TestPetstoreV2ExpandedExample(BaseTestValidValidteV2SpecUrl):
         )
 
 
-class TestPetstoreExample(BaseTestValidValidteSpecUrl):
+class TestPetstoreExample(BaseTestValidValidateV3SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
@@ -122,7 +156,7 @@ class TestPetstoreExample(BaseTestValidValidteSpecUrl):
         )
 
 
-class TestApiWithExampe(BaseTestValidValidteSpecUrl):
+class TestApiWithExampe(BaseTestValidValidateV3SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
@@ -133,7 +167,7 @@ class TestApiWithExampe(BaseTestValidValidteSpecUrl):
         )
 
 
-class TestPetstoreExpandedExample(BaseTestValidValidteSpecUrl):
+class TestPetstoreExpandedExample(BaseTestValidValidateV3SpecUrl):
 
     @pytest.fixture
     def spec_url(self):
