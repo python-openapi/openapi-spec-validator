@@ -1,0 +1,21 @@
+# This workflow will upload Docker image when a release is created
+# For more information see: https://github.com/marketplace/actions/docker-build-push-action
+
+name: Publish docker image
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+    - created
+
+jobs:
+  publish:
+    steps:
+    - name: Publish image
+      uses: mr-smithers-excellent/docker-build-push@v5
+      with:
+        image: p1c2u/openapi-spec-validator
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
