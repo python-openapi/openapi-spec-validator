@@ -1,5 +1,6 @@
 from openapi_spec_validator.exceptions import (
     ExtraParametersError, UnresolvableParameterError, OpenAPIValidationError,
+    DuplicateOperationIDError,
 )
 
 
@@ -79,6 +80,40 @@ class TestSpecValidatorIterErrors(object):
 
         errors_list = list(errors)
         assert errors_list == []
+
+    def test_same_operation_ids(self, validator):
+        spec = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {
+                '/test': {
+                    'get': {
+                        'operationId': 'operation1',
+                        'responses': {},
+                    },
+                    'post': {
+                        'operationId': 'operation1',
+                        'responses': {},
+                    },
+                },
+                '/test2': {
+                    'get': {
+                        'operationId': 'operation1',
+                        'responses': {},
+                    },
+                },
+            },
+        }
+
+        errors = validator.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert len(errors_list) == 2
+        assert errors_list[0].__class__ == DuplicateOperationIDError
+        assert errors_list[1].__class__ == DuplicateOperationIDError
 
     def test_allow_allof_required_no_properties(self, validator):
         spec = {
