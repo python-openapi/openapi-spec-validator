@@ -3,10 +3,14 @@ from six import StringIO
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
+from openapi_spec_validator.loaders import ExtendedSafeLoader
 
 
 class FileObjectHandler(BaseHandler):
     """OpenAPI spec validator file-like object handler."""
+
+    def __init__(self, loader=ExtendedSafeLoader):
+        self.loader = loader
 
     def __call__(self, f):
         return load(f, self.loader)
