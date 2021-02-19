@@ -2,6 +2,7 @@ import logging
 import string
 
 from jsonschema.validators import RefResolver
+from openapi_schema_validator import OAS30Validator, oas30_format_checker
 from six import iteritems
 
 from openapi_spec_validator.exceptions import (
@@ -9,7 +10,6 @@ from openapi_spec_validator.exceptions import (
     OpenAPIValidationError, DuplicateOperationIDError,
 )
 from openapi_spec_validator.decorators import ValidationErrorWrapper
-from openapi_spec_validator.factories import Draft4ExtendedValidatorFactory
 from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
@@ -149,10 +149,7 @@ class SchemaValidator(object):
                     yield err
 
     def _iter_value_errors(self, schema, value):
-        resolver = RefResolver.from_schema(schema)
-        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
-        for err in validator(schema, resolver=resolver).iter_errors(value):
-            yield err
+        return ValueValidator(self.dereferencer).iter_errors(schema, value)
 
 
 class PathsValidator(object):
@@ -327,10 +324,23 @@ class ParameterValidator(object):
                     yield err
 
     def _iter_value_errors(self, schema, value):
-        resolver = RefResolver.from_schema(schema)
-        validator = Draft4ExtendedValidatorFactory.from_resolver(resolver)
-        for err in validator(schema, resolver=resolver).iter_errors(value):
-            yield err
+        return ValueValidator(self.dereferencer).iter_errors(schema, value)
 
     def _iter_schema_errors(self, schema):
         return SchemaValidator(self.dereferencer).iter_errors(schema)
+
+
+class ValueValidator(object):
+
+    def __init__(self, dereferencer):
+        self.dereferencer = dereferencer
+
+    @wraps_errors
+    def iter_errors(self, schema, value):
+        validator = OAS30Validator(
+            schema,
+            resolver=self.dereferencer.resolver_manager.resolver,
+            format_checker=oas30_format_checker,
+        )
+        for err in validator.iter_errors(value):
+            yield err
