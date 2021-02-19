@@ -322,12 +322,7 @@ class TestSpecValidatorIterErrors(object):
             'paths': {
                 '/test/': {
                     'get': {
-                        'responses': {
-                            '200': {
-                                'description': 'OK',
-                                'schema': {'type': 'object'},
-                            },
-                        },
+                        'responses': {},
                         'parameters': [
                             {
                                 'name': 'param1',
