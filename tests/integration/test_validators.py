@@ -70,6 +70,7 @@ class TestSpecValidatorIterErrors(object):
                             'schema': {
                               'type': 'integer',
                             },
+                            'required': True,
                         },
                     ],
                 },
@@ -92,17 +93,29 @@ class TestSpecValidatorIterErrors(object):
                 '/test': {
                     'get': {
                         'operationId': 'operation1',
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                     },
                     'post': {
                         'operationId': 'operation1',
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                     },
                 },
                 '/test2': {
                     'get': {
                         'operationId': 'operation1',
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                     },
                 },
             },
@@ -187,7 +200,11 @@ class TestSpecValidatorIterErrors(object):
             'paths': {
                 '/test/{param1}/{param2}': {
                     'get': {
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                     },
                     'parameters': [
                         {
@@ -196,6 +213,7 @@ class TestSpecValidatorIterErrors(object):
                             'schema': {
                                 'type': 'integer',
                             },
+                            'required': True,
                         },
                     ],
                 },
@@ -248,7 +266,11 @@ class TestSpecValidatorIterErrors(object):
             'paths': {
                 '/test/{param1}': {
                     'get': {
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                     },
                     'parameters': [
                         {
@@ -258,6 +280,7 @@ class TestSpecValidatorIterErrors(object):
                                 'type': 'integer',
                                 'default': 'invaldtype',
                             },
+                            'required': True,
                         },
                     ],
                 },
@@ -322,7 +345,11 @@ class TestSpecValidatorIterErrors(object):
             'paths': {
                 '/test/': {
                     'get': {
-                        'responses': {},
+                        'responses': {
+                            'default': {
+                                'description': 'default response',
+                            },
+                        },
                         'parameters': [
                             {
                                 'name': 'param1',

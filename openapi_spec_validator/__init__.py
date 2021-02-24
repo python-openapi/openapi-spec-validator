@@ -39,8 +39,8 @@ openapi_v2_spec_validator = SpecValidator(
     resolver_handlers=default_handlers,
 )
 
-# v3.0.0 spec
-schema_v3, schema_v3_url = get_openapi_schema('3.0.0')
+# v3.0 spec
+schema_v3, schema_v3_url = get_openapi_schema('3.0')
 openapi_v3_validator_factory = JSONSpecValidatorFactory(
     schema_v3, schema_v3_url,
     resolver_handlers=default_handlers,
