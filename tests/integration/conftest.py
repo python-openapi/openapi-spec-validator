@@ -5,8 +5,10 @@ from six.moves.urllib import request
 from six.moves.urllib.parse import urlunparse
 from yaml import safe_load
 
-from openapi_spec_validator import (openapi_v3_spec_validator,
-                                    openapi_v2_spec_validator)
+from openapi_spec_validator import (
+    openapi_v2_spec_validator, openapi_v3_0_spec_validator,
+    openapi_v3_1_spec_validator,
+)
 from openapi_spec_validator.schemas import read_yaml_file
 
 
@@ -42,8 +44,13 @@ def factory():
 
 
 @pytest.fixture
-def validator():
-    return openapi_v3_spec_validator
+def v3_0_validator():
+    return openapi_v3_0_spec_validator
+
+
+@pytest.fixture
+def v3_1_validator():
+    return openapi_v3_1_spec_validator
 
 
 @pytest.fixture

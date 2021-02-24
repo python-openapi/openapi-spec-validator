@@ -3,7 +3,8 @@ import argparse
 import sys
 
 from openapi_spec_validator import (
-    openapi_v2_spec_validator, openapi_v3_spec_validator,
+    openapi_v2_spec_validator, openapi_v3_0_spec_validator,
+    openapi_v3_1_spec_validator
 )
 from openapi_spec_validator.exceptions import ValidationError
 from openapi_spec_validator.readers import read_from_stdin, read_from_filename
@@ -20,10 +21,10 @@ def main(args=None):
     parser.add_argument('filename', help="Absolute or relative path to file")
     parser.add_argument(
         '--schema',
-        help="OpenAPI schema (default: 3.0.0)",
+        help="OpenAPI schema (default: 3.1)",
         type=str,
-        choices=['2.0', '3.0.0'],
-        default='3.0.0'
+        choices=['2.0', '3.0', '3.1'],
+        default='3.0'
     )
     args = parser.parse_args(args)
 
@@ -42,7 +43,8 @@ def main(args=None):
     # choose the validator
     validators = {
         '2.0': openapi_v2_spec_validator,
-        '3.0.0': openapi_v3_spec_validator,
+        '3.0': openapi_v3_0_spec_validator,
+        '3.1': openapi_v3_1_spec_validator,
     }
     validator = validators[args.schema]
 

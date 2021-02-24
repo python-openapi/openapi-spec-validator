@@ -14,9 +14,16 @@ __url__ = 'https://github.com/p1c2u/openapi-spec-validator'
 __license__ = 'Apache License, Version 2.0'
 
 __all__ = [
-    'openapi_v2_spec_validator', 'openapi_v3_spec_validator',
-    'validate_v2_spec', 'validate_v3_spec', 'validate_spec',
-    'validate_v2_spec_url', 'validate_v3_spec_url', 'validate_spec_url',
+    'validate_spec', 'validate_spec_url',
+    'openapi_spec_validator',
+    'openapi_v2_spec_validator',
+    'validate_v2_spec', 'validate_v2_spec_url',
+    'openapi_v3_spec_validator',
+    'validate_v3_spec', 'validate_v3_spec_url',
+    'openapi_v3_0_spec_validator',
+    'validate_v3_0_spec', 'validate_v3_0_spec_url',
+    'openapi_v3_1_spec_validator',
+    'validate_v3_1_spec', 'validate_v3_1_spec_url',
 ]
 
 file_object_handler = FileObjectHandler()
@@ -40,25 +47,48 @@ openapi_v2_spec_validator = SpecValidator(
 )
 
 # v3.0 spec
-schema_v3, schema_v3_url = get_openapi_schema('3.0')
-openapi_v3_validator_factory = JSONSpecValidatorFactory(
-    schema_v3, schema_v3_url,
+schema_v3_0, schema_v3_0_url = get_openapi_schema('3.0')
+openapi_v3_0_validator_factory = JSONSpecValidatorFactory(
+    schema_v3_0, schema_v3_0_url,
     resolver_handlers=default_handlers,
 )
-openapi_v3_spec_validator = SpecValidator(
-    openapi_v3_validator_factory,
+openapi_v3_0_spec_validator = SpecValidator(
+    openapi_v3_0_validator_factory,
+    resolver_handlers=default_handlers,
+)
+
+# v3.1 spec
+schema_v3_1, schema_v3_1_url = get_openapi_schema('3.1')
+openapi_v3_1_validator_factory = JSONSpecValidatorFactory(
+    schema_v3_1, schema_v3_1_url,
+    resolver_handlers=default_handlers,
+)
+openapi_v3_1_spec_validator = SpecValidator(
+    openapi_v3_1_validator_factory,
     resolver_handlers=default_handlers,
 )
 
 # shortcuts
-validate_v2_spec = validate_spec_factory(openapi_v2_spec_validator.validate)
+validate_v2_spec = validate_spec_factory(
+    openapi_v2_spec_validator.validate)
 validate_v2_spec_url = validate_spec_url_factory(
     openapi_v2_spec_validator.validate, default_handlers)
 
-validate_v3_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
-validate_v3_spec_url = validate_spec_url_factory(
-    openapi_v3_spec_validator.validate, default_handlers)
+validate_v3_0_spec = validate_spec_factory(
+    openapi_v3_0_spec_validator.validate)
+validate_v3_0_spec_url = validate_spec_url_factory(
+    openapi_v3_0_spec_validator.validate, default_handlers)
+
+validate_v3_1_spec = validate_spec_factory(
+    openapi_v3_1_spec_validator.validate)
+validate_v3_1_spec_url = validate_spec_url_factory(
+    openapi_v3_1_spec_validator.validate, default_handlers)
 
 # aliases to the latest version
-validate_spec = validate_v3_spec
-validate_spec_url = validate_v3_spec_url
+schema_v3, schema_v3_url = schema_v3_0, schema_v3_0_url
+openapi_v3_validator_factory = openapi_v3_0_validator_factory
+openapi_v3_spec_validator = openapi_v3_0_spec_validator
+validate_v3_spec = validate_v3_0_spec
+validate_v3_spec_url = validate_v3_0_spec_url
+validate_spec = validate_v3_0_spec
+validate_spec_url = validate_v3_0_spec_url
