@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+from jsonschema.validators import Draft4Validator, Draft7Validator
+
 from openapi_spec_validator.shortcuts import (
     validate_spec_factory, validate_spec_url_factory,
 )
 from openapi_spec_validator.handlers import UrlHandler, FileObjectHandler
 from openapi_spec_validator.schemas import get_openapi_schema
-from openapi_spec_validator.factories import JSONSpecValidatorFactory
+from openapi_spec_validator.factories import (
+    OpenAPIValidatorFactory, OpenAPISpecValidatorFactory,
+)
 from openapi_spec_validator.validators import SpecValidator
 
 __author__ = 'Artur Maciag'
@@ -35,9 +39,14 @@ default_handlers = {
     'file': UrlHandler('file'),
 }
 
+# schemas
+draft4_validator_factory = OpenAPIValidatorFactory(Draft4Validator)
+draft7_validator_factory = OpenAPIValidatorFactory(Draft7Validator)
+
 # v2.0 spec
-schema_v2, schema_v2_url = get_openapi_schema('2.0')
-openapi_v2_validator_factory = JSONSpecValidatorFactory(
+schema_v2, schema_v2_url = get_openapi_schema('2.0', Draft4Validator)
+openapi_v2_validator_factory = OpenAPISpecValidatorFactory(
+    draft4_validator_factory,
     schema_v2, schema_v2_url,
     resolver_handlers=default_handlers,
 )
@@ -47,8 +56,9 @@ openapi_v2_spec_validator = SpecValidator(
 )
 
 # v3.0 spec
-schema_v3_0, schema_v3_0_url = get_openapi_schema('3.0')
-openapi_v3_0_validator_factory = JSONSpecValidatorFactory(
+schema_v3_0, schema_v3_0_url = get_openapi_schema('3.0', Draft4Validator)
+openapi_v3_0_validator_factory = OpenAPISpecValidatorFactory(
+    draft4_validator_factory,
     schema_v3_0, schema_v3_0_url,
     resolver_handlers=default_handlers,
 )
@@ -58,8 +68,10 @@ openapi_v3_0_spec_validator = SpecValidator(
 )
 
 # v3.1 spec
-schema_v3_1, schema_v3_1_url = get_openapi_schema('3.1')
-openapi_v3_1_validator_factory = JSONSpecValidatorFactory(
+# @TODO: change to 2020-12 validator when released
+schema_v3_1, schema_v3_1_url = get_openapi_schema('3.1', Draft7Validator)
+openapi_v3_1_validator_factory = OpenAPISpecValidatorFactory(
+    draft7_validator_factory,
     schema_v3_1, schema_v3_1_url,
     resolver_handlers=default_handlers,
 )

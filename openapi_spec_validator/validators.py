@@ -5,36 +5,17 @@ from jsonschema.validators import RefResolver
 from openapi_schema_validator import OAS30Validator, oas30_format_checker
 from six import iteritems
 
+from openapi_spec_validator.dereferencing.dereferencers import Dereferencer
+from openapi_spec_validator.dereferencing.managers import ResolverManager
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
     OpenAPIValidationError, DuplicateOperationIDError,
 )
 from openapi_spec_validator.decorators import ValidationErrorWrapper
-from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
 
 wraps_errors = ValidationErrorWrapper(OpenAPIValidationError)
-
-
-def is_ref(spec):
-    return isinstance(spec, dict) and '$ref' in spec
-
-
-class Dereferencer(object):
-
-    def __init__(self, spec_resolver):
-        self.resolver_manager = ResolverManager(spec_resolver)
-
-    def dereference(self, item):
-        log.debug("Dereferencing %s", item)
-        if item is None or not is_ref(item):
-            return item
-
-        ref = item['$ref']
-        with self.resolver_manager.in_scope(item) as resolver:
-            with resolver.resolving(ref) as target:
-                return target
 
 
 class SpecValidator(object):

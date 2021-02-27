@@ -8,12 +8,13 @@ from yaml import load
 from openapi_spec_validator.loaders import ExtendedSafeLoader
 
 
-def get_openapi_schema(version):
+def get_openapi_schema(version, schema_validator_class):
     path = 'resources/schemas/v{0}/schema.json'.format(version)
     path_resource = resource_filename('openapi_spec_validator', path)
     path_full = os.path.join(os.path.dirname(__file__), path_resource)
     schema = read_yaml_file(path_full)
     schema_url = parse.urljoin('file:', request.pathname2url(path_full))
+    schema_validator_class.check_schema(schema)
     return schema, schema_url
 
 
