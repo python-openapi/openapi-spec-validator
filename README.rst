@@ -73,7 +73,7 @@ or more pythonic way:
 Examples
 ********
 
-Validate spec:
+By default, OpenAPI v3 syntax is expected. To validate an OpenAPI v3 spec:
 
 .. code:: python
 
@@ -90,6 +90,8 @@ Validate spec:
     Traceback (most recent call last):
         ...
     OpenAPIValidationError: 'openapi' is a required property
+    
+In order to validate a Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec`` instead of ``validate_spec``. You can also explicitly import ``validate_v3_spec`` if you want to disambiguate the expected version.
 
 Add ``spec_url`` to validate spec with relative files:
 
