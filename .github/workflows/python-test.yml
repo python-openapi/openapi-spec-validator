@@ -10,10 +10,11 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        os: [windows-latest, ubuntu-latest]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +28,9 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements_dev.txt
         pip install -e .
+      shell: bash
     - name: Test
       run: python setup.py test
+      shell: bash
     - name: Upload coverage
       uses: codecov/codecov-action@v1

@@ -3,6 +3,7 @@ from six import StringIO
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
+from openapi_spec_validator.handlers.utils import uri_to_path
 from openapi_spec_validator.loaders import ExtendedSafeLoader
 
 
@@ -19,12 +20,12 @@ class FileObjectHandler(BaseHandler):
 class FileHandler(FileObjectHandler):
     """OpenAPI spec validator file path handler."""
 
-    def __call__(self, f):
-        if isinstance(f, StringIO):
-            return super(FileHandler, self).__call__(f)
+    def __call__(self, uri):
+        if isinstance(uri, StringIO):
+            return super(FileHandler, self).__call__(uri)
 
-        assert f.startswith("file")
+        assert uri.startswith("file")
 
-        filename = f[7:]
-        with open(filename) as fh:
+        filepath = uri_to_path(uri)
+        with open(filepath) as fh:
             return super(FileHandler, self).__call__(fh)
