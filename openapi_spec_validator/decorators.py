@@ -18,7 +18,8 @@ class DerefValidatorDecorator:
 
     def __call__(self, func):
         def wrapped(validator, schema_element, instance, schema):
-            if not isinstance(instance, dict) or '$ref' not in instance:
+            if (not isinstance(instance, dict) or '$ref' not in instance
+                    or not instance['$ref'].__hash__):
                 for res in func(validator, schema_element, instance, schema):
                     yield res
                 return
