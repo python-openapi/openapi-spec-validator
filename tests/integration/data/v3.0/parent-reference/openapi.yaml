@@ -14,6 +14,7 @@ paths:
       tags:
         - pets
       parameters:
+        - $ref: "recursive.yaml#/parameters/RecursiveReference"
         - name: limit
           in: query
           description: How many items to return at one time (max 100)

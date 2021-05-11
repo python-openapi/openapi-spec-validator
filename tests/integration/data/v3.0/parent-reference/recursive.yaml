@@ -1,0 +1,3 @@
+parameters:
+  RecursiveReference:
+    $ref : "recursive2.yaml#/parameters/RecursiveReference"

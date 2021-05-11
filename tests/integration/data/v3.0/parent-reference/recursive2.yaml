@@ -1,0 +1,8 @@
+parameters:
+  RecursiveReference:
+    name: sampleParameter
+    in: query
+    description: Tests recursion
+    required: false
+    schema:
+      type: boolean
