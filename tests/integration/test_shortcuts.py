@@ -156,7 +156,7 @@ class TestPetstoreExample(BaseTestValidValidateV3SpecUrl):
         )
 
 
-class TestApiWithExampe(BaseTestValidValidateV3SpecUrl):
+class TestApiWithExample(BaseTestValidValidateV3SpecUrl):
 
     @pytest.fixture
     def spec_url(self):

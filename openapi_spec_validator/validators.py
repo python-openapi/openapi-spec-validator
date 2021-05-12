@@ -34,6 +34,8 @@ class Dereferencer(object):
         ref = item['$ref']
         with self.resolver_manager.in_scope(item) as resolver:
             with resolver.resolving(ref) as target:
+                if is_ref(target):
+                    target = self.dereference(target)
                 return target
 
 
