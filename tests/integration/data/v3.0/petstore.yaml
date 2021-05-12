@@ -93,6 +93,8 @@ components:
           type: string
         tag:
           type: string
+        $ref:
+          type: string
     Pets:
       type: array
       items:
