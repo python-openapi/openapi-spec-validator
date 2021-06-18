@@ -76,7 +76,7 @@ class TestPetstoreExample(BaseTestValidOpenAPIv3Validator):
         return factory.spec_from_url(url)
 
 
-class TestApiWithExampe(BaseTestValidOpenAPIv3Validator):
+class TestApiWithExample(BaseTestValidOpenAPIv3Validator):
 
     @pytest.fixture
     def spec(self, factory):
