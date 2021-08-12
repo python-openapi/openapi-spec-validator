@@ -6,7 +6,8 @@ from urllib.parse import urlunparse
 from yaml import safe_load
 
 from openapi_spec_validator import (openapi_v3_spec_validator,
-                                    openapi_v2_spec_validator)
+                                    openapi_v2_spec_validator,
+                                    openapi_v31_spec_validator)
 from openapi_spec_validator.schemas import read_yaml_file
 
 
@@ -44,6 +45,11 @@ def factory():
 @pytest.fixture
 def validator():
     return openapi_v3_spec_validator
+
+
+@pytest.fixture
+def validator_v31():
+    return openapi_v31_spec_validator
 
 
 @pytest.fixture

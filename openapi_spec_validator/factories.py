@@ -1,6 +1,7 @@
 """OpenAPI spec validator factories module."""
 from jsonschema import validators
-from jsonschema.validators import Draft4Validator, RefResolver
+from jsonschema.validators import Draft4Validator, RefResolver, \
+    Draft202012Validator
 
 from openapi_spec_validator.generators import (
     SpecValidatorsGeneratorFactory,
@@ -28,7 +29,7 @@ class Draft4ExtendedValidatorFactory(Draft4Validator):
         return dict(list(generator))
 
 
-class JSONSpecValidatorFactory:
+class BaseJSONSpecValidatorFactory:
     """
     Json documents validator factory against a json schema.
 
@@ -36,8 +37,7 @@ class JSONSpecValidatorFactory:
     :param schema_url: schema base uri.
     """
 
-    schema_validator_class = Draft4Validator
-    spec_validator_factory = Draft4ExtendedValidatorFactory
+    schema_validator_class = None
 
     def __init__(self, schema, schema_url='', resolver_handlers=None):
         self.schema = schema
@@ -45,6 +45,17 @@ class JSONSpecValidatorFactory:
         self.resolver_handlers = resolver_handlers or ()
 
         self.schema_validator_class.check_schema(self.schema)
+
+
+class Draft4JSONSpecValidatorFactory(BaseJSONSpecValidatorFactory):
+    """
+    Json documents validator factory that uses Draft4Validator
+
+    :param schema: schema for validation.
+    :param schema_url: schema base uri.
+    """
+    schema_validator_class = Draft4Validator
+    spec_validator_factory = Draft4ExtendedValidatorFactory
 
     @property
     def schema_resolver(self):
@@ -67,3 +78,17 @@ class JSONSpecValidatorFactory:
     def _get_resolver(self, base_uri, referrer):
         return RefResolver(
             base_uri, referrer, handlers=self.resolver_handlers)
+
+
+class Draft202012JSONSpecValidatorFactory(BaseJSONSpecValidatorFactory):
+    """
+    Json documents validator factory that uses Draft202012Validator
+
+    :param schema: schema for validation.
+    :param schema_url: schema base uri.
+    """
+
+    schema_validator_class = Draft202012Validator
+
+    def create(self, spec_resolver):
+        return self.schema_validator_class(self.schema)

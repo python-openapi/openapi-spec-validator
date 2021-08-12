@@ -253,7 +253,7 @@ class TestSpecValidatorIterErrors(object):
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
     def test_parameter_default_value_wrong_type(self, validator):
@@ -293,7 +293,7 @@ class TestSpecValidatorIterErrors(object):
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
     def test_parameter_default_value_wrong_type_swagger(self,
@@ -332,7 +332,7 @@ class TestSpecValidatorIterErrors(object):
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
     def test_parameter_default_value_with_reference(self, validator):
