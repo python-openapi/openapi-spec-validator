@@ -26,6 +26,33 @@ def test_schema_v2():
     main(testargs)
 
 
+def test_errors_on_missing_description_best(capsys):
+    """An error is obviously printed given an empty schema."""
+    testargs = ['./tests/integration/data/v3.0/missing-description.yaml']
+    with pytest.raises(SystemExit):
+        main(testargs)
+    out, err = capsys.readouterr()
+    assert "Failed validating" in out
+    assert "'description' is a required property" in out
+    assert "'$ref' is a required property" not in out
+    assert '1 more subschemas errors' in out
+
+
+def test_errors_on_missing_description_full(capsys):
+    """An error is obviously printed given an empty schema."""
+    testargs = [
+        "./tests/integration/data/v3.0/missing-description.yaml",
+        "--errors=all"
+    ]
+    with pytest.raises(SystemExit):
+        main(testargs)
+    out, err = capsys.readouterr()
+    assert "Failed validating" in out
+    assert "'description' is a required property" in out
+    assert "'$ref' is a required property" in out
+    assert '1 more subschema error' not in out
+
+
 def test_schema_unknown():
     """Errors on running with unknown schema."""
     testargs = ['--schema', 'x.x',
