@@ -1,0 +1,18 @@
+---
+openapi: 3.0.0
+
+info:
+  title: test
+  description: test
+  version: 0.0.1
+
+paths:
+  "/":
+    get:
+      description: Get the API root
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string

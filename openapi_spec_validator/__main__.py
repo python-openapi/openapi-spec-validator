@@ -2,6 +2,8 @@ import logging
 import argparse
 import sys
 
+from jsonschema.exceptions import best_match
+
 from openapi_spec_validator import (
     openapi_v2_spec_validator, openapi_v3_spec_validator,
 )
@@ -15,9 +17,37 @@ logging.basicConfig(
 )
 
 
+def print_validationerror(exc, errors="best-match"):
+    print("# Validation Error\n")
+    print(exc)
+    if exc.cause:
+        print("\n# Cause\n")
+        print(exc.cause)
+    if not exc.context:
+        return
+    if errors == "all":
+        print("\n\n# Due to one of those errors\n")
+        print("\n\n\n".join("## " + str(e) for e in exc.context))
+    elif errors == "best-match":
+        print("\n\n# Probably due to this subschema error\n")
+        print("## " + str(best_match(exc.context)))
+        if len(exc.context) > 1:
+            print(
+                "\n({} more subschemas errors,".format(len(exc.context) - 1),
+                "use --errors=all to see them.)",
+            )
+
+
 def main(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', help="Absolute or relative path to file")
+    parser.add_argument(
+        "--errors",
+        choices=("best-match", "all"),
+        default="best-match",
+        help="""Control error reporting. Defaults to "best-match", """
+        """use "all" to get all subschema errors.""",
+    )
     parser.add_argument(
         '--schema',
         help="OpenAPI schema (default: 3.0.0)",
@@ -50,7 +80,7 @@ def main(args=None):
     try:
         validator.validate(spec, spec_url=spec_url)
     except ValidationError as exc:
-        print(exc)
+        print_validationerror(exc, args.errors)
         sys.exit(1)
     except Exception as exc:
         print(exc)
