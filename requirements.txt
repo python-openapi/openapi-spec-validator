@@ -1,5 +1,5 @@
 jsonschema==3.2.0
 openapi-schema-validator
-PyYAML==5.3.1
+PyYAML==5.4
 six==1.12.0
 requests
