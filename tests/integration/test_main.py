@@ -1,9 +1,12 @@
-import mock
-
 import pytest
 from six import StringIO
 
 from openapi_spec_validator.__main__ import main
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 
 def test_schema_default():

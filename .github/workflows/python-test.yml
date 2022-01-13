@@ -10,6 +10,7 @@ on:
 
 jobs:
   test:
+    name: "Tests"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,20 +18,43 @@ jobs:
         os: [windows-latest, ubuntu-latest]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements_dev.txt
-        pip install -e .
-      shell: bash
-    - name: Test
-      run: python setup.py test
-      shell: bash
-    - name: Upload coverage
-      uses: codecov/codecov-action@v1
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get full Python version
+        id: full-python-version
+        run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+      - name: Bootstrap poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install "poetry<1.2"
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ github.event_name }}-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true' && runner.os == 'Linux'
+        run: timeout 10s poetry run pip --version || rm -rf .venv
+
+      - name: Install dependencies
+        run: poetry install -E requests
+
+      - name: Test
+        env:
+          PYTEST_ADDOPTS: "--color=yes"
+        run: poetry run pytest
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
