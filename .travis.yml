@@ -13,12 +13,11 @@ matrix:
   allow_failures:
   - python: nightly
 before_install:
-- pip install codecov
+- python -m pip install --upgrade pip
+- pip install "poetry<1.2"
 install:
-- pip install -r requirements.txt
-- pip install -r requirements_dev.txt
-- pip install -e .
+- poetry install
 script:
-- python setup.py test
+- poetry run pytest
 after_success:
 - codecov

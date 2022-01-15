@@ -1,5 +1,0 @@
-mock==2.0.0
-pytest==3.5.0
-pytest-flake8
-pytest-cov==2.5.1
-tox==3.0.0rc4
