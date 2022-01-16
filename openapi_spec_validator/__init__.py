@@ -9,7 +9,7 @@ from openapi_spec_validator.validators import SpecValidator
 
 __author__ = 'Artur Maciag'
 __email__ = 'maciag.artur@gmail.com'
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 __url__ = 'https://github.com/p1c2u/openapi-spec-validator'
 __license__ = 'Apache License, Version 2.0'
 
