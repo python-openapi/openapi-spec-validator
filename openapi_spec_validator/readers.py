@@ -1,8 +1,5 @@
 import os
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
+import pathlib
 import sys
 
 from openapi_spec_validator import all_urls_handler, file_object_handler

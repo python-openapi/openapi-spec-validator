@@ -1,5 +1,5 @@
 """OpenAPI spec validator handlers file module."""
-from six import StringIO
+import io
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
@@ -21,7 +21,7 @@ class FileHandler(FileObjectHandler):
     """OpenAPI spec validator file path handler."""
 
     def __call__(self, uri):
-        if isinstance(uri, StringIO):
+        if isinstance(uri, io.StringIO):
             return super(FileHandler, self).__call__(uri)
 
         assert uri.startswith("file")
