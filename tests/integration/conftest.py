@@ -1,8 +1,8 @@
 from os import path
 
 import pytest
-from six.moves.urllib import request
-from six.moves.urllib.parse import urlunparse
+from urllib import request
+from urllib.parse import urlunparse
 from yaml import safe_load
 
 from openapi_spec_validator import (openapi_v3_spec_validator,

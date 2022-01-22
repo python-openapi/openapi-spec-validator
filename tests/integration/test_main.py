@@ -1,5 +1,5 @@
 import pytest
-from six import StringIO
+from io import StringIO
 
 from openapi_spec_validator.__main__ import main
 
