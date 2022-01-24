@@ -198,14 +198,15 @@ python-versions = "*"
 
 [[package]]
 name = "openapi-schema-validator"
-version = "0.2.2"
+version = "0.3.0a2"
 description = "OpenAPI schema validation for Python"
 category = "main"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 
 [package.dependencies]
-jsonschema = ">=3.0.0,<5.0.0"
+attrs = ">=19.2.0"
+jsonschema = ">=4.0.0,<5.0.0"
 
 [package.extras]
 rfc3339-validator = ["rfc3339-validator"]
@@ -491,7 +492,7 @@ requests = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.0"
-content-hash = "ed884279ad4d7b9f92b5cd523157c095c8f9fe9365e711b86ed14e31b6bc664c"
+content-hash = "4ab4c42c305463dc8ba43594cf5001566600ce0bb858cb25affb1831efa6980a"
 
 [metadata.files]
 atomicwrites = [
@@ -609,8 +610,8 @@ nodeenv = [
     {file = "nodeenv-1.6.0.tar.gz", hash = "sha256:3ef13ff90291ba2a4a7a4ff9a979b63ffdd00a464dbe04acf0ea6471517a4c2b"},
 ]
 openapi-schema-validator = [
-    {file = "openapi-schema-validator-0.2.2.tar.gz", hash = "sha256:a3778b986f6bdd831efbcd67b0da382dcdd69d24ed550a5afba68a7925f1346b"},
-    {file = "openapi_schema_validator-0.2.2-py3-none-any.whl", hash = "sha256:fb3d058cbfdbf8fba3d58f96dad3e55c1286ebbbc049be944c435cddd7ed11d2"},
+    {file = "openapi-schema-validator-0.3.0a2.tar.gz", hash = "sha256:adc84b86555528cae237b1d8c0197dd5ffa2e4d6b7991bd95556d36b3d4a8285"},
+    {file = "openapi_schema_validator-0.3.0a2-py3-none-any.whl", hash = "sha256:6c73e8cccc16259ea58a4d73f39fbefb6a55f641601cb7cf7f2469a5cb617caa"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},

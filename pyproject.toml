@@ -32,8 +32,8 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-jsonschema = ">=3.2.0, <5.0.0"
-openapi-schema-validator = "^0.2.0"
+jsonschema = "^4.0.0"
+openapi-schema-validator = {version = "^0.3.0a1", allow-prereleases = true}
 python = "^3.7.0"
 PyYAML = ">=5.1"
 requests = {version = "*", optional = true}
