@@ -17,8 +17,8 @@ class BaseTestValidOpenAPIv3Validator(object):
     def spec_url(self):
         return ''
 
-    def test_valid(self, validator, spec, spec_url):
-        return validator.validate(spec, spec_url=spec_url)
+    def test_valid(self, validator_v30, spec, spec_url):
+        return validator_v30.validate(spec, spec_url=spec_url)
 
 
 class BaseTestFailedOpenAPIv3Validator(object):
@@ -27,9 +27,9 @@ class BaseTestFailedOpenAPIv3Validator(object):
     def spec_url(self):
         return ''
 
-    def test_failed(self, validator, spec, spec_url):
+    def test_failed(self, validator_v30, spec, spec_url):
         with pytest.raises(OpenAPIValidationError):
-            validator.validate(spec, spec_url=spec_url)
+            validator_v30.validate(spec, spec_url=spec_url)
 
 
 class TestLocalEmptyExample(BaseTestFailedOpenAPIv3Validator):

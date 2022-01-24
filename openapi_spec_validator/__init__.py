@@ -17,12 +17,17 @@ __license__ = 'Apache License, Version 2.0'
 __all__ = [
     'openapi_v2_spec_validator',
     'openapi_v3_spec_validator',
+    'openapi_v30_spec_validator',
     'openapi_v31_spec_validator',
     'validate_v2_spec',
     'validate_v3_spec',
+    'validate_v30_spec',
+    'validate_v31_spec',
     'validate_spec',
     'validate_v2_spec_url',
     'validate_v3_spec_url',
+    'validate_v30_spec_url',
+    'validate_v31_spec_url',
     'validate_spec_url',
 ]
 
@@ -47,13 +52,13 @@ openapi_v2_spec_validator = SpecValidator(
 )
 
 # v3.0 spec
-schema_v3, schema_v3_url = get_openapi_schema('3.0')
-openapi_v3_validator_factory = Draft4JSONSpecValidatorFactory(
-    schema_v3, schema_v3_url,
+schema_v30, schema_v30_url = get_openapi_schema('3.0')
+openapi_v30_validator_factory = Draft4JSONSpecValidatorFactory(
+    schema_v30, schema_v30_url,
     resolver_handlers=default_handlers,
 )
-openapi_v3_spec_validator = SpecValidator(
-    openapi_v3_validator_factory,
+openapi_v30_spec_validator = SpecValidator(
+    openapi_v30_validator_factory,
     resolver_handlers=default_handlers,
 )
 
@@ -68,21 +73,27 @@ openapi_v31_spec_validator = SpecValidator(
     resolver_handlers=default_handlers,
 )
 
-
 # shortcuts
 validate_v2_spec = validate_spec_factory(openapi_v2_spec_validator.validate)
 validate_v2_spec_url = validate_spec_url_factory(
     openapi_v2_spec_validator.validate, default_handlers)
 
-validate_v3_spec = validate_spec_factory(openapi_v3_spec_validator.validate)
-validate_v3_spec_url = validate_spec_url_factory(
-    openapi_v3_spec_validator.validate, default_handlers)
+validate_v30_spec = validate_spec_factory(openapi_v30_spec_validator.validate)
+validate_v30_spec_url = validate_spec_url_factory(
+    openapi_v30_spec_validator.validate, default_handlers)
 
 
 validate_v31_spec = validate_spec_factory(openapi_v31_spec_validator.validate)
 validate_v31_spec_url = validate_spec_url_factory(
     openapi_v31_spec_validator.validate, default_handlers)
 
+# aliases to the latest v3 version
+schema_v3 = schema_v31
+schema_v3_url = schema_v31_url
+openapi_v3_validator_factory = openapi_v31_validator_factory
+openapi_v3_spec_validator = openapi_v31_spec_validator
+validate_v3_spec = validate_v31_spec
+validate_v3_spec_url = validate_v31_spec_url
 
 # aliases to the latest version
 validate_spec = validate_v3_spec
