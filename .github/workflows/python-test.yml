@@ -45,7 +45,8 @@ jobs:
           key: venv-${{ github.event_name }}-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Ensure cache is healthy
-        if: steps.cache.outputs.cache-hit == 'true' && runner.os == 'Linux'
+        if: steps.cache.outputs.cache-hit == 'true'
+        shell: bash 
         run: timeout 10s poetry run pip --version || rm -rf .venv
 
       - name: Install dependencies
