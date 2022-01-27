@@ -1,10 +1,9 @@
 """OpenAPI spec validator handlers requests module."""
-from __future__ import absolute_import
 import contextlib
-
-from six import StringIO
-from six.moves.urllib.parse import urlparse
+import io
 import requests
+import urllib.parse
+
 
 from openapi_spec_validator.handlers.file import FileHandler
 
@@ -18,7 +17,7 @@ class UrlRequestsHandler(FileHandler):
         self.allowed_schemes = allowed_schemes
 
     def __call__(self, url):
-        scheme = urlparse(url).scheme
+        scheme = urllib.parse.urlparse(url).scheme
         assert scheme in self.allowed_schemes
 
         if scheme == "file":
@@ -27,6 +26,6 @@ class UrlRequestsHandler(FileHandler):
         response = requests.get(url, timeout=self.timeout)
         response.raise_for_status()
 
-        data = StringIO(response.text)
+        data = io.StringIO(response.text)
         with contextlib.closing(data) as fh:
             return super(UrlRequestsHandler, self).__call__(fh)

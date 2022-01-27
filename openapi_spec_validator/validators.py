@@ -3,7 +3,6 @@ import string
 
 from jsonschema.validators import RefResolver
 from openapi_schema_validator import OAS30Validator, oas30_format_checker
-from six import iteritems
 
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
@@ -108,7 +107,7 @@ class SchemasValidator(object):
     @wraps_errors
     def iter_errors(self, schemas):
         schemas_deref = self.dereferencer.dereference(schemas)
-        for name, schema in iteritems(schemas_deref):
+        for name, schema in schemas_deref.items():
             for err in self._iter_schema_errors(schema):
                 yield err
 
@@ -164,7 +163,7 @@ class PathsValidator(object):
     @wraps_errors
     def iter_errors(self, paths):
         paths_deref = self.dereferencer.dereference(paths)
-        for url, path_item in iteritems(paths_deref):
+        for url, path_item in paths_deref.items():
             for err in self._iter_path_errors(url, path_item):
                 yield err
 
@@ -213,7 +212,7 @@ class PathItemValidator(object):
         for err in self._iter_parameters_errors(parameters):
             yield err
 
-        for field_name, operation in iteritems(path_item):
+        for field_name, operation in path_item.items():
             if field_name not in self.OPERATIONS:
                 continue
 

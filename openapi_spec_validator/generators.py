@@ -1,7 +1,6 @@
 """OpenAPI spec validator generators module."""
 import logging
 
-from six import iteritems
 from jsonschema.validators import Draft4Validator
 
 from openapi_spec_validator.decorators import DerefValidatorDecorator
@@ -37,6 +36,6 @@ class SpecValidatorsGeneratorFactory:
         :type instance_resolver: :class:`jsonschema.RefResolver`
         """
         deref = DerefValidatorDecorator(spec_resolver)
-        for key, validator_callable in iteritems(Draft4Validator.VALIDATORS):
+        for key, validator_callable in Draft4Validator.VALIDATORS.items():
             if key in cls.validators:
                 yield key, deref(validator_callable)

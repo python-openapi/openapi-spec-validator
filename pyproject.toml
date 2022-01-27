@@ -23,37 +23,32 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Libraries"
 ]
 
 [tool.poetry.dependencies]
-jsonschema = ">=3.2.0, <4.0.0"
-openapi-schema-validator = "<0.2.0"
-pathlib2 = {version = "*", python = "~2.7"}
+jsonschema = ">=3.2.0, <5.0.0"
+openapi-schema-validator = "^0.2.0"
 pyrsistent = "<0.17.0"
-python = ">= 2.7, != 3.0.*, != 3.1.*, != 3.2.*, != 3.3.*, != 3.4.*"
+python = "^3.7.0"
 PyYAML = ">=5.1"
 requests = {version = "*", optional = true}
 setuptools = "*"
-six = "*"
 
 [tool.poetry.extras]
 dev = ["pre-commit"]
 requests = ["requests"]
 
 [tool.poetry.dev-dependencies]
-mock = {version = "*", python = "~2.7"}
 pre-commit =  {version = "*", optional = true}
-pytest = "=3.5.0"
+pytest = "^6.2.5"
 pytest-flake8 = "=1.0.7"
-pytest-cov = "=2.5.1"
+pytest-cov = "^3.0.0"
 tox = "*"
 
 [tool.poetry.scripts]
