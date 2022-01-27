@@ -11,7 +11,7 @@ output = "reports/coverage.xml"
 
 [tool.poetry]
 name = "openapi-spec-validator"
-version = "0.3.2"
+version = "0.3.3"
 description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3.0 spec validator"
 authors = ["Artur Maciag <maciag.artur@gmail.com>"]
 license = "Apache-2.0"
