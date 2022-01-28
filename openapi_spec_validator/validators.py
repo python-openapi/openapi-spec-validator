@@ -2,7 +2,7 @@ import logging
 import string
 
 from jsonschema.validators import RefResolver
-from openapi_schema_validator import OAS30Validator, oas30_format_checker
+from openapi_schema_validator import OAS31Validator, oas31_format_checker
 
 from openapi_spec_validator.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
@@ -123,6 +123,8 @@ class SchemaValidator(object):
     @wraps_errors
     def iter_errors(self, schema, require_properties=True):
         schema_deref = self.dereferencer.dereference(schema)
+        if not isinstance(schema_deref, dict):
+            return
 
         if 'allOf' in schema_deref:
             for inner_schema in schema_deref['allOf']:
@@ -338,10 +340,10 @@ class ValueValidator(object):
 
     @wraps_errors
     def iter_errors(self, schema, value):
-        validator = OAS30Validator(
+        validator = OAS31Validator(
             schema,
             resolver=self.dereferencer.resolver_manager.resolver,
-            format_checker=oas30_format_checker,
+            format_checker=oas31_format_checker,
         )
         for err in validator.iter_errors(value):
             yield err

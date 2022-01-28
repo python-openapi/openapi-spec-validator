@@ -19,12 +19,11 @@ About
 #####
 
 OpenAPI Spec Validator is a Python library that validates OpenAPI Specs
-against the `OpenAPI 2.0 (aka
-Swagger) <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__
-and `OpenAPI
-3.0 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md>`__
-specification. The validator aims to check for full compliance with the
-Specification.
+against the `OpenAPI 2.0 (aka Swagger)
+<https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__,
+`OpenAPI 3.0 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md>`__
+and `OpenAPI 3.1 <https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md>`__
+specification. The validator aims to check for full compliance with the Specification.
 
 Installation
 ############
@@ -73,7 +72,7 @@ or more pythonic way:
 Examples
 ********
 
-By default, OpenAPI v3 syntax is expected. To validate an OpenAPI v3 spec:
+By default, OpenAPI v3.1 syntax is expected. To validate an OpenAPI v3.1 spec:
 
 .. code:: python
 
@@ -91,7 +90,11 @@ By default, OpenAPI v3 syntax is expected. To validate an OpenAPI v3 spec:
         ...
     OpenAPIValidationError: 'openapi' is a required property
     
-In order to validate a Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec`` instead of ``validate_spec``. You can also explicitly import ``validate_v3_spec`` if you want to disambiguate the expected version.
+In order to validate a Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec`` instead of ``validate_spec``.
+In order to validate a OpenAPI 3.0 spec file, import ``validate_v30_spec`` instead of ``validate_spec``.
+
+You can also explicitly import ``validate_v31_spec`` if you want to disambiguate the expected version or
+explicitly import ``validate_v3_spec`` which is a shortcut to the latest v3 release.
 
 Add ``spec_url`` to validate spec with relative files:
 

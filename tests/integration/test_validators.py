@@ -6,10 +6,10 @@ from openapi_spec_validator.exceptions import (
 
 class TestSpecValidatorIterErrors(object):
 
-    def test_empty(self, validator):
+    def test_empty(self, validator_v30):
         spec = {}
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
@@ -19,20 +19,20 @@ class TestSpecValidatorIterErrors(object):
         assert errors_list[2].__class__ == OpenAPIValidationError
         assert errors_list[2].message == "'paths' is a required property"
 
-    def test_info_empty(self, validator):
+    def test_info_empty(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {},
             'paths': {},
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == "'title' is a required property"
 
-    def test_minimalistic(self, validator):
+    def test_minimalistic(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -42,12 +42,12 @@ class TestSpecValidatorIterErrors(object):
             'paths': {},
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_same_parameters_names(self, validator):
+    def test_same_parameters_names(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -77,12 +77,12 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_same_operation_ids(self, validator):
+    def test_same_operation_ids(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -121,14 +121,14 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert len(errors_list) == 2
         assert errors_list[0].__class__ == DuplicateOperationIDError
         assert errors_list[1].__class__ == DuplicateOperationIDError
 
-    def test_allow_allof_required_no_properties(self, validator):
+    def test_allow_allof_required_no_properties(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -158,11 +158,11 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_extra_parameters_in_required(self, validator):
+    def test_extra_parameters_in_required(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -182,7 +182,7 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == ExtraParametersError
@@ -190,7 +190,7 @@ class TestSpecValidatorIterErrors(object):
             "Required list has not defined properties: ['testparam1']"
         )
 
-    def test_undocumented_parameter(self, validator):
+    def test_undocumented_parameter(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -220,7 +220,7 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == UnresolvableParameterError
@@ -229,7 +229,7 @@ class TestSpecValidatorIterErrors(object):
             "'/test/{param1}/{param2}' was not resolved"
         )
 
-    def test_default_value_wrong_type(self, validator):
+    def test_default_value_wrong_type(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -247,16 +247,16 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_wrong_type(self, validator):
+    def test_parameter_default_value_wrong_type(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -287,17 +287,17 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
     def test_parameter_default_value_wrong_type_swagger(self,
-                                                        swagger_validator):
+                                                        validator_v2):
         spec = {
             'swagger': '2.0',
             'info': {
@@ -326,16 +326,16 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = swagger_validator.iter_errors(spec)
+        errors = validator_v2.iter_errors(spec)
 
         errors_list = list(errors)
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == (
-            "'invaldtype' is not of type integer"
+            "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_with_reference(self, validator):
+    def test_parameter_default_value_with_reference(self, validator_v30):
         spec = {
             'openapi': '3.0.0',
             'info': {
@@ -374,7 +374,7 @@ class TestSpecValidatorIterErrors(object):
             },
         }
 
-        errors = validator.iter_errors(spec)
+        errors = validator_v30.iter_errors(spec)
 
         errors_list = list(errors)
         assert errors_list == []
