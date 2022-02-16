@@ -1,12 +1,16 @@
 """OpenAIP spec validator schemas module."""
+import json
 import os
-
 import urllib.parse
 import urllib.request
-from yaml import load
 
 import importlib_resources
-from openapi_spec_validator.loaders import ExtendedSafeLoader
+from yaml import load
+
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml import SafeLoader
 
 
 def get_openapi_schema(version):
@@ -19,7 +23,7 @@ def get_openapi_schema(version):
     return schema, schema_url
 
 
-def read_yaml_file(path, loader=ExtendedSafeLoader):
+def read_yaml_file(path, loader=SafeLoader):
     """Open a file, read it and return its contents."""
     with open(path) as fh:
-        return load(fh, loader)
+        return json.loads(json.dumps(load(fh, loader)))
