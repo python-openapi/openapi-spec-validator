@@ -162,6 +162,52 @@ class TestSpecValidatorIterErrors(object):
         errors_list = list(errors)
         assert errors_list == []
 
+    def test_allow_allof_when_required_is_linked_to_the_parent_object(self, validator_v30):
+        spec = {
+            'openapi': '3.0.1',
+            'info': {
+                'title': 'Test Api',
+                'version': '0.0.1',
+            },
+            'paths': {},
+            'components': {
+                'schemas': {
+                    'Address': {
+                        'type': 'object',
+                        'properties': {
+                            'SubdivisionCode': {
+                                'type': 'string',
+                                'description': 'State or region'
+                            },
+                            'Town': {
+                                'type': 'string',
+                                'description': 'Town or city'
+                            },
+                            'CountryCode': {
+                                'type': 'string',
+                            }
+                        }
+                    },
+                    'AddressCreation': {
+                        'required': [
+                            'CountryCode',
+                            'Town'
+                        ],
+                        'type': 'object',
+                        'allOf': [
+                            {
+                                '$ref': '#/components/schemas/Address'
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        errors = validator_v30.iter_errors(spec)
+        errors_list = list(errors)
+        assert errors_list == []
+
     def test_extra_parameters_in_required(self, validator_v30):
         spec = {
             'openapi': '3.0.0',

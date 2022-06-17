@@ -120,23 +120,33 @@ class SchemaValidator(object):
     def __init__(self, dereferencer):
         self.dereferencer = dereferencer
 
+    def _nested_properties(self, schema):
+        schema_deref = self.dereferencer.dereference(schema)
+        return schema_deref.get("properties", {}).keys()
+
     @wraps_errors
     def iter_errors(self, schema, require_properties=True):
         schema_deref = self.dereferencer.dereference(schema)
         if not isinstance(schema_deref, dict):
             return
 
+        nested_properties = []
         if 'allOf' in schema_deref:
             for inner_schema in schema_deref['allOf']:
                 for err in self.iter_errors(
-                    inner_schema,
-                    require_properties=False
+                        inner_schema,
+                        require_properties=False
                 ):
                     yield err
+                nested_properties = nested_properties + list(self._nested_properties(inner_schema))
 
         required = schema_deref.get('required', [])
         properties = schema_deref.get('properties', {}).keys()
-        extra_properties = list(set(required) - set(properties))
+        if 'allOf' in schema_deref:
+            extra_properties = list(set(required) - set(properties) - set(nested_properties))
+        else:
+            extra_properties = list(set(required) - set(properties))
+
         if extra_properties and require_properties:
             yield ExtraParametersError(
                 "Required list has not defined properties: {0}".format(
