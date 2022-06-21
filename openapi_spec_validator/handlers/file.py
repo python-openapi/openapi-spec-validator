@@ -1,20 +1,22 @@
 """OpenAPI spec validator handlers file module."""
 import io
+import json
+
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
+from openapi_spec_validator.handlers.compat import SafeLoader
 from openapi_spec_validator.handlers.utils import uri_to_path
-from openapi_spec_validator.loaders import ExtendedSafeLoader
 
 
 class FileObjectHandler(BaseHandler):
     """OpenAPI spec validator file-like object handler."""
 
-    def __init__(self, loader=ExtendedSafeLoader):
+    def __init__(self, loader=SafeLoader):
         self.loader = loader
 
     def __call__(self, f):
-        return load(f, self.loader)
+        return json.loads(json.dumps(load(f, self.loader)))
 
 
 class FileHandler(FileObjectHandler):
