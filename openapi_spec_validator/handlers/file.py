@@ -5,12 +5,8 @@ import json
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
+from openapi_spec_validator.handlers.compat import SafeLoader
 from openapi_spec_validator.handlers.utils import uri_to_path
-
-try:
-    from yaml import CSafeLoader as SafeLoader
-except ImportError:
-    from yaml import SafeLoader
 
 
 class FileObjectHandler(BaseHandler):
