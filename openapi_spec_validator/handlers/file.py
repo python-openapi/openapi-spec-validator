@@ -29,5 +29,5 @@ class FileHandler(FileObjectHandler):
         assert uri.startswith("file")
 
         filepath = uri_to_path(uri)
-        with open(filepath) as fh:
+        with open(filepath, encoding='utf-8') as fh:
             return super(FileHandler, self).__call__(fh)
