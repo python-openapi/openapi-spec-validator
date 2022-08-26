@@ -8,7 +8,7 @@ from openapi_spec_validator.generators import (
 )
 
 
-class Draft4ExtendedValidatorFactory(Draft4Validator):
+class Draft4ExtendedValidatorFactory:
     """Draft4Validator with extra validators factory that follows $refs
     in the schema being validated."""
 
