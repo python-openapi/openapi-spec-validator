@@ -2,6 +2,8 @@ import logging
 import string
 
 from jsonschema.validators import RefResolver
+from jsonschema_spec.accessors import SpecAccessor
+from jsonschema_spec.paths import Spec
 from openapi_schema_validator import OAS31Validator, oas31_format_checker
 
 from openapi_spec_validator.exceptions import (
@@ -9,7 +11,6 @@ from openapi_spec_validator.exceptions import (
     OpenAPIValidationError, DuplicateOperationIDError,
 )
 from openapi_spec_validator.decorators import ValidationErrorWrapper
-from openapi_spec_validator.managers import ResolverManager
 
 log = logging.getLogger(__name__)
 
@@ -20,249 +21,74 @@ def is_ref(spec):
     return isinstance(spec, dict) and '$ref' in spec
 
 
-class Dereferencer(object):
-
-    def __init__(self, spec_resolver):
-        self.resolver_manager = ResolverManager(spec_resolver)
-
-    def dereference(self, item):
-        log.debug("Dereferencing %s", item)
-        if item is None or not is_ref(item):
-            return item
-
-        ref = item['$ref']
-        with self.resolver_manager.in_scope(item) as resolver:
-            with resolver.resolving(ref) as target:
-                if is_ref(target):
-                    target = self.dereference(target)
-                return target
-
-
 class SpecValidator(object):
 
-    def __init__(self, validator_factory, resolver_handlers):
-        self.validator_factory = validator_factory
+    OPERATIONS = [
+        'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace',
+    ]
+
+    def __init__(self, schema_validator, value_validator_class, resolver_handlers=None):
+        self.schema_validator = schema_validator
+        self.value_validator_class = value_validator_class
         self.resolver_handlers = resolver_handlers
+
+        self.operation_ids_registry = None
+        self.resolver = None
 
     def validate(self, spec, spec_url=''):
         for err in self.iter_errors(spec, spec_url=spec_url):
             raise err
 
     @wraps_errors
-    def iter_errors(self, spec, spec_url=''):
-        spec_resolver = self._get_resolver(spec_url, spec)
-        dereferencer = self._get_dereferencer(spec_resolver)
+    def iter_errors(self, spec_dict, spec_url=''):
+        self.operation_ids_registry = []
+        self.resolver = self._get_resolver(spec_url, spec_dict)
 
-        validator = self._get_validator(spec_resolver)
-        for err in validator.iter_errors(spec):
-            yield err
+        yield from self.schema_validator.iter_errors(spec_dict)
 
+        accessor = SpecAccessor(spec_dict, self.resolver)
+        spec = Spec(accessor)
         paths = spec.get('paths', {})
-        for err in self._iter_paths_errors(paths, dereferencer):
-            yield err
+        yield from self._iter_paths_errors(paths)
 
         components = spec.get('components', {})
-        for err in self._iter_components_errors(components, dereferencer):
-            yield err
+        yield from self._iter_components_errors(components)
 
     def _get_resolver(self, base_uri, referrer):
         return RefResolver(
             base_uri, referrer, handlers=self.resolver_handlers)
 
-    def _get_dereferencer(self, spec_resolver):
-        return Dereferencer(spec_resolver)
-
-    def _get_validator(self, spec_resolver):
-        return self.validator_factory.create(spec_resolver)
-
-    def _iter_paths_errors(self, paths, dereferencer):
-        return PathsValidator(dereferencer).iter_errors(paths)
-
-    def _iter_components_errors(self, components, dereferencer):
-        return ComponentsValidator(dereferencer).iter_errors(components)
-
-
-class ComponentsValidator(object):
-
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
-
-    @wraps_errors
-    def iter_errors(self, components):
-        components_deref = self.dereferencer.dereference(components)
-
-        schemas = components_deref.get('schemas', {})
-        for err in self._iter_schemas_errors(schemas):
-            yield err
-
-    def _iter_schemas_errors(self, schemas):
-        return SchemasValidator(self.dereferencer).iter_errors(schemas)
-
-
-class SchemasValidator(object):
-
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
-
-    @wraps_errors
-    def iter_errors(self, schemas):
-        schemas_deref = self.dereferencer.dereference(schemas)
-        for name, schema in schemas_deref.items():
-            for err in self._iter_schema_errors(schema):
-                yield err
-
-    def _iter_schema_errors(self, schema):
-        return SchemaValidator(self.dereferencer).iter_errors(schema)
-
-
-class SchemaValidator(object):
-
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
-
-    def _nested_properties(self, schema):
-        schema_deref = self.dereferencer.dereference(schema)
-        return schema_deref.get("properties", {}).keys()
-
-    @wraps_errors
-    def iter_errors(self, schema, require_properties=True):
-        schema_deref = self.dereferencer.dereference(schema)
-        if not isinstance(schema_deref, dict):
-            return
-
-        nested_properties = []
-        if 'allOf' in schema_deref:
-            for inner_schema in schema_deref['allOf']:
-                for err in self.iter_errors(
-                        inner_schema,
-                        require_properties=False
-                ):
-                    yield err
-                nested_properties = nested_properties + list(self._nested_properties(inner_schema))
-
-        required = schema_deref.get('required', [])
-        properties = schema_deref.get('properties', {}).keys()
-        if 'allOf' in schema_deref:
-            extra_properties = list(set(required) - set(properties) - set(nested_properties))
-        else:
-            extra_properties = list(set(required) - set(properties))
-
-        if extra_properties and require_properties:
-            yield ExtraParametersError(
-                "Required list has not defined properties: {0}".format(
-                    extra_properties
-                )
-            )
-
-        if 'default' in schema_deref:
-            default = schema_deref['default']
-            nullable = schema_deref.get('nullable', False)
-            if default is not None or nullable is not True:
-                for err in self._iter_value_errors(schema_deref, default):
-                    yield err
-
-    def _iter_value_errors(self, schema, value):
-        return ValueValidator(self.dereferencer).iter_errors(schema, value)
-
-
-class PathsValidator(object):
-
-    def __init__(self, dereferencer, operation_ids_registry=None):
-        self.dereferencer = dereferencer
-        self.operation_ids_registry = [] if operation_ids_registry is None \
-            else operation_ids_registry
-
-    @wraps_errors
-    def iter_errors(self, paths):
-        paths_deref = self.dereferencer.dereference(paths)
-        for url, path_item in paths_deref.items():
-            for err in self._iter_path_errors(url, path_item):
-                yield err
+    def _iter_paths_errors(self, paths):
+        for url, path_item in paths.items():
+            yield from self._iter_path_errors(url, path_item)
 
     def _iter_path_errors(self, url, path_item):
-        return PathValidator(
-            self.dereferencer, self.operation_ids_registry).iter_errors(
-                url, path_item)
-
-
-class PathValidator(object):
-
-    def __init__(self, dereferencer, operation_ids_registry=None):
-        self.dereferencer = dereferencer
-        self.operation_ids_registry = [] if operation_ids_registry is None \
-            else operation_ids_registry
-
-    @wraps_errors
-    def iter_errors(self, url, path_item):
-        path_item_deref = self.dereferencer.dereference(path_item)
-
-        for err in self._iter_path_item_errors(url, path_item_deref):
-            yield err
+        yield from self._iter_path_item_errors(url, path_item)
 
     def _iter_path_item_errors(self, url, path_item):
-        return PathItemValidator(
-            self.dereferencer, self.operation_ids_registry).iter_errors(
-                url, path_item)
-
-
-class PathItemValidator(object):
-
-    OPERATIONS = [
-        'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace',
-    ]
-
-    def __init__(self, dereferencer, operation_ids_registry=None):
-        self.dereferencer = dereferencer
-        self.operation_ids_registry = [] if operation_ids_registry is None \
-            else operation_ids_registry
-
-    @wraps_errors
-    def iter_errors(self, url, path_item):
-        path_item_deref = self.dereferencer.dereference(path_item)
-
-        parameters = path_item_deref.get('parameters', [])
-        for err in self._iter_parameters_errors(parameters):
-            yield err
+        parameters = path_item.get('parameters', [])
+        yield from self._iter_parameters_errors(parameters)
 
         for field_name, operation in path_item.items():
             if field_name not in self.OPERATIONS:
                 continue
 
-            for err in self._iter_operation_errors(
-                    url, field_name, operation, parameters):
-                yield err
+            yield from self._iter_operation_errors(
+                url, field_name, operation, parameters)
 
     def _iter_operation_errors(self, url, name, operation, path_parameters):
-        return OperationValidator(
-            self.dereferencer, self.operation_ids_registry).iter_errors(
-                url, name, operation, path_parameters)
-
-    def _iter_parameters_errors(self, parameters):
-        return ParametersValidator(self.dereferencer).iter_errors(parameters)
-
-
-class OperationValidator(object):
-
-    def __init__(self, dereferencer, seen_ids=None):
-        self.dereferencer = dereferencer
-        self.seen_ids = [] if seen_ids is None else seen_ids
-
-    @wraps_errors
-    def iter_errors(self, url, name, operation, path_parameters=None):
         path_parameters = path_parameters or []
-        operation_deref = self.dereferencer.dereference(operation)
 
-        operation_id = operation_deref.get('operationId')
-        if operation_id is not None and operation_id in self.seen_ids:
+        operation_id = operation.getkey('operationId')
+        if operation_id is not None and operation_id in self.operation_ids_registry:
             yield DuplicateOperationIDError(
                 "Operation ID '{0}' for '{1}' in '{2}' is not unique".format(
                     operation_id, name, url)
             )
-        self.seen_ids.append(operation_id)
+        self.operation_ids_registry.append(operation_id)
 
-        parameters = operation_deref.get('parameters', [])
-        for err in self._iter_parameters_errors(parameters):
-            yield err
+        parameters = operation.get('parameters', [])
+        yield from self._iter_parameters_errors(parameters)
 
         all_params = list(set(
             list(self._get_path_param_names(path_parameters)) +
@@ -279,9 +105,8 @@ class OperationValidator(object):
 
     def _get_path_param_names(self, params):
         for param in params:
-            param_deref = self.dereferencer.dereference(param)
-            if param_deref['in'] == 'path':
-                yield param_deref['name']
+            if param['in'] == 'path':
+                yield param['name']
 
     def _get_path_params_from_url(self, url):
         formatter = string.Formatter()
@@ -289,71 +114,107 @@ class OperationValidator(object):
         return filter(None, path_params)
 
     def _iter_parameters_errors(self, parameters):
-        return ParametersValidator(self.dereferencer).iter_errors(parameters)
-
-
-class ParametersValidator(object):
-
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
-
-    @wraps_errors
-    def iter_errors(self, parameters):
         seen = set()
         for parameter in parameters:
-            parameter_deref = self.dereferencer.dereference(parameter)
-            for err in self._iter_parameter_errors(parameter_deref):
-                yield err
+            yield from self._iter_parameter_errors(parameter)
 
-            key = (parameter_deref['name'], parameter_deref['in'])
+            key = (parameter['name'], parameter['in'])
             if key in seen:
                 yield ParameterDuplicateError(
-                    "Duplicate parameter `{0}`".format(parameter_deref['name'])
+                    "Duplicate parameter `{0}`".format(parameter['name'])
                 )
             seen.add(key)
 
     def _iter_parameter_errors(self, parameter):
-        return ParameterValidator(self.dereferencer).iter_errors(parameter)
-
-
-class ParameterValidator(object):
-
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
-
-    @wraps_errors
-    def iter_errors(self, parameter):
         if 'schema' in parameter:
-            schema = parameter['schema']
-            schema_deref = self.dereferencer.dereference(schema)
-            for err in self._iter_schema_errors(schema_deref):
-                yield err
+            schema = parameter / 'schema'
+            yield from self._iter_schema_errors(schema)
 
         if 'default' in parameter:
             # only possible in swagger 2.0
-            default = parameter['default']
+            default = parameter.getkey('default')
             if default is not None:
-                for err in self._iter_value_errors(parameter, default):
-                    yield err
+                yield from self._iter_value_errors(parameter, default)
 
     def _iter_value_errors(self, schema, value):
-        return ValueValidator(self.dereferencer).iter_errors(schema, value)
+        with schema.open() as content:
+            validator = self.value_validator_class(
+                content,
+                resolver=self.resolver,
+                format_checker=oas31_format_checker,
+            )
+            yield from validator.iter_errors(value)
 
-    def _iter_schema_errors(self, schema):
-        return SchemaValidator(self.dereferencer).iter_errors(schema)
+    def _iter_schema_errors(self, schema, require_properties=True):
+        if not hasattr(schema.content(), "__getitem__"):
+            return
 
+        nested_properties = []
+        if 'allOf' in schema:
+            all_of = schema / "allOf"
+            for inner_schema in all_of:
+                yield from self._iter_schema_errors(
+                    inner_schema,
+                    require_properties=False,
+                )
+                inner_schema_props = inner_schema.get("properties", {})
+                inner_schema_props_keys = inner_schema_props.keys()
+                nested_properties = nested_properties + list(inner_schema_props_keys)
 
-class ValueValidator(object):
+        if 'anyOf' in schema:
+            any_of = schema / "anyOf"
+            for inner_schema in any_of:
+                yield from self._iter_schema_errors(
+                    inner_schema,
+                    require_properties=False,
+                )
 
-    def __init__(self, dereferencer):
-        self.dereferencer = dereferencer
+        if 'oneOf' in schema:
+            one_of = schema / "oneOf"
+            for inner_schema in one_of:
+                yield from self._iter_schema_errors(
+                    inner_schema,
+                    require_properties=False,
+                )
+        
+        if 'not' in schema:
+            not_schema = schema / "not"
+            yield from self._iter_schema_errors(
+                not_schema,
+                require_properties=False,
+            )
 
-    @wraps_errors
-    def iter_errors(self, schema, value):
-        validator = OAS31Validator(
-            schema,
-            resolver=self.dereferencer.resolver_manager.resolver,
-            format_checker=oas31_format_checker,
-        )
-        for err in validator.iter_errors(value):
-            yield err
+        if 'items' in schema:
+            array_schema = schema / "items"
+            yield from self._iter_schema_errors(
+                array_schema,
+                require_properties=False,
+            )
+
+        required = schema.getkey('required', [])
+        properties = schema.get('properties', {}).keys()
+        if 'allOf' in schema:
+            extra_properties = list(set(required) - set(properties) - set(nested_properties))
+        else:
+            extra_properties = list(set(required) - set(properties))
+
+        if extra_properties and require_properties:
+            yield ExtraParametersError(
+                "Required list has not defined properties: {0}".format(
+                    extra_properties
+                )
+            )
+
+        if 'default' in schema:
+            default = schema['default']
+            nullable = schema.get('nullable', False)
+            if default is not None or nullable is not True:
+                yield from self._iter_value_errors(schema, default)
+
+    def _iter_components_errors(self, components):
+        schemas = components.get('schemas', {})
+        yield from self._iter_schemas_errors(schemas)
+
+    def _iter_schemas_errors(self, schemas):
+        for _, schema in schemas.items():
+            yield from self._iter_schema_errors(schema)
