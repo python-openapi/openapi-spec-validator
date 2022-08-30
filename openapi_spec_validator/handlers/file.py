@@ -5,14 +5,14 @@ import json
 from yaml import load
 
 from openapi_spec_validator.handlers.base import BaseHandler
-from openapi_spec_validator.handlers.compat import SafeLoader
+from openapi_spec_validator.handlers.compat import UniqueSchemasLoader
 from openapi_spec_validator.handlers.utils import uri_to_path
 
 
 class FileObjectHandler(BaseHandler):
     """OpenAPI spec validator file-like object handler."""
 
-    def __init__(self, loader=SafeLoader):
+    def __init__(self, loader=UniqueSchemasLoader):
         self.loader = loader
 
     def __call__(self, f):
