@@ -2,11 +2,11 @@ import os
 import pathlib
 import sys
 
-from openapi_spec_validator import all_urls_handler, file_object_handler
+from jsonschema_spec.handlers import file_handler, all_urls_handler
 
 
 def read_from_stdin(filename):
-    return file_object_handler(sys.stdin), ''
+    return file_handler(sys.stdin), ''
 
 
 def read_from_filename(filename):

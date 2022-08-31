@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+from jsonschema.validators import Draft202012Validator
+from jsonschema.validators import Draft4Validator
+from jsonschema_spec.handlers import default_handlers
+
+from openapi_schema_validator.validators import OAS30Validator
+from openapi_schema_validator.validators import OAS31Validator
 from openapi_spec_validator.shortcuts import (
     validate_spec_factory, validate_spec_url_factory,
 )
-from openapi_spec_validator.handlers import UrlHandler, FileObjectHandler
 from openapi_spec_validator.schemas import get_openapi_schema
-from openapi_spec_validator.factories import \
-    Draft202012JSONSpecValidatorFactory, Draft4JSONSpecValidatorFactory
 from openapi_spec_validator.validators import SpecValidator
 
 __author__ = 'Artur Maciag'
@@ -31,45 +34,27 @@ __all__ = [
     'validate_spec_url',
 ]
 
-file_object_handler = FileObjectHandler()
-all_urls_handler = UrlHandler('http', 'https', 'file')
-default_handlers = {
-    '<all_urls>': all_urls_handler,
-    'http': UrlHandler('http'),
-    'https': UrlHandler('https'),
-    'file': UrlHandler('file'),
-}
-
 # v2.0 spec
-schema_v2, schema_v2_url = get_openapi_schema('2.0')
-openapi_v2_validator_factory = Draft4JSONSpecValidatorFactory(
-    schema_v2, schema_v2_url,
-    resolver_handlers=default_handlers,
-)
+schema_v2, _ = get_openapi_schema('2.0')
+openapi_v2_schema_validator = Draft4Validator(schema_v2)
 openapi_v2_spec_validator = SpecValidator(
-    openapi_v2_validator_factory,
+    openapi_v2_schema_validator, OAS30Validator,
     resolver_handlers=default_handlers,
 )
 
 # v3.0 spec
-schema_v30, schema_v30_url = get_openapi_schema('3.0')
-openapi_v30_validator_factory = Draft4JSONSpecValidatorFactory(
-    schema_v30, schema_v30_url,
-    resolver_handlers=default_handlers,
-)
+schema_v30, _ = get_openapi_schema('3.0')
+openapi_v30_schema_validator = Draft4Validator(schema_v30)
 openapi_v30_spec_validator = SpecValidator(
-    openapi_v30_validator_factory,
+    openapi_v30_schema_validator, OAS30Validator,
     resolver_handlers=default_handlers,
 )
 
 # v3.1 spec
-schema_v31, schema_v31_url = get_openapi_schema('3.1')
-openapi_v31_validator_factory = Draft202012JSONSpecValidatorFactory(
-    schema_v31, schema_v31_url,
-    resolver_handlers=default_handlers,
-)
+schema_v31, _ = get_openapi_schema('3.1')
+openapi_v31_schema_validator = Draft202012Validator(schema_v31)
 openapi_v31_spec_validator = SpecValidator(
-    openapi_v31_validator_factory,
+    openapi_v31_schema_validator, OAS31Validator,
     resolver_handlers=default_handlers,
 )
 
@@ -89,8 +74,6 @@ validate_v31_spec_url = validate_spec_url_factory(
 
 # aliases to the latest v3 version
 schema_v3 = schema_v31
-schema_v3_url = schema_v31_url
-openapi_v3_validator_factory = openapi_v31_validator_factory
 openapi_v3_spec_validator = openapi_v31_spec_validator
 validate_v3_spec = validate_v31_spec
 validate_v3_spec_url = validate_v31_spec_url

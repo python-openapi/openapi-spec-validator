@@ -5,8 +5,8 @@ import urllib.request
 
 import importlib_resources
 
-from openapi_spec_validator.handlers.compat import SafeLoader
-from openapi_spec_validator.handlers.file import FileObjectHandler
+from jsonschema_spec.handlers.compat import SafeLoader
+from jsonschema_spec.handlers.file import FileHandler
 
 
 def get_openapi_schema(version):
@@ -22,4 +22,4 @@ def get_openapi_schema(version):
 def read_yaml_file(path, loader=SafeLoader):
     """Open a file, read it and return its contents."""
     with open(path) as fh:
-        return FileObjectHandler(loader=loader)(fh)
+        return FileHandler(loader=loader)(fh)

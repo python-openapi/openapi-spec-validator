@@ -1,4 +1,5 @@
 import pytest
+from jsonschema_spec.handlers import default_handlers
 
 from openapi_spec_validator import (
     validate_v2_spec, validate_v2_spec_url,
@@ -7,7 +8,6 @@ from openapi_spec_validator import (
     validate_v30_spec_url, validate_v30_spec,
 )
 from openapi_spec_validator.exceptions import OpenAPIValidationError
-from openapi_spec_validator.handlers.urllib import UrllibHandler
 
 
 class BaseTestValidValidteV2Spec:
@@ -36,25 +36,12 @@ class BaseTestFaliedValidateSpec:
             validate_v30_spec(spec)
 
 
-class BaseTestValidValidateSpecUrl:
+class BaseTestValidValidateV2SpecUrl:
 
     @pytest.fixture
-    def urllib_handlers(self):
-        all_urls_handler = UrllibHandler('http', 'https', 'file')
-        return {
-            '<all_urls>': all_urls_handler,
-            'http': UrllibHandler('http'),
-            'https': UrllibHandler('https'),
-            'file': UrllibHandler('file'),
-        }
-
-
-class BaseTestValidValidateV2SpecUrl(BaseTestValidValidateSpecUrl):
-
-    @pytest.fixture
-    def validate_spec_url_callable(self, urllib_handlers):
+    def validate_spec_url_callable(self):
         return validate_spec_url_factory(
-            openapi_v2_spec_validator.validate, urllib_handlers)
+            openapi_v2_spec_validator.validate, default_handlers)
 
     def test_valid(self, spec_url):
         validate_v2_spec_url(spec_url)
@@ -70,12 +57,12 @@ class BaseTestFaliedValidateV2SpecUrl:
             validate_v2_spec_url(spec_url)
 
 
-class BaseTestValidValidateV30SpecUrl(BaseTestValidValidateSpecUrl):
+class BaseTestValidValidateV30SpecUrl:
 
     @pytest.fixture
-    def validate_spec_url_callable(self, urllib_handlers):
+    def validate_spec_url_callable(self):
         return validate_spec_url_factory(
-            openapi_v30_spec_validator.validate, urllib_handlers)
+            openapi_v30_spec_validator.validate, default_handlers)
 
     def test_default_valid(self, spec_url):
         validate_v30_spec_url(spec_url)
