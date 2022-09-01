@@ -1,4 +1,4 @@
-from openapi_spec_validator.exceptions import (
+from openapi_spec_validator.validation.exceptions import (
     ExtraParametersError, UnresolvableParameterError, OpenAPIValidationError,
     DuplicateOperationIDError,
 )

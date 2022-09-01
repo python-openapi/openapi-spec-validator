@@ -1,4 +1,4 @@
-"""OpenAPI spec validator decorators module."""
+"""OpenAPI spec validator validation decorators module."""
 from functools import wraps
 import logging
 
