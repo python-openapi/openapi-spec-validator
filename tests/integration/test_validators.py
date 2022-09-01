@@ -1,426 +1,106 @@
-from openapi_spec_validator.exceptions import (
-    ExtraParametersError, UnresolvableParameterError, OpenAPIValidationError,
-    DuplicateOperationIDError,
-)
+import pytest
+
+from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 
-class TestSpecValidatorIterErrors(object):
+class TestLocalOpenAPIv30Validator:
 
-    def test_empty(self, validator_v30):
-        spec = {}
+    LOCAL_SOURCE_DIRECTORY = "data/v3.0/"
 
-        errors = validator_v30.iter_errors(spec)
+    def local_test_suite_file_path(self, test_file):
+        return "{}{}".format(self.LOCAL_SOURCE_DIRECTORY, test_file)
 
-        errors_list = list(errors)
-        assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == "'openapi' is a required property"
-        assert errors_list[1].__class__ == OpenAPIValidationError
-        assert errors_list[1].message == "'info' is a required property"
-        assert errors_list[2].__class__ == OpenAPIValidationError
-        assert errors_list[2].message == "'paths' is a required property"
+    @pytest.mark.parametrize('spec_file', [
+        "petstore.yaml",
+        "petstore-separate/spec/openapi.yaml",
+        "parent-reference/openapi.yaml",
+    ])
+    def test_valid(self, factory, validator_v30, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
 
-    def test_info_empty(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {},
-            'paths': {},
-        }
+        return validator_v30.validate(spec, spec_url=spec_url)
 
-        errors = validator_v30.iter_errors(spec)
+    @pytest.mark.parametrize('spec_file', [
+        "empty.yaml",
+    ])
+    def test_falied(self, factory, validator_v30, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
 
-        errors_list = list(errors)
-        assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == "'title' is a required property"
+        with pytest.raises(OpenAPIValidationError):
+            validator_v30.validate(spec, spec_url=spec_url)
 
-    def test_minimalistic(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {},
-        }
 
-        errors = validator_v30.iter_errors(spec)
+class TestRemoteOpenAPIv30Validator:
 
-        errors_list = list(errors)
-        assert errors_list == []
+    REMOTE_SOURCE_URL = (
+        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
+    )
 
-    def test_same_parameters_names(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test/{param1}': {
-                    'parameters': [
-                        {
-                            'name': 'param1',
-                            'in': 'query',
-                            'schema': {
-                              'type': 'integer',
-                            },
-                        },
-                        {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                              'type': 'integer',
-                            },
-                            'required': True,
-                        },
-                    ],
-                },
-            },
-        }
+    def remote_test_suite_file_path(self, test_file):
+        return "{}{}".format(self.REMOTE_SOURCE_URL, test_file)
 
-        errors = validator_v30.iter_errors(spec)
+    @pytest.mark.parametrize('spec_file', [
+        'f75f8486a1aae1a7ceef92fbc63692cb2556c0cd/examples/v3.0/'
+        'petstore.yaml',
+        'f75f8486a1aae1a7ceef92fbc63692cb2556c0cd/examples/v3.0/'
+        'api-with-examples.yaml',
+        '970566d5ca236a5ce1a02fb7d617fdbd07df88db/examples/v3.0/'
+        'api-with-examples.yaml'
+    ])
+    def test_valid(self, factory, validator_v30, spec_file):
+        spec_url = self.remote_test_suite_file_path(spec_file)
+        spec = factory.spec_from_url(spec_url)
 
-        errors_list = list(errors)
-        assert errors_list == []
+        return validator_v30.validate(spec, spec_url=spec_url)
 
-    def test_same_operation_ids(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test': {
-                    'get': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                    },
-                    'post': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                    },
-                },
-                '/test2': {
-                    'get': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                    },
-                },
-            },
-        }
 
-        errors = validator_v30.iter_errors(spec)
+class TestRemoteOpeAPIv31Validator:
 
-        errors_list = list(errors)
-        assert len(errors_list) == 2
-        assert errors_list[0].__class__ == DuplicateOperationIDError
-        assert errors_list[1].__class__ == DuplicateOperationIDError
+    REMOTE_SOURCE_URL = 'https://raw.githubusercontent.com/' \
+                        'OAI/OpenAPI-Specification/' \
+                        'd9ac75b00c8bf405c2c90cfa9f20370564371dec/'
 
-    def test_allow_allof_required_no_properties(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'Credit': {
-                        'type': 'object',
-                        'properties': {
-                            'clientId': {'type': 'string'},
-                        }
-                    },
-                    'CreditCreate': {
-                        'allOf': [
-                            {
-                                '$ref': '#/components/schemas/Credit'
-                            },
-                            {
-                                'required': ['clientId']
-                            }
-                        ]
-                    }
-                },
-            },
-        }
+    def remote_test_suite_file_path(self, test_file):
+        return "{}{}".format(self.REMOTE_SOURCE_URL, test_file)
 
-        errors = validator_v30.iter_errors(spec)
-        errors_list = list(errors)
-        assert errors_list == []
-
-    def test_allow_allof_when_required_is_linked_to_the_parent_object(self, validator_v30):
-        spec = {
-            'openapi': '3.0.1',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'Address': {
-                        'type': 'object',
-                        'properties': {
-                            'SubdivisionCode': {
-                                'type': 'string',
-                                'description': 'State or region'
-                            },
-                            'Town': {
-                                'type': 'string',
-                                'description': 'Town or city'
-                            },
-                            'CountryCode': {
-                                'type': 'string',
-                            }
-                        }
-                    },
-                    'AddressCreation': {
-                        'required': [
-                            'CountryCode',
-                            'Town'
-                        ],
-                        'type': 'object',
-                        'allOf': [
-                            {
-                                '$ref': '#/components/schemas/Address'
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-
-        errors = validator_v30.iter_errors(spec)
-        errors_list = list(errors)
-        assert errors_list == []
-
-    def test_extra_parameters_in_required(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'testSchema': {
-                        'type': 'object',
-                        'required': [
-                            'testparam1',
-                        ]
-                    }
-                },
-            },
-        }
-
-        errors = validator_v30.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert errors_list[0].__class__ == ExtraParametersError
-        assert errors_list[0].message == (
-            "Required list has not defined properties: ['testparam1']"
+    @pytest.mark.parametrize('spec_file', [
+        'comp_pathitems.yaml',
+        'info_summary.yaml',
+        'license_identifier.yaml',
+        'mega.yaml',
+        'minimal_comp.yaml',
+        'minimal_hooks.yaml',
+        'minimal_paths.yaml',
+        'path_no_response.yaml',
+        'path_var_empty_pathitem.yaml',
+        'schema.yaml',
+        'servers.yaml',
+        'valid_schema_types.yaml',
+    ])
+    def test_valid(self, factory, validator_v31, spec_file):
+        spec_url = self.remote_test_suite_file_path(
+            '{}{}'.format('tests/v3.1/pass/', spec_file)
         )
+        spec = factory.spec_from_url(spec_url)
 
-    def test_undocumented_parameter(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test/{param1}/{param2}': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                    },
-                    'parameters': [
-                        {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                                'type': 'integer',
-                            },
-                            'required': True,
-                        },
-                    ],
-                },
-            },
-        }
+        return validator_v31.validate(spec, spec_url=spec_url)
 
-        errors = validator_v30.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert errors_list[0].__class__ == UnresolvableParameterError
-        assert errors_list[0].message == (
-            "Path parameter 'param2' for 'get' operation in "
-            "'/test/{param1}/{param2}' was not resolved"
+    @pytest.mark.parametrize('spec_file', [
+        'invalid_schema_types.yaml',
+        'no_containers.yaml',
+        'server_enum_empty.yaml',
+        'servers.yaml',
+        'unknown_container.yaml',
+    ])
+    def test_failed(self, factory, validator_v31, spec_file):
+        spec_url = self.remote_test_suite_file_path(
+            '{}{}'.format('tests/v3.1/fail/', spec_file)
         )
+        spec = factory.spec_from_url(spec_url)
 
-    def test_default_value_wrong_type(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'test': {
-                        'type': 'integer',
-                        'default': 'invaldtype',
-                    },
-                },
-            },
-        }
-
-        errors = validator_v30.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert len(errors_list) == 1
-        assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == (
-            "'invaldtype' is not of type 'integer'"
-        )
-
-    def test_parameter_default_value_wrong_type(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test/{param1}': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                    },
-                    'parameters': [
-                        {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                                'type': 'integer',
-                                'default': 'invaldtype',
-                            },
-                            'required': True,
-                        },
-                    ],
-                },
-            },
-        }
-
-        errors = validator_v30.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert len(errors_list) == 1
-        assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == (
-            "'invaldtype' is not of type 'integer'"
-        )
-
-    def test_parameter_default_value_wrong_type_swagger(self,
-                                                        validator_v2):
-        spec = {
-            'swagger': '2.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test/': {
-                    'get': {
-                        'responses': {
-                            '200': {
-                                'description': 'OK',
-                                'schema': {'type': 'object'},
-                            },
-                        },
-                        'parameters': [
-                            {
-                                'name': 'param1',
-                                'in': 'query',
-                                'type': 'integer',
-                                'default': 'invaldtype',
-                            },
-                        ],
-                    },
-                },
-            },
-        }
-
-        errors = validator_v2.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert len(errors_list) == 1
-        assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == (
-            "'invaldtype' is not of type 'integer'"
-        )
-
-    def test_parameter_default_value_with_reference(self, validator_v30):
-        spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
-            },
-            'paths': {
-                '/test/': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
-                            },
-                        },
-                        'parameters': [
-                            {
-                                'name': 'param1',
-                                'in': 'query',
-                                'schema': {
-                                    'allOf': [{
-                                        '$ref': '#/components/schemas/type',
-                                    }],
-                                    'default': 1,
-                                },
-                            },
-                        ],
-                    },
-                },
-            },
-            'components': {
-                'schemas': {
-                    'type': {
-                        'type': 'integer',
-                    }
-                },
-            },
-        }
-
-        errors = validator_v30.iter_errors(spec)
-
-        errors_list = list(errors)
-        assert errors_list == []
+        with pytest.raises(OpenAPIValidationError):
+            validator_v31.validate(spec, spec_url=spec_url)
