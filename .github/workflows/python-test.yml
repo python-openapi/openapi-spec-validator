@@ -57,5 +57,8 @@ jobs:
           PYTEST_ADDOPTS: "--color=yes"
         run: poetry run pytest
 
+      - name: Static type check
+        run: poetry run mypy
+
       - name: Upload coverage
         uses: codecov/codecov-action@v1

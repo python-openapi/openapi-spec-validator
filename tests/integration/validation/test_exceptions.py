@@ -1,11 +1,14 @@
 from openapi_spec_validator.validation.exceptions import (
-    ExtraParametersError, UnresolvableParameterError, OpenAPIValidationError,
     DuplicateOperationIDError,
+)
+from openapi_spec_validator.validation.exceptions import ExtraParametersError
+from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
+from openapi_spec_validator.validation.exceptions import (
+    UnresolvableParameterError,
 )
 
 
-class TestSpecValidatorIterErrors(object):
-
+class TestSpecValidatorIterErrors:
     def test_empty(self, validator_v30):
         spec = {}
 
@@ -21,9 +24,9 @@ class TestSpecValidatorIterErrors(object):
 
     def test_info_empty(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {},
-            'paths': {},
+            "openapi": "3.0.0",
+            "info": {},
+            "paths": {},
         }
 
         errors = validator_v30.iter_errors(spec)
@@ -34,12 +37,12 @@ class TestSpecValidatorIterErrors(object):
 
     def test_minimalistic(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {},
+            "paths": {},
         }
 
         errors = validator_v30.iter_errors(spec)
@@ -49,28 +52,28 @@ class TestSpecValidatorIterErrors(object):
 
     def test_same_parameters_names(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test/{param1}': {
-                    'parameters': [
+            "paths": {
+                "/test/{param1}": {
+                    "parameters": [
                         {
-                            'name': 'param1',
-                            'in': 'query',
-                            'schema': {
-                              'type': 'integer',
+                            "name": "param1",
+                            "in": "query",
+                            "schema": {
+                                "type": "integer",
                             },
                         },
                         {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                              'type': 'integer',
+                            "name": "param1",
+                            "in": "path",
+                            "schema": {
+                                "type": "integer",
                             },
-                            'required': True,
+                            "required": True,
                         },
                     ],
                 },
@@ -84,36 +87,36 @@ class TestSpecValidatorIterErrors(object):
 
     def test_same_operation_ids(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test': {
-                    'get': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+            "paths": {
+                "/test": {
+                    "get": {
+                        "operationId": "operation1",
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
                     },
-                    'post': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+                    "post": {
+                        "operationId": "operation1",
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
                     },
                 },
-                '/test2': {
-                    'get': {
-                        'operationId': 'operation1',
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+                "/test2": {
+                    "get": {
+                        "operationId": "operation1",
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
                     },
@@ -130,30 +133,26 @@ class TestSpecValidatorIterErrors(object):
 
     def test_allow_allof_required_no_properties(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'Credit': {
-                        'type': 'object',
-                        'properties': {
-                            'clientId': {'type': 'string'},
-                        }
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "Credit": {
+                        "type": "object",
+                        "properties": {
+                            "clientId": {"type": "string"},
+                        },
                     },
-                    'CreditCreate': {
-                        'allOf': [
-                            {
-                                '$ref': '#/components/schemas/Credit'
-                            },
-                            {
-                                'required': ['clientId']
-                            }
+                    "CreditCreate": {
+                        "allOf": [
+                            {"$ref": "#/components/schemas/Credit"},
+                            {"required": ["clientId"]},
                         ]
-                    }
+                    },
                 },
             },
         }
@@ -162,46 +161,41 @@ class TestSpecValidatorIterErrors(object):
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_allow_allof_when_required_is_linked_to_the_parent_object(self, validator_v30):
+    def test_allow_allof_when_required_is_linked_to_the_parent_object(
+        self, validator_v30
+    ):
         spec = {
-            'openapi': '3.0.1',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.1",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'Address': {
-                        'type': 'object',
-                        'properties': {
-                            'SubdivisionCode': {
-                                'type': 'string',
-                                'description': 'State or region'
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "Address": {
+                        "type": "object",
+                        "properties": {
+                            "SubdivisionCode": {
+                                "type": "string",
+                                "description": "State or region",
                             },
-                            'Town': {
-                                'type': 'string',
-                                'description': 'Town or city'
+                            "Town": {
+                                "type": "string",
+                                "description": "Town or city",
                             },
-                            'CountryCode': {
-                                'type': 'string',
-                            }
-                        }
+                            "CountryCode": {
+                                "type": "string",
+                            },
+                        },
                     },
-                    'AddressCreation': {
-                        'required': [
-                            'CountryCode',
-                            'Town'
-                        ],
-                        'type': 'object',
-                        'allOf': [
-                            {
-                                '$ref': '#/components/schemas/Address'
-                            }
-                        ]
-                    }
+                    "AddressCreation": {
+                        "required": ["CountryCode", "Town"],
+                        "type": "object",
+                        "allOf": [{"$ref": "#/components/schemas/Address"}],
+                    },
                 }
-            }
+            },
         }
 
         errors = validator_v30.iter_errors(spec)
@@ -210,19 +204,19 @@ class TestSpecValidatorIterErrors(object):
 
     def test_extra_parameters_in_required(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'testSchema': {
-                        'type': 'object',
-                        'required': [
-                            'testparam1',
-                        ]
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "testSchema": {
+                        "type": "object",
+                        "required": [
+                            "testparam1",
+                        ],
                     }
                 },
             },
@@ -238,28 +232,28 @@ class TestSpecValidatorIterErrors(object):
 
     def test_undocumented_parameter(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test/{param1}/{param2}': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+            "paths": {
+                "/test/{param1}/{param2}": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
                     },
-                    'parameters': [
+                    "parameters": [
                         {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                                'type': 'integer',
+                            "name": "param1",
+                            "in": "path",
+                            "schema": {
+                                "type": "integer",
                             },
-                            'required': True,
+                            "required": True,
                         },
                     ],
                 },
@@ -277,17 +271,17 @@ class TestSpecValidatorIterErrors(object):
 
     def test_default_value_wrong_type(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {},
-            'components': {
-                'schemas': {
-                    'test': {
-                        'type': 'integer',
-                        'default': 'invaldtype',
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "test": {
+                        "type": "integer",
+                        "default": "invaldtype",
                     },
                 },
             },
@@ -304,29 +298,29 @@ class TestSpecValidatorIterErrors(object):
 
     def test_parameter_default_value_wrong_type(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test/{param1}': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+            "paths": {
+                "/test/{param1}": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
                     },
-                    'parameters': [
+                    "parameters": [
                         {
-                            'name': 'param1',
-                            'in': 'path',
-                            'schema': {
-                                'type': 'integer',
-                                'default': 'invaldtype',
+                            "name": "param1",
+                            "in": "path",
+                            "schema": {
+                                "type": "integer",
+                                "default": "invaldtype",
                             },
-                            'required': True,
+                            "required": True,
                         },
                     ],
                 },
@@ -342,29 +336,28 @@ class TestSpecValidatorIterErrors(object):
             "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_wrong_type_swagger(self,
-                                                        validator_v2):
+    def test_parameter_default_value_wrong_type_swagger(self, validator_v2):
         spec = {
-            'swagger': '2.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "swagger": "2.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test/': {
-                    'get': {
-                        'responses': {
-                            '200': {
-                                'description': 'OK',
-                                'schema': {'type': 'object'},
+            "paths": {
+                "/test/": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "OK",
+                                "schema": {"type": "object"},
                             },
                         },
-                        'parameters': [
+                        "parameters": [
                             {
-                                'name': 'param1',
-                                'in': 'query',
-                                'type': 'integer',
-                                'default': 'invaldtype',
+                                "name": "param1",
+                                "in": "query",
+                                "type": "integer",
+                                "default": "invaldtype",
                             },
                         ],
                     },
@@ -383,38 +376,40 @@ class TestSpecValidatorIterErrors(object):
 
     def test_parameter_default_value_with_reference(self, validator_v30):
         spec = {
-            'openapi': '3.0.0',
-            'info': {
-                'title': 'Test Api',
-                'version': '0.0.1',
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
             },
-            'paths': {
-                '/test/': {
-                    'get': {
-                        'responses': {
-                            'default': {
-                                'description': 'default response',
+            "paths": {
+                "/test/": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
                             },
                         },
-                        'parameters': [
+                        "parameters": [
                             {
-                                'name': 'param1',
-                                'in': 'query',
-                                'schema': {
-                                    'allOf': [{
-                                        '$ref': '#/components/schemas/type',
-                                    }],
-                                    'default': 1,
+                                "name": "param1",
+                                "in": "query",
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/type",
+                                        }
+                                    ],
+                                    "default": 1,
                                 },
                             },
                         ],
                     },
                 },
             },
-            'components': {
-                'schemas': {
-                    'type': {
-                        'type': 'integer',
+            "components": {
+                "schemas": {
+                    "type": {
+                        "type": "integer",
                     }
                 },
             },

@@ -1,7 +1,7 @@
 from jsonschema.exceptions import ValidationError
 
 
-class OpenAPIValidationError(ValidationError):
+class OpenAPIValidationError(ValidationError):  # type: ignore
     pass
 
 

@@ -1,18 +1,23 @@
-import os
-import pathlib
+from os import path
+from pathlib import Path
 import sys
+from typing import Any
+from typing import Hashable
+from typing import Mapping
+from typing import Tuple
 
-from jsonschema_spec.handlers import file_handler, all_urls_handler
+from jsonschema_spec.handlers import all_urls_handler
+from jsonschema_spec.handlers import file_handler
 
 
-def read_from_stdin(filename):
-    return file_handler(sys.stdin), ''
+def read_from_stdin(filename: str) -> Tuple[Mapping[Hashable, Any], str]:
+    return file_handler(sys.stdin), ""  # type: ignore
 
 
-def read_from_filename(filename):
-    if not os.path.isfile(filename):
-        raise IOError("No such file: {0}".format(filename))
+def read_from_filename(filename: str) -> Tuple[Mapping[Hashable, Any], str]:
+    if not path.isfile(filename):
+        raise OSError(f"No such file: {filename}")
 
-    filename = os.path.abspath(filename)
-    uri = pathlib.Path(filename).as_uri()
+    filename = path.abspath(filename)
+    uri = Path(filename).as_uri()
     return all_urls_handler(uri), uri

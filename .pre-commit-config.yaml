@@ -1,0 +1,39 @@
+---
+default_stages: [commit, push]
+default_language_version:
+  # force all unspecified python hooks to run python3
+  python: python3
+minimum_pre_commit_version: "1.20.0"
+repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.19.0
+    hooks:
+      - id: pyupgrade
+        args: ["--py36-plus"]
+
+  - repo: local
+    hooks:
+      - id: flynt
+        name: Convert to f-strings with flynt
+        entry: flynt
+        language: python
+        additional_dependencies: ['flynt==0.76']
+
+      - id: black
+        name: black
+        entry: black
+        language: system
+        require_serial: true
+        types: [python]
+
+      - id: isort
+        name: isort
+        entry: isort
+        args: ['--filter-files']
+        language: system
+        require_serial: true
+        types: [python]
