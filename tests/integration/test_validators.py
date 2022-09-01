@@ -1,6 +1,6 @@
 import pytest
 
-from openapi_spec_validator.exceptions import OpenAPIValidationError
+from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
 class TestLocalOpenAPIv30Validator:

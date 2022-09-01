@@ -1,4 +1,4 @@
-"""OpenAIP spec validator schemas module."""
+"""OpenAIP spec validator schemas utils module."""
 from os import path
 
 import importlib_resources
@@ -6,7 +6,7 @@ import importlib_resources
 from jsonschema_spec.readers import FilePathReader
 
 
-def get_openapi_schema(version):
+def get_schema(version):
     schema_path = 'resources/schemas/v{0}/schema.json'.format(version)
     ref = importlib_resources.files('openapi_spec_validator') / schema_path
     with importlib_resources.as_file(ref) as resource_path:

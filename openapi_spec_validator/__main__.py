@@ -9,7 +9,7 @@ from openapi_spec_validator import (
     openapi_v30_spec_validator,
     openapi_v31_spec_validator,
 )
-from openapi_spec_validator.exceptions import ValidationError
+from openapi_spec_validator.validation.exceptions import ValidationError
 from openapi_spec_validator.readers import read_from_stdin, read_from_filename
 
 logger = logging.getLogger(__name__)

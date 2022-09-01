@@ -7,7 +7,7 @@ from openapi_spec_validator import (
     openapi_v2_spec_validator, openapi_v30_spec_validator,
     validate_v30_spec_url, validate_v30_spec,
 )
-from openapi_spec_validator.exceptions import OpenAPIValidationError
+from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
 class TestLocalOpenAPIv20Validator:

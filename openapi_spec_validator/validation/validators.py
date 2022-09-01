@@ -1,16 +1,16 @@
+"""OpenAPI spec validator validation validators module."""
 import logging
 import string
 
 from jsonschema.validators import RefResolver
 from jsonschema_spec.accessors import SpecAccessor
 from jsonschema_spec.paths import Spec
-from openapi_schema_validator import OAS31Validator, oas31_format_checker
 
-from openapi_spec_validator.exceptions import (
+from openapi_spec_validator.validation.exceptions import (
     ParameterDuplicateError, ExtraParametersError, UnresolvableParameterError,
     OpenAPIValidationError, DuplicateOperationIDError,
 )
-from openapi_spec_validator.decorators import ValidationErrorWrapper
+from openapi_spec_validator.validation.decorators import ValidationErrorWrapper
 
 log = logging.getLogger(__name__)
 
@@ -27,9 +27,10 @@ class SpecValidator(object):
         'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace',
     ]
 
-    def __init__(self, schema_validator, value_validator_class, resolver_handlers=None):
+    def __init__(self, schema_validator, value_validator_class, value_validator_format_checker, resolver_handlers=None):
         self.schema_validator = schema_validator
         self.value_validator_class = value_validator_class
+        self.value_validator_format_checker = value_validator_format_checker
         self.resolver_handlers = resolver_handlers
 
         self.operation_ids_registry = None
@@ -141,7 +142,7 @@ class SpecValidator(object):
             validator = self.value_validator_class(
                 content,
                 resolver=self.resolver,
-                format_checker=oas31_format_checker,
+                format_checker=self.value_validator_format_checker,
             )
             yield from validator.iter_errors(value)
 
