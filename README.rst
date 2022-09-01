@@ -84,17 +84,21 @@ By default, OpenAPI v3.1 syntax is expected. To validate an OpenAPI v3.1 spec:
     # If no exception is raised by validate_spec(), the spec is valid.
     validate_spec(spec_dict)
 
-    validate_spec({})
+    validate_spec({'openapi': '3.1.0'})
 
     Traceback (most recent call last):
         ...
-    OpenAPIValidationError: 'openapi' is a required property
+    OpenAPIValidationError: 'info' is a required property
     
-In order to validate a Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec`` instead of ``validate_spec``.
-In order to validate a OpenAPI 3.0 spec file, import ``validate_v30_spec`` instead of ``validate_spec``.
+In order to explicitly validate a:
 
-You can also explicitly import ``validate_v31_spec`` if you want to disambiguate the expected version or
-explicitly import ``validate_v3_spec`` which is a shortcut to the latest v3 release.
+* Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec``
+* OpenAPI 3.0 spec file, import ``validate_v30_spec`` 
+* OpenAPI 3.1 spec file, import ``validate_v31_spec`` 
+
+instead of ``validate_spec``.
+
+You can also explicitly import ``validate_v3_spec`` which is a shortcut to the latest v3 release.
 
 Add ``spec_url`` to validate spec with relative files:
 
@@ -110,6 +114,16 @@ You can also validate spec from url:
 
     # If no exception is raised by validate_spec_url(), the spec is valid.
     validate_spec_url('http://example.com/openapi.json')
+
+In order to explicitly validate a:
+
+* Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec_url``
+* OpenAPI 3.0 spec file, import ``validate_v30_spec_url`` 
+* OpenAPI 3.1 spec file, import ``validate_v31_spec_url`` 
+
+instead of ``validate_spec_url``.
+
+You can also explicitly import ``validate_v3_spec_url`` which is a shortcut to the latest v3 release.
 
 If you want to iterate through validation errors:
 
@@ -130,4 +144,4 @@ Related projects
 License
 #######
 
-Copyright (c) 2017-2021, Artur Maciag, All rights reserved. Apache v2
+Copyright (c) 2017-2022, Artur Maciag, All rights reserved. Apache v2
