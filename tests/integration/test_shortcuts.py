@@ -1,16 +1,36 @@
 import pytest
-from jsonschema_spec.handlers import default_handlers
 
 from openapi_spec_validator import (
+    validate_spec, validate_spec_url,
     validate_v2_spec, validate_v2_spec_url,
     validate_spec_factory, validate_spec_url_factory,
     openapi_v2_spec_validator, openapi_v30_spec_validator,
     validate_v30_spec_url, validate_v30_spec,
 )
+from openapi_spec_validator.exceptions import ValidatorDetectError
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
-class TestLocalOpenAPIv20Validator:
+class TestValidateSpec:
+
+    def test_spec_schema_version_not_detected(self):
+        spec = {}
+
+        with pytest.raises(ValidatorDetectError):
+            validate_spec(spec)
+
+
+class TestValidateSpecUrl:
+
+    def test_spec_schema_version_not_detected(self, factory):
+        spec_path = "data/empty.yaml"
+        spec_url = factory.spec_file_url(spec_path)
+
+        with pytest.raises(ValidatorDetectError):
+            validate_spec_url(spec_url)
+
+
+class TestValidatev2Spec:
 
     LOCAL_SOURCE_DIRECTORY = "data/v2.0/"
 
@@ -25,10 +45,11 @@ class TestLocalOpenAPIv20Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
+        validate_spec(spec)
         validate_v2_spec(spec)
 
         validate_spec_factory(
-            openapi_v2_spec_validator.validate)(spec, spec_url)
+            openapi_v2_spec_validator)(spec, spec_url)
 
     @pytest.mark.parametrize('spec_file', [
         "empty.yaml",
@@ -41,7 +62,7 @@ class TestLocalOpenAPIv20Validator:
             validate_v2_spec(spec)
 
 
-class TestLocalOpenAPIv30Validator:
+class TestValidatev30Spec:
 
     LOCAL_SOURCE_DIRECTORY = "data/v3.0/"
 
@@ -56,10 +77,11 @@ class TestLocalOpenAPIv30Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
+        validate_spec(spec)
         validate_v30_spec(spec)
 
         validate_spec_factory(
-            openapi_v30_spec_validator.validate)(spec, spec_url)
+            openapi_v30_spec_validator)(spec, spec_url)
 
     @pytest.mark.parametrize('spec_file', [
         "empty.yaml",
@@ -72,7 +94,7 @@ class TestLocalOpenAPIv30Validator:
             validate_v30_spec(spec)
 
 
-class TestRemoteValidateV20:
+class TestValidatev2SpecUrl:
 
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
@@ -92,13 +114,14 @@ class TestRemoteValidateV20:
     def test_valid(self, spec_file):
         spec_url = self.remote_test_suite_file_path(spec_file)
 
+        validate_spec_url(spec_url)
         validate_v2_spec_url(spec_url)
 
         validate_spec_url_factory(
-            openapi_v2_spec_validator.validate, default_handlers)(spec_url)
+            openapi_v2_spec_validator)(spec_url)
 
 
-class TestRemoteValidateV30:
+class TestValidatev30SpecUrl:
 
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
@@ -118,7 +141,8 @@ class TestRemoteValidateV30:
     def test_valid(self, spec_file):
         spec_url = self.remote_test_suite_file_path(spec_file)
 
+        validate_spec_url(spec_url)
         validate_v30_spec_url(spec_url)
 
         validate_spec_url_factory(
-            openapi_v30_spec_validator.validate, default_handlers)(spec_url)
+            openapi_v30_spec_validator)(spec_url)
