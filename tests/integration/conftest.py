@@ -1,17 +1,17 @@
 from os import path
-
-import pytest
-from urllib import request
+from pathlib import PurePath
 from urllib.parse import urlunparse
-from yaml import safe_load
 
-from openapi_spec_validator import (openapi_v2_spec_validator,
-                                    openapi_v30_spec_validator,
-                                    openapi_v31_spec_validator)
-from openapi_spec_validator.schemas import read_yaml_file
+from jsonschema_spec.handlers.file import FilePathHandler
+from jsonschema_spec.handlers.urllib import UrllibHandler
+import pytest
+
+from openapi_spec_validator import openapi_v2_spec_validator
+from openapi_spec_validator import openapi_v30_spec_validator
+from openapi_spec_validator import openapi_v31_spec_validator
 
 
-def spec_url(spec_file, schema='file'):
+def spec_file_url(spec_file, schema='file'):
     directory = path.abspath(path.dirname(__file__))
     full_path = path.join(directory, spec_file)
     return urlunparse((schema, None, full_path, None, None, None))
@@ -20,12 +20,12 @@ def spec_url(spec_file, schema='file'):
 def spec_from_file(spec_file):
     directory = path.abspath(path.dirname(__file__))
     path_full = path.join(directory, spec_file)
-    return read_yaml_file(path_full)
+    uri = PurePath(path_full).as_uri()
+    return FilePathHandler()(uri)
 
 
 def spec_from_url(spec_url):
-    content = request.urlopen(spec_url)
-    return safe_load(content)
+    return UrllibHandler("http", "https")(spec_url)
 
 
 class Factory(dict):
@@ -36,7 +36,7 @@ class Factory(dict):
 @pytest.fixture
 def factory():
     return Factory(
-        spec_url=spec_url,
+        spec_file_url=spec_file_url,
         spec_from_file=spec_from_file,
         spec_from_url=spec_from_url,
     )
