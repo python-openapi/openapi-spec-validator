@@ -1,18 +1,22 @@
 """OpenAIP spec validator schemas utils module."""
+import sys
 from os import path
 from typing import Any
 from typing import Hashable
 from typing import Mapping
 from typing import Tuple
 
-import importlib_resources
+if sys.version_info >= (3, 9):
+    from importlib.resources import as_file, files
+else:
+    from importlib_resources import as_file, files
 from jsonschema_spec.readers import FilePathReader
 
 
 def get_schema(version: str) -> Tuple[Mapping[Hashable, Any], str]:
     schema_path = f"resources/schemas/v{version}/schema.json"
-    ref = importlib_resources.files("openapi_spec_validator") / schema_path
-    with importlib_resources.as_file(ref) as resource_path:
+    ref = files("openapi_spec_validator") / schema_path
+    with as_file(ref) as resource_path:
         schema_path_full = path.join(path.dirname(__file__), resource_path)
     return FilePathReader(schema_path_full).read()
 
