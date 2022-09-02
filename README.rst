@@ -90,16 +90,6 @@ By default, OpenAPI spec version is detected. To validate spec:
         ...
     OpenAPIValidationError: 'info' is a required property
     
-In order to explicitly validate a:
-
-* Swagger / OpenAPI 2.0 spec, import ``validate_v2_spec``
-* OpenAPI 3.0 spec, import ``validate_v30_spec`` 
-* OpenAPI 3.1 spec, import ``validate_v31_spec`` 
-
-instead of ``validate_spec``.
-
-You can also explicitly import ``validate_v3_spec`` which is a shortcut to the latest v3 release.
-
 Add ``spec_url`` to validate spec with relative files:
 
 .. code:: python
@@ -117,13 +107,17 @@ You can also validate spec from url:
 
 In order to explicitly validate a:
 
-* Swagger / OpenAPI 2.0 spec url, import ``validate_v2_spec_url``
-* OpenAPI 3.0 spec url, import ``validate_v30_spec_url`` 
-* OpenAPI 3.1 spec url, import ``validate_v31_spec_url`` 
+* Swagger / OpenAPI 2.0 spec, import ``openapi_v2_spec_validator``
+* OpenAPI 3.0 spec, import ``openapi_v30_spec_validator`` 
+* OpenAPI 3.1 spec, import ``openapi_v31_spec_validator`` 
 
-instead of ``validate_spec_url``.
+and pass the validator to ``validate_spec`` or ``validate_spec_url`` function:
 
-You can also explicitly import ``validate_v3_spec_url`` which is a shortcut to the latest v3 release.
+.. code:: python
+
+    validate_spec(spec_dict, validator=openapi_v31_spec_validator)
+
+You can also explicitly import ``openapi_v3_spec_validator`` which is a shortcut to the latest v3 release.
 
 If you want to iterate through validation errors:
 

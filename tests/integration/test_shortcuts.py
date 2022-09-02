@@ -3,13 +3,7 @@ import pytest
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
 from openapi_spec_validator import validate_spec
-from openapi_spec_validator import validate_spec_factory
 from openapi_spec_validator import validate_spec_url
-from openapi_spec_validator import validate_spec_url_factory
-from openapi_spec_validator import validate_v2_spec
-from openapi_spec_validator import validate_v2_spec_url
-from openapi_spec_validator import validate_v30_spec
-from openapi_spec_validator import validate_v30_spec_url
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 
@@ -50,9 +44,7 @@ class TestLiocalValidatev2Spec:
         spec_url = factory.spec_file_url(spec_path)
 
         validate_spec(spec)
-        validate_v2_spec(spec)
-
-        validate_spec_factory(openapi_v2_spec_validator)(spec, spec_url)
+        validate_spec(spec, validator=openapi_v2_spec_validator)
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -65,7 +57,7 @@ class TestLiocalValidatev2Spec:
         spec = factory.spec_from_file(spec_path)
 
         with pytest.raises(OpenAPIValidationError):
-            validate_v2_spec(spec)
+            validate_spec(spec, validator=openapi_v2_spec_validator)
 
 
 class TestLocalValidatev30Spec:
@@ -87,9 +79,8 @@ class TestLocalValidatev30Spec:
         spec_url = factory.spec_file_url(spec_path)
 
         validate_spec(spec)
-        validate_v30_spec(spec)
-
-        validate_spec_factory(openapi_v30_spec_validator)(spec, spec_url)
+        validate_spec(spec, spec_url=spec_url)
+        validate_spec(spec, validator=openapi_v30_spec_validator)
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -102,7 +93,7 @@ class TestLocalValidatev30Spec:
         spec = factory.spec_from_file(spec_path)
 
         with pytest.raises(OpenAPIValidationError):
-            validate_v30_spec(spec)
+            validate_spec(spec, validator=openapi_v30_spec_validator)
 
 
 @pytest.mark.network
@@ -130,9 +121,7 @@ class TestRemoteValidatev2SpecUrl:
         spec_url = self.remote_test_suite_file_path(spec_file)
 
         validate_spec_url(spec_url)
-        validate_v2_spec_url(spec_url)
-
-        validate_spec_url_factory(openapi_v2_spec_validator)(spec_url)
+        validate_spec_url(spec_url, validator=openapi_v2_spec_validator)
 
 
 @pytest.mark.network
@@ -160,6 +149,4 @@ class TestRemoteValidatev30SpecUrl:
         spec_url = self.remote_test_suite_file_path(spec_file)
 
         validate_spec_url(spec_url)
-        validate_v30_spec_url(spec_url)
-
-        validate_spec_url_factory(openapi_v30_spec_validator)(spec_url)
+        validate_spec_url(spec_url, validator=openapi_v30_spec_validator)

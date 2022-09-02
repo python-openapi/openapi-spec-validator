@@ -1,8 +1,7 @@
 from jsonschema_spec.handlers import default_handlers
 
-from openapi_spec_validator.shortcuts import validate_spec_factory
-from openapi_spec_validator.shortcuts import validate_spec_url_factory
-from openapi_spec_validator.validation import openapi_spec_validator_proxy
+from openapi_spec_validator.shortcuts import validate_spec
+from openapi_spec_validator.shortcuts import validate_spec_url
 from openapi_spec_validator.validation import openapi_v2_spec_validator
 from openapi_spec_validator.validation import openapi_v3_spec_validator
 from openapi_spec_validator.validation import openapi_v30_spec_validator
@@ -19,31 +18,6 @@ __all__ = [
     "openapi_v3_spec_validator",
     "openapi_v30_spec_validator",
     "openapi_v31_spec_validator",
-    "validate_v2_spec",
-    "validate_v3_spec",
-    "validate_v30_spec",
-    "validate_v31_spec",
     "validate_spec",
-    "validate_v2_spec_url",
-    "validate_v3_spec_url",
-    "validate_v30_spec_url",
-    "validate_v31_spec_url",
     "validate_spec_url",
 ]
-
-# shortcuts
-validate_v2_spec = validate_spec_factory(openapi_v2_spec_validator)
-validate_v2_spec_url = validate_spec_url_factory(openapi_v2_spec_validator)
-
-validate_v30_spec = validate_spec_factory(openapi_v30_spec_validator)
-validate_v30_spec_url = validate_spec_url_factory(openapi_v30_spec_validator)
-
-validate_v31_spec = validate_spec_factory(openapi_v31_spec_validator)
-validate_v31_spec_url = validate_spec_url_factory(openapi_v31_spec_validator)
-
-validate_spec = validate_spec_factory(openapi_spec_validator_proxy)
-validate_spec_url = validate_spec_url_factory(openapi_spec_validator_proxy)
-
-# aliases to the latest v3 version
-validate_v3_spec = validate_v31_spec
-validate_v3_spec_url = validate_v31_spec_url

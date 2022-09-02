@@ -11,7 +11,6 @@ from openapi_spec_validator.validation.validators import SpecValidator
 
 
 class DetectValidatorProxy:
-
     def __init__(self, choices: Mapping[Tuple[str, str], SpecValidator]):
         self.choices = choices
 
