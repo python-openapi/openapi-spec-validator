@@ -1,25 +1,26 @@
+from argparse import ArgumentParser
 import logging
-import argparse
 import sys
+from typing import Optional
+from typing import Sequence
 
 from jsonschema.exceptions import best_match
+from jsonschema.exceptions import ValidationError
 
-from openapi_spec_validator import (
-    openapi_v2_spec_validator,
-    openapi_v30_spec_validator,
-    openapi_v31_spec_validator,
-)
-from openapi_spec_validator.validation.exceptions import ValidationError
-from openapi_spec_validator.readers import read_from_stdin, read_from_filename
+from openapi_spec_validator import openapi_v2_spec_validator
+from openapi_spec_validator import openapi_v30_spec_validator
+from openapi_spec_validator import openapi_v31_spec_validator
+from openapi_spec_validator.readers import read_from_filename
+from openapi_spec_validator.readers import read_from_stdin
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    format='%(asctime)s %(levelname)s %(name)s %(message)s',
-    level=logging.WARNING
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    level=logging.WARNING,
 )
 
 
-def print_validationerror(exc, errors="best-match"):
+def print_validationerror(exc: ValidationError, errors: str = "best-match") -> None:
     print("# Validation Error\n")
     print(exc)
     if exc.cause:
@@ -35,14 +36,14 @@ def print_validationerror(exc, errors="best-match"):
         print("## " + str(best_match(exc.context)))
         if len(exc.context) > 1:
             print(
-                "\n({} more subschemas errors,".format(len(exc.context) - 1),
+                f"\n({len(exc.context) - 1} more subschemas errors,",
                 "use --errors=all to see them.)",
             )
 
 
-def main(args=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filename', help="Absolute or relative path to file")
+def main(args: Optional[Sequence[str]] = None) -> None:
+    parser = ArgumentParser()
+    parser.add_argument("filename", help="Absolute or relative path to file")
     parser.add_argument(
         "--errors",
         choices=("best-match", "all"),
@@ -51,46 +52,46 @@ def main(args=None):
         """use "all" to get all subschema errors.""",
     )
     parser.add_argument(
-        '--schema',
+        "--schema",
         help="OpenAPI schema (default: 3.1.0)",
         type=str,
-        choices=['2.0', '3.0.0', '3.1.0'],
-        default='3.1.0'
+        choices=["2.0", "3.0.0", "3.1.0"],
+        default="3.1.0",
     )
-    args = parser.parse_args(args)
+    args_parsed = parser.parse_args(args)
 
     # choose source
     reader = read_from_filename
-    if args.filename in ['-', '/-']:
+    if args_parsed.filename in ["-", "/-"]:
         reader = read_from_stdin
 
     # read source
     try:
-        spec, spec_url = reader(args.filename)
+        spec, spec_url = reader(args_parsed.filename)
     except Exception as exc:
         print(exc)
         sys.exit(1)
 
     # choose the validator
     validators = {
-        '2.0': openapi_v2_spec_validator,
-        '3.0.0': openapi_v30_spec_validator,
-        '3.1.0': openapi_v31_spec_validator,
+        "2.0": openapi_v2_spec_validator,
+        "3.0.0": openapi_v30_spec_validator,
+        "3.1.0": openapi_v31_spec_validator,
     }
-    validator = validators[args.schema]
+    validator = validators[args_parsed.schema]
 
     # validate
     try:
         validator.validate(spec, spec_url=spec_url)
     except ValidationError as exc:
-        print_validationerror(exc, args.errors)
+        print_validationerror(exc, args_parsed.errors)
         sys.exit(1)
     except Exception as exc:
         print(exc)
         sys.exit(2)
     else:
-        print('OK')
+        print("OK")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

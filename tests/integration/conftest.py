@@ -2,16 +2,16 @@ from os import path
 from pathlib import PurePath
 from urllib.parse import urlunparse
 
+import pytest
 from jsonschema_spec.handlers.file import FilePathHandler
 from jsonschema_spec.handlers.urllib import UrllibHandler
-import pytest
 
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
 from openapi_spec_validator import openapi_v31_spec_validator
 
 
-def spec_file_url(spec_file, schema='file'):
+def spec_file_url(spec_file, schema="file"):
     directory = path.abspath(path.dirname(__file__))
     full_path = path.join(directory, spec_file)
     return urlunparse((schema, None, full_path, None, None, None))
