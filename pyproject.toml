@@ -17,6 +17,10 @@ strict = true
 module = "jsonschema.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "lazy_object_proxy.*"
+ignore_missing_imports = true
+
 [tool.poetry]
 name = "openapi-spec-validator"
 version = "0.5.0a3"
@@ -47,6 +51,7 @@ PyYAML = ">=5.1"
 requests = {version = "*", optional = true}
 importlib-resources = "^5.8.0"
 jsonschema-spec = "^0.1.1"
+lazy-object-proxy = "^1.7.1"
 
 [tool.poetry.extras]
 dev = ["pre-commit"]
