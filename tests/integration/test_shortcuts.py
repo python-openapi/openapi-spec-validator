@@ -10,8 +10,8 @@ from openapi_spec_validator import validate_v2_spec
 from openapi_spec_validator import validate_v2_spec_url
 from openapi_spec_validator import validate_v30_spec
 from openapi_spec_validator import validate_v30_spec_url
-from openapi_spec_validator.exceptions import ValidatorDetectError
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
+from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 
 
 class TestValidateSpec:

@@ -1,6 +1,6 @@
+import sys
 from os import path
 from pathlib import Path
-import sys
 from typing import Any
 from typing import Hashable
 from typing import Mapping

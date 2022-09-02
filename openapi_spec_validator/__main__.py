@@ -1,17 +1,18 @@
-from argparse import ArgumentParser
 import logging
 import sys
+from argparse import ArgumentParser
 from typing import Optional
 from typing import Sequence
 
-from jsonschema.exceptions import best_match
 from jsonschema.exceptions import ValidationError
+from jsonschema.exceptions import best_match
 
-from openapi_spec_validator import openapi_v2_spec_validator
-from openapi_spec_validator import openapi_v30_spec_validator
-from openapi_spec_validator import openapi_v31_spec_validator
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
+from openapi_spec_validator.validation import openapi_spec_validator_proxy
+from openapi_spec_validator.validation import openapi_v2_spec_validator
+from openapi_spec_validator.validation import openapi_v30_spec_validator
+from openapi_spec_validator.validation import openapi_v31_spec_validator
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -20,7 +21,9 @@ logging.basicConfig(
 )
 
 
-def print_validationerror(exc: ValidationError, errors: str = "best-match") -> None:
+def print_validationerror(
+    exc: ValidationError, errors: str = "best-match"
+) -> None:
     print("# Validation Error\n")
     print(exc)
     if exc.cause:
@@ -53,10 +56,10 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     )
     parser.add_argument(
         "--schema",
-        help="OpenAPI schema (default: 3.1.0)",
+        help="OpenAPI schema (default: detect)",
         type=str,
-        choices=["2.0", "3.0.0", "3.1.0"],
-        default="3.1.0",
+        choices=["2.0", "3.0.0", "3.1.0", "detect"],
+        default="detect",
     )
     args_parsed = parser.parse_args(args)
 
@@ -77,6 +80,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
         "2.0": openapi_v2_spec_validator,
         "3.0.0": openapi_v30_spec_validator,
         "3.1.0": openapi_v31_spec_validator,
+        "detect": openapi_spec_validator_proxy,
     }
     validator = validators[args_parsed.schema]
 
