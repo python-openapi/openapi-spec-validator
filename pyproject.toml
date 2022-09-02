@@ -76,6 +76,9 @@ addopts = """
 --cov-report=term-missing
 --cov-report=xml
 """
+markers = [
+    "network: marks tests which do need network-enabled environment",
+]
 
 [tool.black]
 line-length = 79

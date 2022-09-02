@@ -40,6 +40,7 @@ class TestLocalOpenAPIv30Validator:
             validator_v30.validate(spec, spec_url=spec_url)
 
 
+@pytest.mark.network
 class TestRemoteOpenAPIv30Validator:
 
     REMOTE_SOURCE_URL = (
@@ -67,6 +68,7 @@ class TestRemoteOpenAPIv30Validator:
         return validator_v30.validate(spec, spec_url=spec_url)
 
 
+@pytest.mark.network
 class TestRemoteOpeAPIv31Validator:
 
     REMOTE_SOURCE_URL = (
