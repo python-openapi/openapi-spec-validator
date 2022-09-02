@@ -1,5 +1,4 @@
-from jsonschema_spec.handlers import default_handlers
-
+"""OpenAPI spec validator module."""
 from openapi_spec_validator.shortcuts import validate_spec
 from openapi_spec_validator.shortcuts import validate_spec_url
 from openapi_spec_validator.validation import openapi_v2_spec_validator
