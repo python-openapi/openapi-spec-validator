@@ -1,6 +1,9 @@
+from functools import partial
+
 from jsonschema.validators import Draft4Validator
 from jsonschema.validators import Draft202012Validator
 from jsonschema_spec.handlers import default_handlers
+from lazy_object_proxy import Proxy
 from openapi_schema_validator import oas30_format_checker
 from openapi_schema_validator import oas31_format_checker
 from openapi_schema_validator.validators import OAS30Validator
@@ -19,31 +22,40 @@ __all__ = [
 ]
 
 # v2.0 spec
-openapi_v2_schema_validator = Draft4Validator(schema_v2)
-openapi_v2_spec_validator = SpecValidator(
+get_openapi_v2_schema_validator = partial(Draft4Validator, schema_v2)
+openapi_v2_schema_validator = Proxy(get_openapi_v2_schema_validator)
+get_openapi_v2_spec_validator = partial(
+    SpecValidator,
     openapi_v2_schema_validator,
     OAS30Validator,
     oas30_format_checker,
     resolver_handlers=default_handlers,
 )
+openapi_v2_spec_validator = Proxy(get_openapi_v2_spec_validator)
 
 # v3.0 spec
-openapi_v30_schema_validator = Draft4Validator(schema_v30)
-openapi_v30_spec_validator = SpecValidator(
+get_openapi_v30_schema_validator = partial(Draft4Validator, schema_v30)
+openapi_v30_schema_validator = Proxy(get_openapi_v30_schema_validator)
+get_openapi_v30_spec_validator = partial(
+    SpecValidator,
     openapi_v30_schema_validator,
     OAS30Validator,
     oas30_format_checker,
     resolver_handlers=default_handlers,
 )
+openapi_v30_spec_validator = Proxy(get_openapi_v30_spec_validator)
 
 # v3.1 spec
-openapi_v31_schema_validator = Draft202012Validator(schema_v31)
-openapi_v31_spec_validator = SpecValidator(
+get_openapi_v31_schema_validator = partial(Draft202012Validator, schema_v31)
+openapi_v31_schema_validator = Proxy(get_openapi_v31_schema_validator)
+get_openapi_v31_spec_validator = partial(
+    SpecValidator,
     openapi_v31_schema_validator,
     OAS31Validator,
     oas31_format_checker,
     resolver_handlers=default_handlers,
 )
+openapi_v31_spec_validator = Proxy(get_openapi_v31_spec_validator)
 
 # alias to the latest v3 version
 openapi_v3_spec_validator = openapi_v31_spec_validator

@@ -266,6 +266,14 @@ PyYAML = ">=5.1"
 typing-extensions = ">=4.3.0,<5.0.0"
 
 [[package]]
+name = "lazy-object-proxy"
+version = "1.7.1"
+description = "A fast and thorough lazy object proxy."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "mccabe"
 version = "0.6.1"
 description = "McCabe checker, plugin for flake8"
@@ -635,7 +643,7 @@ requests = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.0"
-content-hash = "ef6f3182b5cadd5b5771b0d10e16211bd7724a06c09112e70ade2a20866ed339"
+content-hash = "e362281cbb4462609d584ef83056e034f0d4b315dd362fbba396fd9a65899514"
 
 [metadata.files]
 astor = []
@@ -660,6 +668,7 @@ iniconfig = []
 isort = []
 jsonschema = []
 jsonschema-spec = []
+lazy-object-proxy = []
 mccabe = []
 mypy = []
 mypy-extensions = []
