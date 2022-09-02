@@ -22,7 +22,7 @@ class TestValidateSpec:
             validate_spec(spec)
 
 
-class TestValidateSpecUrl:
+class TestLocalValidateSpecUrl:
     def test_spec_schema_version_not_detected(self, factory):
         spec_path = "data/empty.yaml"
         spec_url = factory.spec_file_url(spec_path)
@@ -31,7 +31,7 @@ class TestValidateSpecUrl:
             validate_spec_url(spec_url)
 
 
-class TestValidatev2Spec:
+class TestLiocalValidatev2Spec:
 
     LOCAL_SOURCE_DIRECTORY = "data/v2.0/"
 
@@ -68,7 +68,7 @@ class TestValidatev2Spec:
             validate_v2_spec(spec)
 
 
-class TestValidatev30Spec:
+class TestLocalValidatev30Spec:
 
     LOCAL_SOURCE_DIRECTORY = "data/v3.0/"
 
@@ -105,7 +105,8 @@ class TestValidatev30Spec:
             validate_v30_spec(spec)
 
 
-class TestValidatev2SpecUrl:
+@pytest.mark.network
+class TestRemoteValidatev2SpecUrl:
 
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
@@ -134,7 +135,8 @@ class TestValidatev2SpecUrl:
         validate_spec_url_factory(openapi_v2_spec_validator)(spec_url)
 
 
-class TestValidatev30SpecUrl:
+@pytest.mark.network
+class TestRemoteValidatev30SpecUrl:
 
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
