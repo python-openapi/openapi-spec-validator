@@ -6,8 +6,14 @@ import pytest
 from openapi_spec_validator.__main__ import main
 
 
-def test_schema_default():
-    """Test default schema is 3.1.0"""
+def test_schema_v2_detect():
+    """Test schema v2 is detected"""
+    testargs = ["./tests/integration/data/v2.0/petstore.yaml"]
+    main(testargs)
+
+
+def test_schema_v31_detect():
+    """Test schema v3.1 is detected"""
     testargs = ["./tests/integration/data/v3.1/petstore.yaml"]
     main(testargs)
 

@@ -67,18 +67,26 @@ class SpecValidator:
         self.operation_ids_registry: Optional[List[str]] = None
         self.resolver = None
 
-    def validate(self, spec_dict: Mapping[Hashable, Any], spec_url: str = "") -> None:
-        for err in self.iter_errors(spec_dict, spec_url=spec_url):
+    def validate(
+        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+    ) -> None:
+        for err in self.iter_errors(instance, spec_url=spec_url):
             raise err
 
+    def is_valid(self, instance: Mapping[Hashable, Any]) -> bool:
+        error = next(self.iter_errors(instance), None)
+        return error is None
+
     @wraps_errors
-    def iter_errors(self, spec_dict: Mapping[Hashable, Any], spec_url: str = "") -> Iterator[ValidationError]:
+    def iter_errors(
+        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+    ) -> Iterator[ValidationError]:
         self.operation_ids_registry = []
-        self.resolver = self._get_resolver(spec_url, spec_dict)
+        self.resolver = self._get_resolver(spec_url, instance)
 
-        yield from self.schema_validator.iter_errors(spec_dict)
+        yield from self.schema_validator.iter_errors(instance)
 
-        accessor = SpecAccessor(spec_dict, self.resolver)
+        accessor = SpecAccessor(instance, self.resolver)
         spec = Spec(accessor)
         if "paths" in spec:
             paths = spec / "paths"
@@ -88,14 +96,18 @@ class SpecValidator:
             components = spec / "components"
             yield from self._iter_components_errors(components)
 
-    def _get_resolver(self, base_uri: str, referrer: Mapping[Hashable, Any]) -> RefResolver:
+    def _get_resolver(
+        self, base_uri: str, referrer: Mapping[Hashable, Any]
+    ) -> RefResolver:
         return RefResolver(base_uri, referrer, handlers=self.resolver_handlers)
 
     def _iter_paths_errors(self, paths: Spec) -> Iterator[ValidationError]:
         for url, path_item in paths.items():
             yield from self._iter_path_errors(url, path_item)
 
-    def _iter_path_errors(self, url: str, path_item: Spec) -> Iterator[ValidationError]:
+    def _iter_path_errors(
+        self, url: str, path_item: Spec
+    ) -> Iterator[ValidationError]:
         parameters = None
         if "parameters" in path_item:
             parameters = path_item / "parameters"
@@ -109,7 +121,13 @@ class SpecValidator:
                 url, field_name, operation, parameters
             )
 
-    def _iter_operation_errors(self, url: str, name: str, operation: Spec, path_parameters: Optional[Spec]) -> Iterator[ValidationError]:
+    def _iter_operation_errors(
+        self,
+        url: str,
+        name: str,
+        operation: Spec,
+        path_parameters: Optional[Spec],
+    ) -> Iterator[ValidationError]:
         assert self.operation_ids_registry is not None
 
         operation_id = operation.getkey("operationId")
@@ -153,7 +171,9 @@ class SpecValidator:
         path_params = [item[1] for item in formatter.parse(url)]
         return filter(None, path_params)
 
-    def _iter_parameters_errors(self, parameters: Spec) -> Iterator[ValidationError]:
+    def _iter_parameters_errors(
+        self, parameters: Spec
+    ) -> Iterator[ValidationError]:
         seen = set()
         for parameter in parameters:
             yield from self._iter_parameter_errors(parameter)
@@ -165,7 +185,9 @@ class SpecValidator:
                 )
             seen.add(key)
 
-    def _iter_parameter_errors(self, parameter: Spec) -> Iterator[ValidationError]:
+    def _iter_parameter_errors(
+        self, parameter: Spec
+    ) -> Iterator[ValidationError]:
         if "schema" in parameter:
             schema = parameter / "schema"
             yield from self._iter_schema_errors(schema)
@@ -176,7 +198,9 @@ class SpecValidator:
             if default is not None:
                 yield from self._iter_value_errors(parameter, default)
 
-    def _iter_value_errors(self, schema: Spec, value: Any) -> Iterator[ValidationError]:
+    def _iter_value_errors(
+        self, schema: Spec, value: Any
+    ) -> Iterator[ValidationError]:
         with schema.open() as content:
             validator = self.value_validator_class(
                 content,
@@ -185,7 +209,9 @@ class SpecValidator:
             )
             yield from validator.iter_errors(value)
 
-    def _iter_schema_errors(self, schema: Spec, require_properties: bool = True) -> Iterator[ValidationError]:
+    def _iter_schema_errors(
+        self, schema: Spec, require_properties: bool = True
+    ) -> Iterator[ValidationError]:
         if not hasattr(schema.content(), "__getitem__"):
             return
 
@@ -253,7 +279,9 @@ class SpecValidator:
             if default is not None or nullable is not True:
                 yield from self._iter_value_errors(schema, default)
 
-    def _iter_components_errors(self, components: Spec) -> Iterator[ValidationError]:
+    def _iter_components_errors(
+        self, components: Spec
+    ) -> Iterator[ValidationError]:
         schemas = components.get("schemas", {})
         yield from self._iter_schemas_errors(schemas)
 

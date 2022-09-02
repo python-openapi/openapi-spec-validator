@@ -12,6 +12,7 @@ from openapi_schema_validator.validators import OAS31Validator
 from openapi_spec_validator.schemas import schema_v2
 from openapi_spec_validator.schemas import schema_v30
 from openapi_spec_validator.schemas import schema_v31
+from openapi_spec_validator.validation.proxies import DetectValidatorProxy
 from openapi_spec_validator.validation.validators import SpecValidator
 
 __all__ = [
@@ -19,6 +20,7 @@ __all__ = [
     "openapi_v3_spec_validator",
     "openapi_v30_spec_validator",
     "openapi_v31_spec_validator",
+    "openapi_spec_validator_proxy",
 ]
 
 # v2.0 spec
@@ -59,3 +61,12 @@ openapi_v31_spec_validator = Proxy(get_openapi_v31_spec_validator)
 
 # alias to the latest v3 version
 openapi_v3_spec_validator = openapi_v31_spec_validator
+
+# detect version spec
+openapi_spec_validator_proxy = DetectValidatorProxy(
+    {
+        ("swagger", "2.0"): openapi_v2_spec_validator,
+        ("openapi", "3.0"): openapi_v30_spec_validator,
+        ("openapi", "3.1"): openapi_v31_spec_validator,
+    },
+)

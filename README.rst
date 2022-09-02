@@ -72,7 +72,7 @@ or more pythonic way:
 Examples
 ********
 
-By default, OpenAPI v3.1 syntax is expected. To validate an OpenAPI v3.1 spec:
+By default, OpenAPI spec version is detected. To validate spec:
 
 .. code:: python
 
@@ -92,9 +92,9 @@ By default, OpenAPI v3.1 syntax is expected. To validate an OpenAPI v3.1 spec:
     
 In order to explicitly validate a:
 
-* Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec``
-* OpenAPI 3.0 spec file, import ``validate_v30_spec`` 
-* OpenAPI 3.1 spec file, import ``validate_v31_spec`` 
+* Swagger / OpenAPI 2.0 spec, import ``validate_v2_spec``
+* OpenAPI 3.0 spec, import ``validate_v30_spec`` 
+* OpenAPI 3.1 spec, import ``validate_v31_spec`` 
 
 instead of ``validate_spec``.
 
@@ -117,9 +117,9 @@ You can also validate spec from url:
 
 In order to explicitly validate a:
 
-* Swagger / OpenAPI 2.0 spec file, import ``validate_v2_spec_url``
-* OpenAPI 3.0 spec file, import ``validate_v30_spec_url`` 
-* OpenAPI 3.1 spec file, import ``validate_v31_spec_url`` 
+* Swagger / OpenAPI 2.0 spec url, import ``validate_v2_spec_url``
+* OpenAPI 3.0 spec url, import ``validate_v30_spec_url`` 
+* OpenAPI 3.1 spec url, import ``validate_v31_spec_url`` 
 
 instead of ``validate_spec_url``.
 
