@@ -69,7 +69,7 @@ class TestRemoteOpenAPIv30Validator:
 
 
 @pytest.mark.network
-class TestRemoteOpeAPIv31Validator:
+class TestRemoteOpenAPIv31Validator:
 
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/"
