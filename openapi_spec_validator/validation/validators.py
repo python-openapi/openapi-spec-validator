@@ -140,6 +140,10 @@ class SpecValidator:
             )
         self.operation_ids_registry.append(operation_id)
 
+        if "responses" in operation:
+            responses = operation / "responses"
+            yield from self._iter_responses_errors(responses)
+
         names = []
 
         parameters = None
@@ -160,6 +164,35 @@ class SpecValidator:
                     "was not resolved".format(path, name, url)
                 )
         return
+
+    def _iter_responses_errors(
+        self, responses: Spec
+    ) -> Iterator[ValidationError]:
+        for response_code, response in responses.items():
+            yield from self._iter_response_errors(response_code, response)
+
+    def _iter_response_errors(
+        self, response_code: str, response: Spec
+    ) -> Iterator[ValidationError]:
+        # openapi 2
+        if "schema" in response:
+            schema = response / "schema"
+            yield from self._iter_schema_errors(schema)
+        # openapi 3
+        if "content" in response:
+            content = response / "content"
+            yield from self._iter_content_errors(content)
+
+    def _iter_content_errors(self, content: Spec) -> Iterator[ValidationError]:
+        for mimetype, media_type in content.items():
+            yield from self._iter_media_type_errors(mimetype, media_type)
+
+    def _iter_media_type_errors(
+        self, mimetype: str, media_type: Spec
+    ) -> Iterator[ValidationError]:
+        if "schema" in media_type:
+            schema = media_type / "schema"
+            yield from self._iter_schema_errors(schema)
 
     def _get_path_param_names(self, params: Spec) -> Iterator[str]:
         for param in params:
