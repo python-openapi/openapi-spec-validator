@@ -1,6 +1,56 @@
 import pytest
+from jsonschema.exceptions import RefResolutionError
 
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
+
+
+class TestLocalOpenAPIv2Validator:
+
+    LOCAL_SOURCE_DIRECTORY = "data/v2.0/"
+
+    def local_test_suite_file_path(self, test_file):
+        return f"{self.LOCAL_SOURCE_DIRECTORY}{test_file}"
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "petstore.yaml",
+        ],
+    )
+    def test_valid(self, factory, validator_v2, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+
+        return validator_v2.validate(spec, spec_url=spec_url)
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "empty.yaml",
+        ],
+    )
+    def test_validation_failed(self, factory, validator_v2, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+
+        with pytest.raises(OpenAPIValidationError):
+            validator_v2.validate(spec, spec_url=spec_url)
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "missing-reference.yaml",
+        ],
+    )
+    def test_ref_failed(self, factory, validator_v2, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+
+        with pytest.raises(RefResolutionError):
+            validator_v2.validate(spec, spec_url=spec_url)
 
 
 class TestLocalOpenAPIv30Validator:
@@ -31,7 +81,7 @@ class TestLocalOpenAPIv30Validator:
             "empty.yaml",
         ],
     )
-    def test_falied(self, factory, validator_v30, spec_file):
+    def test_failed(self, factory, validator_v30, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
