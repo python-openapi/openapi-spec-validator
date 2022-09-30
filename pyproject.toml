@@ -47,7 +47,6 @@ classifiers = [
 jsonschema = "^4.0.0"
 openapi-schema-validator = "^0.3.2"
 python = "^3.7.0"
-PyYAML = ">=5.1"
 requests = {version = "*", optional = true}
 importlib-resources = "^5.8.0"
 jsonschema-spec = "^0.1.1"
