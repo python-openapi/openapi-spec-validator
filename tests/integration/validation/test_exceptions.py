@@ -419,3 +419,89 @@ class TestSpecValidatorIterErrors:
 
         errors_list = list(errors)
         assert errors_list == []
+
+    def test_parameter_custom_format_checker_not_found(self, validator_v30):
+        spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
+            },
+            "paths": {
+                "/test/": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
+                            },
+                        },
+                        "parameters": [
+                            {
+                                "name": "param1",
+                                "in": "query",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "custom",
+                                    "default": "customvalue",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        }
+
+        errors = validator_v30.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert len(errors_list) == 1
+        assert errors_list[0].__class__ == OpenAPIValidationError
+        assert errors_list[0].message == (
+            "Format checker for 'custom' format not found"
+        )
+
+    def test_parameter_default_value_custom_format_invalid(self, validator_v30):
+        from openapi_schema_validator import oas30_format_checker
+
+        @oas30_format_checker.checks("custom")
+        def validate(to_validate) -> bool:
+            return to_validate is "valid"
+
+        spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
+            },
+            "paths": {
+                "/test/": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
+                            },
+                        },
+                        "parameters": [
+                            {
+                                "name": "param1",
+                                "in": "query",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "custom",
+                                    "default": "invalid",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        }
+
+        errors = validator_v30.iter_errors(spec)
+
+        errors_list = list(errors)
+        assert len(errors_list) == 1
+        assert errors_list[0].__class__ == OpenAPIValidationError
+        assert errors_list[0].message == (
+            "'invalid' is not a 'custom'"
+        )
