@@ -465,7 +465,7 @@ class TestSpecValidatorIterErrors:
 
         @oas30_format_checker.checks("custom")
         def validate(to_validate) -> bool:
-            return to_validate is "valid"
+            return to_validate == "valid"
 
         spec = {
             "openapi": "3.0.0",
