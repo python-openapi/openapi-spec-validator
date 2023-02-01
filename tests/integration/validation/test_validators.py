@@ -89,6 +89,20 @@ class TestLocalOpenAPIv30Validator:
         with pytest.raises(OpenAPIValidationError):
             validator_v30.validate(spec, spec_url=spec_url)
 
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "property-missing-reference.yaml",
+        ],
+    )
+    def test_ref_failed(self, factory, validator_v30, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+
+        with pytest.raises(RefResolutionError):
+            validator_v30.validate(spec, spec_url=spec_url)
+
 
 @pytest.mark.network
 class TestRemoteOpenAPIv30Validator:
