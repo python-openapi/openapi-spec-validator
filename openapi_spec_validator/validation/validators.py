@@ -248,6 +248,7 @@ class SpecValidator:
         if not hasattr(schema.content(), "__getitem__"):
             return
 
+        schema_type = schema.getkey("type")
         nested_properties = []
         if "allOf" in schema:
             all_of = schema / "allOf"
@@ -291,6 +292,14 @@ class SpecValidator:
                 array_schema,
                 require_properties=False,
             )
+
+        if "properties" in schema:
+            props = schema /"properties"
+            for _, prop_schema in props.items():
+                yield from self._iter_schema_errors(
+                    prop_schema,
+                    require_properties=False,
+                )
 
         required = schema.getkey("required", [])
         properties = schema.get("properties", {}).keys()
