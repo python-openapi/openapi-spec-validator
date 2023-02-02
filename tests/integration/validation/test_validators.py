@@ -66,6 +66,7 @@ class TestLocalOpenAPIv30Validator:
             "petstore.yaml",
             "petstore-separate/spec/openapi.yaml",
             "parent-reference/openapi.yaml",
+            "property-recursive.yaml",
         ],
     )
     def test_valid(self, factory, validator_v30, spec_file):

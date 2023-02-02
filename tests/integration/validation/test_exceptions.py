@@ -456,7 +456,9 @@ class TestSpecValidatorIterErrors:
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_parameter_default_value_custom_format_invalid(self, validator_v30):
+    def test_parameter_default_value_custom_format_invalid(
+        self, validator_v30
+    ):
         from openapi_schema_validator import oas30_format_checker
 
         @oas30_format_checker.checks("custom")
@@ -498,6 +500,4 @@ class TestSpecValidatorIterErrors:
         errors_list = list(errors)
         assert len(errors_list) == 1
         assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == (
-            "'invalid' is not a 'custom'"
-        )
+        assert errors_list[0].message == ("'invalid' is not a 'custom'")
