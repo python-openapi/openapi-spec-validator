@@ -65,6 +65,7 @@ class SpecValidator:
         self.resolver_handlers = resolver_handlers
 
         self.operation_ids_registry: Optional[List[str]] = None
+        self.schema_ids_registry: Optional[List[int]] = None
         self.resolver = None
 
     def validate(
@@ -82,6 +83,7 @@ class SpecValidator:
         self, instance: Mapping[Hashable, Any], spec_url: str = ""
     ) -> Iterator[ValidationError]:
         self.operation_ids_registry = []
+        self.schema_ids_registry = []
         self.resolver = self._get_resolver(spec_url, instance)
 
         yield from self.schema_validator.iter_errors(instance)
@@ -248,7 +250,12 @@ class SpecValidator:
         if not hasattr(schema.content(), "__getitem__"):
             return
 
-        schema_type = schema.getkey("type")
+        assert self.schema_ids_registry is not None
+        schema_id = id(schema.content())
+        if schema_id in self.schema_ids_registry:
+            return
+        self.schema_ids_registry.append(schema_id)
+
         nested_properties = []
         if "allOf" in schema:
             all_of = schema / "allOf"
@@ -294,7 +301,7 @@ class SpecValidator:
             )
 
         if "properties" in schema:
-            props = schema /"properties"
+            props = schema / "properties"
             for _, prop_schema in props.items():
                 yield from self._iter_schema_errors(
                     prop_schema,
