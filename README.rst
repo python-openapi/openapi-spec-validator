@@ -25,54 +25,61 @@ against the `OpenAPI 2.0 (aka Swagger)
 and `OpenAPI 3.1 <https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md>`__
 specification. The validator aims to check for full compliance with the Specification.
 
+
+Documentation
+#############
+
+Check documentation to see more details about the features. All documentation is in the "docs" directory and online at `openapi-spec-validator.readthedocs.io <https://openapi-spec-validator.readthedocs.io>`__
+
+
 Installation
 ############
 
-::
+.. code-block:: console
 
-    $ pip install openapi-spec-validator
+    pip install openapi-spec-validator
 
 Alternatively you can download the code and install from the repository:
 
 .. code-block:: bash
 
-   $ pip install -e git+https://github.com/p1c2u/openapi-spec-validator.git#egg=openapi_spec_validator
+   pip install -e git+https://github.com/p1c2u/openapi-spec-validator.git#egg=openapi_spec_validator
 
 
 Usage
 #####
 
-Command Line Interface
-**********************
+CLI (Command Line Interface)
+****************************
 
 Straight forward way:
 
-.. code:: bash
+.. code-block:: bash
 
-    $ openapi-spec-validator openapi.yaml
+    openapi-spec-validator openapi.yaml
 
 pipes way:
 
-.. code:: bash
+.. code-block:: bash
 
-    $ cat openapi.yaml | openapi-spec-validator -
+    cat openapi.yaml | openapi-spec-validator -
 
 docker way:
 
-.. code:: bash
+.. code-block:: bash
 
-    $ docker run -v path/to/openapi.yaml:/openapi.yaml --rm p1c2u/openapi-spec-validator /openapi.yaml
+    docker run -v path/to/openapi.yaml:/openapi.yaml --rm p1c2u/openapi-spec-validator /openapi.yaml
 
 or more pythonic way:
 
-.. code:: bash
+.. code-block:: bash
 
-    $ python -m openapi_spec_validator openapi.yaml
+    python -m openapi_spec_validator openapi.yaml
 
-Examples
-********
+For more details, read about `CLI (Command Line Interface) <https://openapi-spec-validator.readthedocs.io/en/latest/cli.html>`__.
 
-By default, OpenAPI spec version is detected. To validate spec:
+Python package
+**************
 
 .. code:: python
 
@@ -89,53 +96,18 @@ By default, OpenAPI spec version is detected. To validate spec:
     Traceback (most recent call last):
         ...
     OpenAPIValidationError: 'info' is a required property
-    
-Add ``spec_url`` to validate spec with relative files:
 
-.. code:: python
-
-    validate_spec(spec_dict, spec_url='file:///path/to/spec/openapi.yaml')
-
-You can also validate spec from url:
-
-.. code:: python
-
-    from openapi_spec_validator import validate_spec_url
-
-    # If no exception is raised by validate_spec_url(), the spec is valid.
-    validate_spec_url('http://example.com/openapi.json')
-
-In order to explicitly validate a:
-
-* Swagger / OpenAPI 2.0 spec, import ``openapi_v2_spec_validator``
-* OpenAPI 3.0 spec, import ``openapi_v30_spec_validator`` 
-* OpenAPI 3.1 spec, import ``openapi_v31_spec_validator`` 
-
-and pass the validator to ``validate_spec`` or ``validate_spec_url`` function:
-
-.. code:: python
-
-    validate_spec(spec_dict, validator=openapi_v31_spec_validator)
-
-You can also explicitly import ``openapi_v3_spec_validator`` which is a shortcut to the latest v3 release.
-
-If you want to iterate through validation errors:
-
-.. code:: python
-
-    from openapi_spec_validator import openapi_v3_spec_validator
-
-    errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
+For more details, read about `Python package <https://openapi-spec-validator.readthedocs.io/en/latest/python.html>`__.
 
 Related projects
 ################
 
 * `openapi-core <https://github.com/p1c2u/openapi-core>`__
-   Python library that adds client-side and server-side support for the OpenAPI.
+   Python library that adds client-side and server-side support for the OpenAPI v3.0 and OpenAPI v3.1 specification.
 * `openapi-schema-validator <https://github.com/p1c2u/openapi-schema-validator>`__
-   Python library that validates schema against the OpenAPI Schema Specification v3.0.
+   Python library that validates schema against the OpenAPI Schema Specification v3.0 and OpenAPI Schema Specification v3.1.
 
 License
 #######
 
-Copyright (c) 2017-2022, Artur Maciag, All rights reserved. Apache v2
+Copyright (c) 2017-2023, Artur Maciag, All rights reserved. Apache v2
