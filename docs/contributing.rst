@@ -11,8 +11,8 @@ Reporting bugs
 Before you report
 ^^^^^^^^^^^^^^^^^
 
-* Check whether your issue does not already exist in the `Issue tracker <https://github.com/p1c2u/openapi-spec-validator/issues>`__.
-* Make sure it is not a support request or question better suited for `Discussion board <https://github.com/p1c2u/openapi-spec-validator/discussions>`__.
+* Check whether your issue does not already exist in the `Issue tracker <https://github.com/python-openapi/openapi-spec-validator/issues>`__.
+* Make sure it is not a support request or question better suited for `Discussion board <https://github.com/python-openapi/openapi-spec-validator/discussions>`__.
 
 How to submit a report
 ^^^^^^^^^^^^^^^^^^^^^^

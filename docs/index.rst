@@ -32,7 +32,7 @@ Installation
 
       .. code-block:: console
 
-         pip install -e git+https://github.com/p1c2u/openapi-spec-validator.git#egg=openapi_spec_validator
+         pip install -e git+https://github.com/python-openapi/openapi-spec-validator.git#egg=openapi_spec_validator
 
 Usage
 -----
@@ -94,9 +94,9 @@ Usage
 Related projects
 ----------------
 
-* `openapi-core <https://github.com/p1c2u/openapi-core>`__
+* `openapi-core <https://github.com/python-openapi/openapi-core>`__
    Python library that adds client-side and server-side support for the OpenAPI v3.0 and OpenAPI v3.1 specification.
-* `openapi-schema-validator <https://github.com/p1c2u/openapi-schema-validator>`__
+* `openapi-schema-validator <https://github.com/python-openapi/openapi-schema-validator>`__
    Python library that validates schema against the OpenAPI Schema Specification v3.0 and OpenAPI Schema Specification v3.1.
 
 License

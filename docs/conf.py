@@ -30,7 +30,7 @@ html_theme_options = {
         "provider": "google",
         "property": "G-SWHTV603PN",
     },
-    "repo_url": "https://github.com/p1c2u/openapi-spec-validator/",
+    "repo_url": "https://github.com/python-openapi/openapi-spec-validator/",
     "repo_name": "openapi-spec-validator",
     "repo_type": "github",
     "icon": {
