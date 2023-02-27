@@ -28,7 +28,7 @@ description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3 spec validator"
 authors = ["Artur Maciag <maciag.artur@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.rst"
-repository = "https://github.com/p1c2u/openapi-spec-validator"
+repository = "https://github.com/python-openapi/openapi-spec-validator"
 keywords = ["openapi", "swagger", "schema"]
 classifiers = [
     "Development Status :: 4 - Beta",

@@ -4,10 +4,10 @@ OpenAPI Spec validator
 
 .. image:: https://img.shields.io/pypi/v/openapi-spec-validator.svg
      :target: https://pypi.python.org/pypi/openapi-spec-validator
-.. image:: https://travis-ci.org/p1c2u/openapi-spec-validator.svg?branch=master
-     :target: https://travis-ci.org/p1c2u/openapi-spec-validator
-.. image:: https://img.shields.io/codecov/c/github/p1c2u/openapi-spec-validator/master.svg?style=flat
-     :target: https://codecov.io/github/p1c2u/openapi-spec-validator?branch=master
+.. image:: https://travis-ci.org/python-openapi/openapi-spec-validator.svg?branch=master
+     :target: https://travis-ci.org/python-openapi/openapi-spec-validator
+.. image:: https://img.shields.io/codecov/c/github/python-openapi/openapi-spec-validator/master.svg?style=flat
+     :target: https://codecov.io/github/python-openapi/openapi-spec-validator?branch=master
 .. image:: https://img.shields.io/pypi/pyversions/openapi-spec-validator.svg
      :target: https://pypi.python.org/pypi/openapi-spec-validator
 .. image:: https://img.shields.io/pypi/format/openapi-spec-validator.svg
@@ -43,7 +43,7 @@ Alternatively you can download the code and install from the repository:
 
 .. code-block:: bash
 
-   pip install -e git+https://github.com/p1c2u/openapi-spec-validator.git#egg=openapi_spec_validator
+   pip install -e git+https://github.com/python-openapi/openapi-spec-validator.git#egg=openapi_spec_validator
 
 
 Usage
@@ -102,9 +102,9 @@ For more details, read about `Python package <https://openapi-spec-validator.rea
 Related projects
 ################
 
-* `openapi-core <https://github.com/p1c2u/openapi-core>`__
+* `openapi-core <https://github.com/python-openapi/openapi-core>`__
    Python library that adds client-side and server-side support for the OpenAPI v3.0 and OpenAPI v3.1 specification.
-* `openapi-schema-validator <https://github.com/p1c2u/openapi-schema-validator>`__
+* `openapi-schema-validator <https://github.com/python-openapi/openapi-schema-validator>`__
    Python library that validates schema against the OpenAPI Schema Specification v3.0 and OpenAPI Schema Specification v3.1.
 
 License

@@ -15,7 +15,7 @@ A full .pre-commit-config.yaml example you can use in your repository:
 .. code-block:: yaml
 
    repos:
-   -   repo: https://github.com/p1c2u/openapi-spec-validator
+   -   repo: https://github.com/python-openapi/openapi-spec-validator
        rev: 0.5.5 # The version to use or 'master' for latest
        hooks:
        -   id: openapi-spec-validator
