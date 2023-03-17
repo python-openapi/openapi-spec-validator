@@ -18,6 +18,10 @@ module = "jsonschema.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "jsonschema_specifications"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "lazy_object_proxy.*"
 ignore_missing_imports = true
 
@@ -47,20 +51,18 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-jsonschema = ">=4.0.0,<4.18.0"
-openapi-schema-validator = "^0.4.2"
+jsonschema = {version = "^4.18.0a1", allow-prereleases = true}
+openapi-schema-validator = {version = "^0.6.0a1", allow-prereleases = true}
 python = "^3.8.0"
 importlib-resources = {version = "^5.8.0", python = "<3.9" }
-jsonschema-spec = "^0.1.1"
+jsonschema-spec = "^0.2.2"
 lazy-object-proxy = "^1.7.1"
 
 [tool.poetry.extras]
-dev = ["pre-commit"]
 docs = ["sphinx", "sphinx-immaterial"]
-requests = ["requests"]
 
 [tool.poetry.dev-dependencies]
-pre-commit =  {version = "*", optional = true}
+pre-commit =  "*"
 pytest = "^7.3.2"
 pytest-flake8 = "=1.1.0"
 pytest-cov = "^4.1.0"

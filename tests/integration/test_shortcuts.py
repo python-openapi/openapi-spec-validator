@@ -26,7 +26,6 @@ class TestLocalValidateSpecUrl:
 
 
 class TestLiocalValidatev2Spec:
-
     LOCAL_SOURCE_DIRECTORY = "data/v2.0/"
 
     def local_test_suite_file_path(self, test_file):
@@ -61,7 +60,6 @@ class TestLiocalValidatev2Spec:
 
 
 class TestLocalValidatev30Spec:
-
     LOCAL_SOURCE_DIRECTORY = "data/v3.0/"
 
     def local_test_suite_file_path(self, test_file):
@@ -98,7 +96,6 @@ class TestLocalValidatev30Spec:
 
 @pytest.mark.network
 class TestRemoteValidatev2SpecUrl:
-
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
     )
@@ -126,7 +123,6 @@ class TestRemoteValidatev2SpecUrl:
 
 @pytest.mark.network
 class TestRemoteValidatev30SpecUrl:
-
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
     )

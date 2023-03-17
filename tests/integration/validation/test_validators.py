@@ -1,11 +1,10 @@
 import pytest
-from jsonschema.exceptions import RefResolutionError
+from referencing.exceptions import Unresolvable
 
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
 class TestLocalOpenAPIv2Validator:
-
     LOCAL_SOURCE_DIRECTORY = "data/v2.0/"
 
     def local_test_suite_file_path(self, test_file):
@@ -49,12 +48,11 @@ class TestLocalOpenAPIv2Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
-        with pytest.raises(RefResolutionError):
+        with pytest.raises(Unresolvable):
             validator_v2.validate(spec, spec_url=spec_url)
 
 
 class TestLocalOpenAPIv30Validator:
-
     LOCAL_SOURCE_DIRECTORY = "data/v3.0/"
 
     def local_test_suite_file_path(self, test_file):
@@ -101,13 +99,12 @@ class TestLocalOpenAPIv30Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
-        with pytest.raises(RefResolutionError):
+        with pytest.raises(Unresolvable):
             validator_v30.validate(spec, spec_url=spec_url)
 
 
 @pytest.mark.network
 class TestRemoteOpenAPIv30Validator:
-
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/"
     )
@@ -135,7 +132,6 @@ class TestRemoteOpenAPIv30Validator:
 
 @pytest.mark.network
 class TestRemoteOpenAPIv31Validator:
-
     REMOTE_SOURCE_URL = (
         "https://raw.githubusercontent.com/"
         "OAI/OpenAPI-Specification/"
