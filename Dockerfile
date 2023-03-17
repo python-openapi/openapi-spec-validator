@@ -1,6 +1,6 @@
 FROM python:3.7-alpine
 
-ARG OPENAPI_SPEC_VALIDATOR_VERSION=0.5.5
+ARG OPENAPI_SPEC_VALIDATOR_VERSION=0.5.6
 
 RUN pip install --no-cache-dir openapi-spec-validator==${OPENAPI_SPEC_VALIDATOR_VERSION}
 
