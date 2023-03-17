@@ -899,7 +899,7 @@ requests = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.0"
-content-hash = "0ca4b3efec83ed05ffa1e3885e96d4238ebf65b3071ed61f7e0bf10260828d41"
+content-hash = "ffbbac7c3f8cc9240f0819e88161dad1d4460bb27e346b6ca20aa6d83084434d"
 
 [metadata.files]
 alabaster = [
