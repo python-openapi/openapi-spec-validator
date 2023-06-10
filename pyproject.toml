@@ -64,7 +64,7 @@ requests = ["requests"]
 [tool.poetry.dev-dependencies]
 pre-commit =  {version = "*", optional = true}
 pytest = "^6.2.5"
-pytest-flake8 = "=1.0.7"
+pytest-flake8 = "=1.1.0"
 pytest-cov = "^3.0.0"
 tox = "*"
 mypy = "^1.3"
