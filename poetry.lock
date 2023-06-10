@@ -1002,13 +1002,13 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "pytest-flake8"
-version = "1.0.7"
+version = "1.1.0"
 description = "pytest plugin to check FLAKE8 requirements"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pytest-flake8-1.0.7.tar.gz", hash = "sha256:f0259761a903563f33d6f099914afef339c085085e643bee8343eb323b32dd6b"},
-    {file = "pytest_flake8-1.0.7-py2.py3-none-any.whl", hash = "sha256:c28cf23e7d359753c896745fd4ba859495d02e16c84bac36caa8b1eec58f5bc1"},
+    {file = "pytest-flake8-1.1.0.tar.gz", hash = "sha256:358d449ca06b80dbadcb43506cd3e38685d273b4968ac825da871bd4cc436202"},
+    {file = "pytest_flake8-1.1.0-py2.py3-none-any.whl", hash = "sha256:f1b19dad0b9f0aa651d391c9527ebc20ac1a0f847aa78581094c747462bfa182"},
 ]
 
 [package.dependencies]
@@ -1450,4 +1450,4 @@ requests = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.0"
-content-hash = "6be6dc6a0429d79ac1eddec8957719d4d28f80cc2a6d6f74fccfb9f1146f100b"
+content-hash = "d9d729463016b97b48fe5deb056d671f4a389f9d0ad75787075259b8ff67a172"
