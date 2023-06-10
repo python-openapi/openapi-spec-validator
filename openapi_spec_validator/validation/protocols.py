@@ -1,5 +1,4 @@
 import sys
-from typing import TYPE_CHECKING
 from typing import Any
 from typing import Hashable
 from typing import Iterator
