@@ -48,7 +48,7 @@ jobs:
         run: timeout 10s poetry run pip --version || rm -rf .venv
 
       - name: Install dependencies
-        run: poetry install -E requests
+        run: poetry install --all-extras
 
       - name: Test
         env:
@@ -57,6 +57,10 @@ jobs:
 
       - name: Static type check
         run: poetry run mypy
+
+      - name: Check dependencies
+        run: poetry run deptry .
+        if: ${{ matrix.python-version != '3.7' }}
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1
