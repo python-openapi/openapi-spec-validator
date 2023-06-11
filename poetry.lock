@@ -497,20 +497,21 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-spec"
-version = "0.1.1"
+version = "0.1.6"
 description = "JSONSchema Spec with object-oriented paths"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 files = [
-    {file = "jsonschema-spec-0.1.1.tar.gz", hash = "sha256:2eaf5d20c017921950df53d898e0e85029901d83c28730f0fa20813648c7af22"},
-    {file = "jsonschema_spec-0.1.1-py3-none-any.whl", hash = "sha256:5fa06f740d81de4a46d51ffb847ea381d09c4a5872bf0f17d7e0d4bd862d687b"},
+    {file = "jsonschema_spec-0.1.6-py3-none-any.whl", hash = "sha256:f2206d18c89d1824c1f775ba14ed039743b41a9167bd2c5bdb774b66b3ca0bbf"},
+    {file = "jsonschema_spec-0.1.6.tar.gz", hash = "sha256:90215863b56e212086641956b20127ccbf6d8a3a38343dad01d6a74d19482f76"},
 ]
 
 [package.dependencies]
-jsonschema = ">=4.0.0,<5.0.0"
+jsonschema = ">=4.0.0,<4.18.0"
 pathable = ">=0.4.1,<0.5.0"
 PyYAML = ">=5.1"
-typing-extensions = ">=4.3.0,<5.0.0"
+requests = ">=2.31.0,<3.0.0"
+typing-extensions = {version = "<4.6.0", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "lazy-object-proxy"
