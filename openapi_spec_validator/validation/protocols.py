@@ -1,15 +1,9 @@
-import sys
 from typing import Any
 from typing import Hashable
 from typing import Iterator
 from typing import Mapping
-
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-    from typing import runtime_checkable
-else:
-    from typing_extensions import Protocol
-    from typing_extensions import runtime_checkable
+from typing import Protocol
+from typing import runtime_checkable
 
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
