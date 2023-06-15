@@ -789,21 +789,18 @@ setuptools = "*"
 
 [[package]]
 name = "openapi-schema-validator"
-version = "0.4.4"
+version = "0.5.0"
 description = "OpenAPI schema validation for Python"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 files = [
-    {file = "openapi_schema_validator-0.4.4-py3-none-any.whl", hash = "sha256:79f37f38ef9fd5206b924ed7a6f382cea7b649b3b56383c47f1906082b7b9015"},
-    {file = "openapi_schema_validator-0.4.4.tar.gz", hash = "sha256:c573e2be2c783abae56c5a1486ab716ca96e09d1c3eab56020d1dc680aa57bf8"},
+    {file = "openapi_schema_validator-0.5.0-py3-none-any.whl", hash = "sha256:9c12e551dab1c87ba4c86d31df5a33a197dd9404f04fd065706c86a4572be299"},
+    {file = "openapi_schema_validator-0.5.0.tar.gz", hash = "sha256:405373711310eadd31b617e33a19286a0da5cbc47df2e94f2fd01b33aee4e6dd"},
 ]
 
 [package.dependencies]
 jsonschema = ">=4.0.0,<4.18.0"
 rfc3339-validator = "*"
-
-[package.extras]
-docs = ["sphinx (>=5.3.0,<6.0.0)", "sphinx-immaterial (>=0.11.0,<0.12.0)"]
 
 [[package]]
 name = "packaging"
@@ -1487,4 +1484,4 @@ requests = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "b86a1d81b4bb1eb9da80d03026e6365bcc703872bb9b49157bfe71d7f8af6ed1"
+content-hash = "95e67025334d7af456d8309c0897bd3e0a4f7bd0f6aa8bdddb393da3285a888f"
