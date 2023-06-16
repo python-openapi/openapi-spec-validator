@@ -3,6 +3,7 @@ from typing import Any
 from typing import Hashable
 from typing import Iterator
 from typing import Mapping
+from typing import Optional
 from typing import Tuple
 
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
@@ -21,10 +22,15 @@ class DetectValidatorProxy:
         raise ValidatorDetectError("Spec schema version not detected")
 
     def validate(
-        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+        self,
+        instance: Mapping[Hashable, Any],
+        base_uri: str = "",
+        spec_url: Optional[str] = None,
     ) -> None:
         validator = self.detect(instance)
-        for err in validator.iter_errors(instance, spec_url=spec_url):
+        for err in validator.iter_errors(
+            instance, base_uri=base_uri, spec_url=spec_url
+        ):
             raise err
 
     def is_valid(self, instance: Mapping[Hashable, Any]) -> bool:
@@ -33,7 +39,12 @@ class DetectValidatorProxy:
         return error is None
 
     def iter_errors(
-        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+        self,
+        instance: Mapping[Hashable, Any],
+        base_uri: str = "",
+        spec_url: Optional[str] = None,
     ) -> Iterator[OpenAPIValidationError]:
         validator = self.detect(instance)
-        yield from validator.iter_errors(instance, spec_url=spec_url)
+        yield from validator.iter_errors(
+            instance, base_uri=base_uri, spec_url=spec_url
+        )
