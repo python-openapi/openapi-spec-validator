@@ -2,6 +2,7 @@ from typing import Any
 from typing import Hashable
 from typing import Iterator
 from typing import Mapping
+from typing import Optional
 from typing import Protocol
 from typing import runtime_checkable
 
@@ -14,11 +15,17 @@ class SupportsValidation(Protocol):
         ...
 
     def iter_errors(
-        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+        self,
+        instance: Mapping[Hashable, Any],
+        base_uri: str = "",
+        spec_url: Optional[str] = None,
     ) -> Iterator[OpenAPIValidationError]:
         ...
 
     def validate(
-        self, instance: Mapping[Hashable, Any], spec_url: str = ""
+        self,
+        instance: Mapping[Hashable, Any],
+        base_uri: str = "",
+        spec_url: Optional[str] = None,
     ) -> None:
         ...
