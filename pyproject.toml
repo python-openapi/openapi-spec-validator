@@ -71,7 +71,7 @@ mypy = "^1.3"
 isort = "^5.11.5"
 black = "^23.3.0"
 flynt = "^0.78"
-deptry = "^0.11.0"
+deptry = "^0.12.0"
 
 [tool.poetry.scripts]
 openapi-spec-validator = "openapi_spec_validator.__main__:main"
