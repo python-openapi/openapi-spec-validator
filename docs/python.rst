@@ -8,7 +8,7 @@ By default, OpenAPI spec version is detected. To validate spec:
     from openapi_spec_validator import validate_spec
     from openapi_spec_validator.readers import read_from_filename
 
-    spec_dict, spec_url = read_from_filename('openapi.yaml')
+    spec_dict, base_uri = read_from_filename('openapi.yaml')
 
     # If no exception is raised by validate_spec(), the spec is valid.
     validate_spec(spec_dict)
@@ -19,11 +19,11 @@ By default, OpenAPI spec version is detected. To validate spec:
     ...
     OpenAPIValidationError: 'info' is a required property
          
-Add ``spec_url`` to validate spec with relative files:
+Add ``base_uri`` to validate spec with relative files:
 
 .. code:: python
 
-    validate_spec(spec_dict, spec_url='file:///path/to/spec/openapi.yaml')
+    validate_spec(spec_dict, base_uri='file:///path/to/spec/openapi.yaml')
 
 You can also validate spec from url:
 

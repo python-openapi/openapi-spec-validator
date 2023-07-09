@@ -78,7 +78,7 @@ Usage
          from openapi_spec_validator import validate_spec
          from openapi_spec_validator.readers import read_from_filename
 
-         spec_dict, spec_url = read_from_filename('openapi.yaml')
+         spec_dict, base_uri = read_from_filename('openapi.yaml')
 
          # If no exception is raised by validate_spec(), the spec is valid.
          validate_spec(spec_dict)
