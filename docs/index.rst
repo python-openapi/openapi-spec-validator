@@ -10,7 +10,7 @@ openapi-spec-validator
    hook
    contributing
 
-OpenAPI Spec Validator is a Python library that validates OpenAPI Specs
+OpenAPI Spec Validator is a CLI, pre-commit hook and python package that validates OpenAPI Specs
 against the `OpenAPI 2.0 (aka Swagger)
 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__,
 `OpenAPI 3.0 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md>`__
@@ -70,6 +70,18 @@ Usage
                python -m openapi_spec_validator openapi.yaml
 
       Read more about the :doc:`cli`.
+
+   .. md-tab-item:: pre-commit hook
+
+      .. code-block:: yaml
+
+         repos:
+         -   repo: https://github.com/python-openapi/openapi-spec-validator
+             rev: 0.5.5 # The version to use or 'master' for latest
+             hooks:
+             -   id: openapi-spec-validator
+      
+      Read more about the :doc:`hook`.
 
    .. md-tab-item:: Python package
 
