@@ -17,10 +17,10 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v4
         with:
           images: |
-            p1c2u/openapi-spec-validator
+            pythonopenapi/openapi-spec-validator
           tags: |
             type=semver,pattern={{version}}
 

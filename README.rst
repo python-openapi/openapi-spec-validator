@@ -2,8 +2,8 @@
 OpenAPI Spec validator
 **********************
 
-.. image:: https://img.shields.io/docker/v/p1c2u/openapi-spec-validator.svg?color=%23086DD7&label=docker%20hub&sort=semver
-     :target: https://hub.docker.com/r/p1c2u/openapi-spec-validator
+.. image:: https://img.shields.io/docker/v/pythonopenapi/openapi-spec-validator.svg?color=%23086DD7&label=docker%20hub&sort=semver
+     :target: https://hub.docker.com/r/pythonopenapi/openapi-spec-validator
 .. image:: https://img.shields.io/pypi/v/openapi-spec-validator.svg
      :target: https://pypi.python.org/pypi/openapi-spec-validator
 .. image:: https://travis-ci.org/python-openapi/openapi-spec-validator.svg?branch=master
@@ -70,7 +70,7 @@ docker way:
 
 .. code-block:: bash
 
-    docker run -v path/to/openapi.yaml:/openapi.yaml --rm p1c2u/openapi-spec-validator /openapi.yaml
+    docker run -v path/to/openapi.yaml:/openapi.yaml --rm pythonopenapi/openapi-spec-validator /openapi.yaml
 
 or more pythonic way:
 

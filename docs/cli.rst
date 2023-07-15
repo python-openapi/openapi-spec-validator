@@ -21,7 +21,7 @@ CLI (Command Line Interface)
 
       .. code-block:: bash
 
-         docker run -v path/to/openapi.yaml:/openapi.yaml --rm p1c2u/openapi-spec-validator /openapi.yaml
+         docker run -v path/to/openapi.yaml:/openapi.yaml --rm pythonopenapi/openapi-spec-validator /openapi.yaml
 
    .. md-tab-item:: Python interpreter
 
