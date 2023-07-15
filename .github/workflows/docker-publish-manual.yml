@@ -9,9 +9,6 @@ on:
       version:
         required: true
         description: Version to build
-      tags:
-        required: true
-        description: Tags to publish
       push:
         type: boolean
         description: Push to docker hub
@@ -29,7 +26,7 @@ jobs:
           images: |
             pythonopenapi/openapi-spec-validator
           tags: |
-            type=semver,pattern=${{ github.event.inputs.version }}
+            type=semver,pattern={{version}},value=${{ github.event.inputs.version }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -50,5 +47,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event.inputs.push }}
-          tags: ${{ github.event.inputs.tags }}
-          labels: ${{ github.event.inputs.version }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
