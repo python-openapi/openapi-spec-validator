@@ -4,7 +4,7 @@ PROJECT_NAME=openapi-spec-validator
 PACKAGE_NAME=$(subst -,_,${PROJECT_NAME})
 VERSION=`git describe --abbrev=0`
 
-DOCKER_REGISTRY=p1c2u
+DOCKER_REGISTRY=pythonopenapi
 
 PYTHONDONTWRITEBYTECODE=1
 
