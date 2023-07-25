@@ -21,11 +21,18 @@ logging.basicConfig(
 )
 
 
+def print_ok(filename: str) -> None:
+    print(f"{filename}: OK")
+
+
+def print_error(filename: str, exc: Exception) -> None:
+    print(f"{filename}: Error: {exc}")
+
+
 def print_validationerror(
-    exc: ValidationError, errors: str = "best-match"
+    filename: str, exc: ValidationError, errors: str = "best-match"
 ) -> None:
-    print("# Validation Error\n")
-    print(exc)
+    print(f"{filename}: Validation Error: {exc}")
     if exc.cause:
         print("\n# Cause\n")
         print(exc.cause)
@@ -46,7 +53,11 @@ def print_validationerror(
 
 def main(args: Optional[Sequence[str]] = None) -> None:
     parser = ArgumentParser()
-    parser.add_argument("filename", help="Absolute or relative path to file")
+    parser.add_argument(
+        "file",
+        nargs="+",
+        help="Validate specified file(s).",
+    )
     parser.add_argument(
         "--errors",
         choices=("best-match", "all"),
@@ -63,38 +74,40 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     )
     args_parsed = parser.parse_args(args)
 
-    # choose source
-    reader = read_from_filename
-    if args_parsed.filename in ["-", "/-"]:
-        reader = read_from_stdin
+    for filename in args_parsed.file:
+        # choose source
+        reader = read_from_filename
+        if filename in ["-", "/-"]:
+            filename = "stdin"
+            reader = read_from_stdin
 
-    # read source
-    try:
-        spec, spec_url = reader(args_parsed.filename)
-    except Exception as exc:
-        print(exc)
-        sys.exit(1)
+        # read source
+        try:
+            spec, spec_url = reader(filename)
+        except Exception as exc:
+            print(exc)
+            sys.exit(1)
 
-    # choose the validator
-    validators = {
-        "2.0": openapi_v2_spec_validator,
-        "3.0.0": openapi_v30_spec_validator,
-        "3.1.0": openapi_v31_spec_validator,
-        "detect": openapi_spec_validator_proxy,
-    }
-    validator = validators[args_parsed.schema]
+        # choose the validator
+        validators = {
+            "2.0": openapi_v2_spec_validator,
+            "3.0.0": openapi_v30_spec_validator,
+            "3.1.0": openapi_v31_spec_validator,
+            "detect": openapi_spec_validator_proxy,
+        }
+        validator = validators[args_parsed.schema]
 
-    # validate
-    try:
-        validator.validate(spec, spec_url=spec_url)
-    except ValidationError as exc:
-        print_validationerror(exc, args_parsed.errors)
-        sys.exit(1)
-    except Exception as exc:
-        print(exc)
-        sys.exit(2)
-    else:
-        print("OK")
+        # validate
+        try:
+            validator.validate(spec, spec_url=spec_url)
+        except ValidationError as exc:
+            print_validationerror(filename, exc, args_parsed.errors)
+            sys.exit(1)
+        except Exception as exc:
+            print_error(filename, exc)
+            sys.exit(2)
+        else:
+            print_ok(filename)
 
 
 if __name__ == "__main__":
