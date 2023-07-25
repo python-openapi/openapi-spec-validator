@@ -67,10 +67,11 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     )
     parser.add_argument(
         "--schema",
-        help="OpenAPI schema (default: detect)",
         type=str,
-        choices=["2.0", "3.0.0", "3.1.0", "detect"],
+        choices=["detect", "2.0", "3.0", "3.1", "3.0.0", "3.1.0"],
         default="detect",
+        metavar="{detect,2.0,3.0,3.1}",
+        help="OpenAPI schema version (default: detect).",
     )
     args_parsed = parser.parse_args(args)
 
@@ -90,10 +91,13 @@ def main(args: Optional[Sequence[str]] = None) -> None:
 
         # choose the validator
         validators = {
+            "detect": openapi_spec_validator_proxy,
             "2.0": openapi_v2_spec_validator,
+            "3.0": openapi_v30_spec_validator,
+            "3.1": openapi_v31_spec_validator,
+            # backward compatibility
             "3.0.0": openapi_v30_spec_validator,
             "3.1.0": openapi_v31_spec_validator,
-            "detect": openapi_spec_validator_proxy,
         }
         validator = validators[args_parsed.schema]
 
