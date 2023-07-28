@@ -84,7 +84,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
 
         # read source
         try:
-            spec, spec_url = reader(filename)
+            spec, base_uri = reader(filename)
         except Exception as exc:
             print(exc)
             sys.exit(1)
@@ -103,7 +103,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
 
         # validate
         try:
-            validator.validate(spec, spec_url=spec_url)
+            validator.validate(spec, base_uri=base_uri)
         except ValidationError as exc:
             print_validationerror(filename, exc, args_parsed.errors)
             sys.exit(1)
