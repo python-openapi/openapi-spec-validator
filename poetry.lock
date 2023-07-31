@@ -440,13 +440,13 @@ pyflakes = ">=2.5.0,<2.6.0"
 
 [[package]]
 name = "flynt"
-version = "1.0.0"
+version = "1.0.1"
 description = "CLI tool to convert a python project's %-formatted strings to f-strings."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "flynt-1.0.0-py3-none-any.whl", hash = "sha256:8975913426a096750fb427701ed59f2f381fac7aa0afc9b6eff433a651d1f5d6"},
-    {file = "flynt-1.0.0.tar.gz", hash = "sha256:38fd2ff64acf67c58a09ec17c4ffdf673075fad5f3249e7f7221cb3ddf42cc34"},
+    {file = "flynt-1.0.1-py3-none-any.whl", hash = "sha256:65d1c546434827275123222a98408e9561bcd67db832dd58f530ff17b8329ec1"},
+    {file = "flynt-1.0.1.tar.gz", hash = "sha256:988aac00672a5469726cc0a17cef7d1178c284a9fe8563458db2475d0aaed965"},
 ]
 
 [package.dependencies]
