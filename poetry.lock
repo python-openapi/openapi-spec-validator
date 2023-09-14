@@ -1142,13 +1142,13 @@ testing = ["covdefaults (>=2.3)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytes
 
 [[package]]
 name = "pytest"
-version = "7.4.1"
+version = "7.4.2"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.4.1-py3-none-any.whl", hash = "sha256:460c9a59b14e27c602eb5ece2e47bec99dc5fc5f6513cf924a7d03a578991b1f"},
-    {file = "pytest-7.4.1.tar.gz", hash = "sha256:2f2301e797521b23e4d2585a0a3d7b5e50fdddaaf7e7d6773ea26ddb17c213ab"},
+    {file = "pytest-7.4.2-py3-none-any.whl", hash = "sha256:1d881c6124e08ff0a1bb75ba3ec0bfd8b5354a01c194ddd5a0a870a48d99b002"},
+    {file = "pytest-7.4.2.tar.gz", hash = "sha256:a766259cfab564a2ad52cb1aae1b881a75c3eb7e34ca3779697c23ed47c47069"},
 ]
 
 [package.dependencies]
@@ -1707,4 +1707,4 @@ docs = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "e25e37091de4313600f424b66e0e8440a032c2423c5edb4ec9cf48e45059558c"
+content-hash = "e0623333a7a6038f4ee596a1ffafd2b863f3002853ea1325ac5ae0e28d754a65"
