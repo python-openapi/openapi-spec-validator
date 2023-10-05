@@ -1,0 +1,42 @@
+openapi: "3.0.0"
+info:
+  title: Specification Containing readOnly
+  version: "0.1"
+paths:
+  /users:
+    post:
+        operationId: createUser
+        requestBody:
+          description: Post data for creating a user
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        responses:
+          default:
+            description: Create a user
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+components:
+  schemas:
+    User:
+      x-model: User
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int32
+          readOnly: true
+          default: 1
+        name:
+          type: string
+        hidden:
+          type: boolean
+          writeOnly: true
+          default: true
