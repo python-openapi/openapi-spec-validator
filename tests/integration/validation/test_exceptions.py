@@ -1,3 +1,5 @@
+from openapi_spec_validator import OpenAPIV2SpecValidator
+from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation.exceptions import (
     DuplicateOperationIDError,
 )
@@ -9,10 +11,10 @@ from openapi_spec_validator.validation.exceptions import (
 
 
 class TestSpecValidatorIterErrors:
-    def test_empty(self, validator_v30):
+    def test_empty(self):
         spec = {}
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
@@ -22,20 +24,20 @@ class TestSpecValidatorIterErrors:
         assert errors_list[2].__class__ == OpenAPIValidationError
         assert errors_list[2].message == "'paths' is a required property"
 
-    def test_info_empty(self, validator_v30):
+    def test_info_empty(self):
         spec = {
             "openapi": "3.0.0",
             "info": {},
             "paths": {},
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
         assert errors_list[0].message == "'title' is a required property"
 
-    def test_minimalistic(self, validator_v30):
+    def test_minimalistic(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -45,12 +47,12 @@ class TestSpecValidatorIterErrors:
             "paths": {},
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_same_parameters_names(self, validator_v30):
+    def test_same_parameters_names(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -80,12 +82,12 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_same_operation_ids(self, validator_v30):
+    def test_same_operation_ids(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -124,14 +126,14 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert len(errors_list) == 2
         assert errors_list[0].__class__ == DuplicateOperationIDError
         assert errors_list[1].__class__ == DuplicateOperationIDError
 
-    def test_allow_allof_required_no_properties(self, validator_v30):
+    def test_allow_allof_required_no_properties(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -157,13 +159,11 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_allow_allof_when_required_is_linked_to_the_parent_object(
-        self, validator_v30
-    ):
+    def test_allow_allof_when_required_is_linked_to_the_parent_object(self):
         spec = {
             "openapi": "3.0.1",
             "info": {
@@ -198,11 +198,11 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_extra_parameters_in_required(self, validator_v30):
+    def test_extra_parameters_in_required(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -222,7 +222,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == ExtraParametersError
@@ -230,7 +230,7 @@ class TestSpecValidatorIterErrors:
             "Required list has not defined properties: ['testparam1']"
         )
 
-    def test_undocumented_parameter(self, validator_v30):
+    def test_undocumented_parameter(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -260,7 +260,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == UnresolvableParameterError
@@ -269,7 +269,7 @@ class TestSpecValidatorIterErrors:
             "'/test/{param1}/{param2}' was not resolved"
         )
 
-    def test_default_value_wrong_type(self, validator_v30):
+    def test_default_value_wrong_type(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -287,7 +287,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert len(errors_list) == 1
@@ -296,7 +296,7 @@ class TestSpecValidatorIterErrors:
             "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_wrong_type(self, validator_v30):
+    def test_parameter_default_value_wrong_type(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -327,7 +327,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert len(errors_list) == 1
@@ -336,7 +336,7 @@ class TestSpecValidatorIterErrors:
             "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_wrong_type_swagger(self, validator_v2):
+    def test_parameter_default_value_wrong_type_swagger(self):
         spec = {
             "swagger": "2.0",
             "info": {
@@ -365,7 +365,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v2.iter_errors(spec)
+        errors = OpenAPIV2SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert len(errors_list) == 1
@@ -374,7 +374,7 @@ class TestSpecValidatorIterErrors:
             "'invaldtype' is not of type 'integer'"
         )
 
-    def test_parameter_default_value_with_reference(self, validator_v30):
+    def test_parameter_default_value_with_reference(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -415,12 +415,12 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_parameter_custom_format_checker_not_found(self, validator_v30):
+    def test_parameter_custom_format_checker_not_found(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -451,14 +451,12 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_parameter_default_value_custom_format_invalid(
-        self, validator_v30
-    ):
+    def test_parameter_default_value_custom_format_invalid(self):
         from openapi_schema_validator import oas30_format_checker
 
         @oas30_format_checker.checks("custom")
@@ -495,7 +493,7 @@ class TestSpecValidatorIterErrors:
             },
         }
 
-        errors = validator_v30.iter_errors(spec)
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
         assert len(errors_list) == 1

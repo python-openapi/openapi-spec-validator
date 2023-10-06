@@ -36,22 +36,22 @@ You can also validate spec from url:
 
 In order to explicitly validate a:
 
-* Swagger / OpenAPI 2.0 spec, import ``openapi_v2_spec_validator``
-* OpenAPI 3.0 spec, import ``openapi_v30_spec_validator`` 
-* OpenAPI 3.1 spec, import ``openapi_v31_spec_validator`` 
+* Swagger / OpenAPI 2.0 spec, import ``OpenAPIV2SpecValidator``
+* OpenAPI 3.0 spec, import ``OpenAPIV30SpecValidator`` 
+* OpenAPI 3.1 spec, import ``OpenAPIV31SpecValidator`` 
 
-and pass the validator to ``validate_spec`` or ``validate_spec_url`` function:
+and pass the validator class to ``validate_spec`` or ``validate_spec_url`` function:
 
 .. code:: python
 
-    validate_spec(spec_dict, validator=openapi_v31_spec_validator)
+    validate_spec(spec_dict, cls=OpenAPIV31SpecValidator)
 
-You can also explicitly import ``openapi_v3_spec_validator`` which is a shortcut to the latest v3 release.
+You can also explicitly import ``OpenAPIV3SpecValidator`` which is a shortcut to the latest v3 release.
 
 If you want to iterate through validation errors:
 
 .. code:: python
 
-    from openapi_spec_validator import openapi_v3_spec_validator
+    from openapi_spec_validator import OpenAPIV31SpecValidator
 
-    errors_iterator = openapi_v3_spec_validator.iter_errors(spec)
+    errors_iterator = OpenAPIV31SpecValidator(spec).iter_errors()

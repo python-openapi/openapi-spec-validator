@@ -6,10 +6,6 @@ import pytest
 from jsonschema_spec.handlers.file import FilePathHandler
 from jsonschema_spec.handlers.urllib import UrllibHandler
 
-from openapi_spec_validator import openapi_v2_spec_validator
-from openapi_spec_validator import openapi_v30_spec_validator
-from openapi_spec_validator import openapi_v31_spec_validator
-
 
 def spec_file_url(spec_file, schema="file"):
     directory = path.abspath(path.dirname(__file__))
@@ -40,18 +36,3 @@ def factory():
         spec_from_file=spec_from_file,
         spec_from_url=spec_from_url,
     )
-
-
-@pytest.fixture
-def validator_v2():
-    return openapi_v2_spec_validator
-
-
-@pytest.fixture
-def validator_v30():
-    return openapi_v30_spec_validator
-
-
-@pytest.fixture
-def validator_v31():
-    return openapi_v31_spec_validator

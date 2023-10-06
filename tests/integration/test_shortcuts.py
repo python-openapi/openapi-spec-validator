@@ -1,5 +1,7 @@
 import pytest
 
+from openapi_spec_validator import OpenAPIV2SpecValidator
+from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
 from openapi_spec_validator import validate_spec
@@ -40,10 +42,11 @@ class TestLiocalValidatev2Spec:
     def test_valid(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
-        spec_url = factory.spec_file_url(spec_path)
 
         validate_spec(spec)
-        validate_spec(spec, validator=openapi_v2_spec_validator)
+        validate_spec(spec, cls=OpenAPIV2SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec(spec, validator=openapi_v2_spec_validator)
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -56,7 +59,10 @@ class TestLiocalValidatev2Spec:
         spec = factory.spec_from_file(spec_path)
 
         with pytest.raises(OpenAPIValidationError):
-            validate_spec(spec, validator=openapi_v2_spec_validator)
+            validate_spec(spec, cls=OpenAPIV2SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            with pytest.raises(OpenAPIValidationError):
+                validate_spec(spec, validator=openapi_v2_spec_validator)
 
 
 class TestLocalValidatev30Spec:
@@ -78,7 +84,9 @@ class TestLocalValidatev30Spec:
 
         validate_spec(spec)
         validate_spec(spec, spec_url=spec_url)
-        validate_spec(spec, validator=openapi_v30_spec_validator)
+        validate_spec(spec, cls=OpenAPIV30SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec(spec, validator=openapi_v30_spec_validator)
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -91,7 +99,10 @@ class TestLocalValidatev30Spec:
         spec = factory.spec_from_file(spec_path)
 
         with pytest.raises(OpenAPIValidationError):
-            validate_spec(spec, validator=openapi_v30_spec_validator)
+            validate_spec(spec, cls=OpenAPIV30SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            with pytest.raises(OpenAPIValidationError):
+                validate_spec(spec, validator=openapi_v30_spec_validator)
 
 
 @pytest.mark.network
@@ -118,7 +129,9 @@ class TestRemoteValidatev2SpecUrl:
         spec_url = self.remote_test_suite_file_path(spec_file)
 
         validate_spec_url(spec_url)
-        validate_spec_url(spec_url, validator=openapi_v2_spec_validator)
+        validate_spec_url(spec_url, cls=OpenAPIV2SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec_url(spec_url, validator=openapi_v2_spec_validator)
 
 
 @pytest.mark.network
@@ -145,4 +158,6 @@ class TestRemoteValidatev30SpecUrl:
         spec_url = self.remote_test_suite_file_path(spec_file)
 
         validate_spec_url(spec_url)
-        validate_spec_url(spec_url, validator=openapi_v30_spec_validator)
+        validate_spec_url(spec_url, cls=OpenAPIV30SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec_url(spec_url, validator=openapi_v30_spec_validator)

@@ -1,6 +1,9 @@
 import pytest
 from referencing.exceptions import Unresolvable
 
+from openapi_spec_validator import OpenAPIV2SpecValidator
+from openapi_spec_validator import OpenAPIV30SpecValidator
+from openapi_spec_validator import OpenAPIV31SpecValidator
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
@@ -16,12 +19,15 @@ class TestLocalOpenAPIv2Validator:
             "petstore.yaml",
         ],
     )
-    def test_valid(self, factory, validator_v2, spec_file):
+    def test_valid(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
+        validator = OpenAPIV2SpecValidator(spec, base_uri=spec_url)
 
-        return validator_v2.validate(spec, spec_url=spec_url)
+        validator.validate()
+
+        assert validator.is_valid() == True
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -29,13 +35,16 @@ class TestLocalOpenAPIv2Validator:
             "empty.yaml",
         ],
     )
-    def test_validation_failed(self, factory, validator_v2, spec_file):
+    def test_validation_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
+        validator = OpenAPIV2SpecValidator(spec, base_uri=spec_url)
 
         with pytest.raises(OpenAPIValidationError):
-            validator_v2.validate(spec, spec_url=spec_url)
+            validator.validate()
+
+        assert validator.is_valid() == False
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -43,13 +52,13 @@ class TestLocalOpenAPIv2Validator:
             "missing-reference.yaml",
         ],
     )
-    def test_ref_failed(self, factory, validator_v2, spec_file):
+    def test_ref_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
         with pytest.raises(Unresolvable):
-            validator_v2.validate(spec, spec_url=spec_url)
+            OpenAPIV2SpecValidator(spec, base_uri=spec_url).validate()
 
 
 class TestLocalOpenAPIv30Validator:
@@ -68,12 +77,15 @@ class TestLocalOpenAPIv30Validator:
             "read-only-write-only.yaml",
         ],
     )
-    def test_valid(self, factory, validator_v30, spec_file):
+    def test_valid(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
+        validator = OpenAPIV30SpecValidator(spec, base_uri=spec_url)
 
-        return validator_v30.validate(spec, spec_url=spec_url)
+        validator.validate()
+
+        assert validator.is_valid() == True
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -81,13 +93,16 @@ class TestLocalOpenAPIv30Validator:
             "empty.yaml",
         ],
     )
-    def test_failed(self, factory, validator_v30, spec_file):
+    def test_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
+        validator = OpenAPIV30SpecValidator(spec, base_uri=spec_url)
 
         with pytest.raises(OpenAPIValidationError):
-            validator_v30.validate(spec, spec_url=spec_url)
+            validator.validate()
+
+        assert validator.is_valid() == False
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -95,13 +110,13 @@ class TestLocalOpenAPIv30Validator:
             "property-missing-reference.yaml",
         ],
     )
-    def test_ref_failed(self, factory, validator_v30, spec_file):
+    def test_ref_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
         with pytest.raises(Unresolvable):
-            validator_v30.validate(spec, spec_url=spec_url)
+            OpenAPIV30SpecValidator(spec, base_uri=spec_url).validate()
 
 
 @pytest.mark.network
@@ -124,11 +139,11 @@ class TestRemoteOpenAPIv30Validator:
             "api-with-examples.yaml",
         ],
     )
-    def test_valid(self, factory, validator_v30, spec_file):
+    def test_valid(self, factory, spec_file):
         spec_url = self.remote_test_suite_file_path(spec_file)
         spec = factory.spec_from_url(spec_url)
 
-        return validator_v30.validate(spec, spec_url=spec_url)
+        OpenAPIV30SpecValidator(spec, base_uri=spec_url).validate()
 
 
 @pytest.mark.network
@@ -159,13 +174,13 @@ class TestRemoteOpenAPIv31Validator:
             "valid_schema_types.yaml",
         ],
     )
-    def test_valid(self, factory, validator_v31, spec_file):
+    def test_valid(self, factory, spec_file):
         spec_url = self.remote_test_suite_file_path(
             f"tests/v3.1/pass/{spec_file}"
         )
         spec = factory.spec_from_url(spec_url)
 
-        return validator_v31.validate(spec, spec_url=spec_url)
+        OpenAPIV31SpecValidator(spec, base_uri=spec_url).validate()
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -177,11 +192,11 @@ class TestRemoteOpenAPIv31Validator:
             "unknown_container.yaml",
         ],
     )
-    def test_failed(self, factory, validator_v31, spec_file):
+    def test_failed(self, factory, spec_file):
         spec_url = self.remote_test_suite_file_path(
             f"tests/v3.1/fail/{spec_file}"
         )
         spec = factory.spec_from_url(spec_url)
 
         with pytest.raises(OpenAPIValidationError):
-            validator_v31.validate(spec, spec_url=spec_url)
+            OpenAPIV31SpecValidator(spec, base_uri=spec_url).validate()
