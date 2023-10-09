@@ -37,3 +37,10 @@ repos:
         language: system
         require_serial: true
         types: [python]
+
+      - id: pyflakes
+        name: pyflakes
+        entry: pyflakes
+        language: system
+        require_serial: true
+        types: [python]
