@@ -1,2 +1,6 @@
-class OpenAPISpecValidatorError(Exception):
+class OpenAPIError(Exception):
+    pass
+
+
+class OpenAPISpecValidatorError(OpenAPIError):
     pass

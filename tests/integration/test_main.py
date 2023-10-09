@@ -150,7 +150,7 @@ def test_validation_error(capsys):
 
 
 @mock.patch(
-    "openapi_spec_validator.__main__.openapi_v30_spec_validator.validate",
+    "openapi_spec_validator.__main__.OpenAPIV30SpecValidator.validate",
     side_effect=Exception,
 )
 def test_unknown_error(m_validate, capsys):

@@ -9,10 +9,10 @@ from jsonschema.exceptions import best_match
 
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
-from openapi_spec_validator.validation import openapi_spec_validator_proxy
-from openapi_spec_validator.validation import openapi_v2_spec_validator
-from openapi_spec_validator.validation import openapi_v30_spec_validator
-from openapi_spec_validator.validation import openapi_v31_spec_validator
+from openapi_spec_validator.shortcuts import get_validator_cls
+from openapi_spec_validator.validation import OpenAPIV2SpecValidator
+from openapi_spec_validator.validation import OpenAPIV30SpecValidator
+from openapi_spec_validator.validation import OpenAPIV31SpecValidator
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -91,19 +91,22 @@ def main(args: Optional[Sequence[str]] = None) -> None:
 
         # choose the validator
         validators = {
-            "detect": openapi_spec_validator_proxy,
-            "2.0": openapi_v2_spec_validator,
-            "3.0": openapi_v30_spec_validator,
-            "3.1": openapi_v31_spec_validator,
+            "2.0": OpenAPIV2SpecValidator,
+            "3.0": OpenAPIV30SpecValidator,
+            "3.1": OpenAPIV31SpecValidator,
             # backward compatibility
-            "3.0.0": openapi_v30_spec_validator,
-            "3.1.0": openapi_v31_spec_validator,
+            "3.0.0": OpenAPIV30SpecValidator,
+            "3.1.0": OpenAPIV31SpecValidator,
         }
-        validator = validators[args_parsed.schema]
+        if args_parsed.schema == "detect":
+            validator_cls = get_validator_cls(spec)
+        else:
+            validator_cls = validators[args_parsed.schema]
 
+        validator = validator_cls(spec, base_uri=base_uri)
         # validate
         try:
-            validator.validate(spec, base_uri=base_uri)
+            validator.validate()
         except ValidationError as exc:
             print_validationerror(filename, exc, args_parsed.errors)
             sys.exit(1)

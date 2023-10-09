@@ -1,352 +1,153 @@
 """OpenAPI spec validator validation validators module."""
 import logging
-import string
 import warnings
-from typing import Any
+from functools import lru_cache
 from typing import Iterator
 from typing import List
+from typing import Mapping
 from typing import Optional
 from typing import Type
+from typing import cast
 
-from jsonschema._format import FormatChecker
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 from jsonschema_spec.handlers import default_handlers
 from jsonschema_spec.paths import SchemaPath
-from jsonschema_spec.typing import ResolverHandlers
 from jsonschema_spec.typing import Schema
 
-from openapi_spec_validator.validation.decorators import ValidationErrorWrapper
-from openapi_spec_validator.validation.exceptions import (
-    DuplicateOperationIDError,
-)
-from openapi_spec_validator.validation.exceptions import ExtraParametersError
-from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
-from openapi_spec_validator.validation.exceptions import (
-    ParameterDuplicateError,
-)
-from openapi_spec_validator.validation.exceptions import (
-    UnresolvableParameterError,
+from openapi_spec_validator.schemas import openapi_v2_schema_validator
+from openapi_spec_validator.schemas import openapi_v30_schema_validator
+from openapi_spec_validator.schemas import openapi_v31_schema_validator
+from openapi_spec_validator.validation import keywords
+from openapi_spec_validator.validation.decorators import unwraps_iter
+from openapi_spec_validator.validation.decorators import wraps_cached_iter
+from openapi_spec_validator.validation.decorators import wraps_errors
+from openapi_spec_validator.validation.registries import (
+    KeywordValidatorRegistry,
 )
 
 log = logging.getLogger(__name__)
 
-wraps_errors = ValidationErrorWrapper(OpenAPIValidationError)
-
 
 class SpecValidator:
-    OPERATIONS = [
-        "get",
-        "put",
-        "post",
-        "delete",
-        "options",
-        "head",
-        "patch",
-        "trace",
-    ]
+    resolver_handlers = default_handlers
+    keyword_validators: Mapping[str, Type[keywords.KeywordValidator]] = {
+        "__root__": keywords.RootValidator,
+    }
+    root_keywords: List[str] = []
+    schema_validator: Validator = NotImplemented
 
     def __init__(
-        self,
-        schema_validator: Validator,
-        value_validator_class: Type[Validator],
-        value_validator_format_checker: FormatChecker,
-        resolver_handlers: ResolverHandlers = default_handlers,
-    ):
-        self.schema_validator = schema_validator
-        self.value_validator_class = value_validator_class
-        self.value_validator_format_checker = value_validator_format_checker
-        self.resolver_handlers = resolver_handlers
-
-        self.operation_ids_registry: Optional[List[str]] = None
-        self.schema_ids_registry: Optional[List[int]] = None
-
-    def validate(
         self,
         schema: Schema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
     ) -> None:
-        for err in self.iter_errors(
-            schema,
-            base_uri=base_uri,
-            spec_url=spec_url,
-        ):
-            raise err
-
-    def is_valid(self, schema: Schema) -> bool:
-        error = next(self.iter_errors(schema), None)
-        return error is None
-
-    @wraps_errors
-    def iter_errors(
-        self,
-        schema: Schema,
-        base_uri: str = "",
-        spec_url: Optional[str] = None,
-    ) -> Iterator[ValidationError]:
+        self.schema = schema
         if spec_url is not None:
             warnings.warn(
                 "spec_url parameter is deprecated. " "Use base_uri instead.",
                 DeprecationWarning,
             )
             base_uri = spec_url
+        self.base_uri = base_uri
 
-        self.operation_ids_registry = []
-        self.schema_ids_registry = []
-
-        yield from self.schema_validator.iter_errors(schema)
-
-        spec = SchemaPath.from_dict(
-            schema,
-            base_uri=base_uri,
+        self.spec = SchemaPath.from_dict(
+            self.schema,
+            base_uri=self.base_uri,
             handlers=self.resolver_handlers,
         )
-        if "paths" in spec:
-            paths = spec / "paths"
-            yield from self._iter_paths_errors(paths)
 
-        if "components" in spec:
-            components = spec / "components"
-            yield from self._iter_components_errors(components)
+        self.keyword_validators_registry = KeywordValidatorRegistry(
+            self.keyword_validators
+        )
 
-    def _iter_paths_errors(
-        self, paths: SchemaPath
-    ) -> Iterator[ValidationError]:
-        for url, path_item in paths.items():
-            yield from self._iter_path_errors(url, path_item)
+    def validate(self) -> None:
+        for err in self.iter_errors():
+            raise err
 
-    def _iter_path_errors(
-        self, url: str, path_item: SchemaPath
-    ) -> Iterator[ValidationError]:
-        parameters = None
-        if "parameters" in path_item:
-            parameters = path_item / "parameters"
-            yield from self._iter_parameters_errors(parameters)
+    def is_valid(self) -> bool:
+        error = next(self.iter_errors(), None)
+        return error is None
 
-        for field_name, operation in path_item.items():
-            if field_name not in self.OPERATIONS:
-                continue
+    @property
+    def root_validator(self) -> keywords.RootValidator:
+        return cast(
+            keywords.RootValidator,
+            self.keyword_validators_registry["__root__"],
+        )
 
-            yield from self._iter_operation_errors(
-                url, field_name, operation, parameters
-            )
+    @unwraps_iter
+    @lru_cache(maxsize=None)
+    @wraps_cached_iter
+    @wraps_errors
+    def iter_errors(self) -> Iterator[ValidationError]:
+        yield from self.schema_validator.iter_errors(self.schema)
 
-    def _iter_operation_errors(
-        self,
-        url: str,
-        name: str,
-        operation: SchemaPath,
-        path_parameters: Optional[SchemaPath],
-    ) -> Iterator[ValidationError]:
-        assert self.operation_ids_registry is not None
+        spec = SchemaPath.from_dict(
+            self.schema,
+            base_uri=self.base_uri,
+            handlers=self.resolver_handlers,
+        )
+        yield from self.root_validator(spec)
 
-        operation_id = operation.getkey("operationId")
-        if (
-            operation_id is not None
-            and operation_id in self.operation_ids_registry
-        ):
-            yield DuplicateOperationIDError(
-                f"Operation ID '{operation_id}' for '{name}' in '{url}' is not unique"
-            )
-        self.operation_ids_registry.append(operation_id)
 
-        if "responses" in operation:
-            responses = operation / "responses"
-            yield from self._iter_responses_errors(responses)
+class OpenAPIV2SpecValidator(SpecValidator):
+    schema_validator = openapi_v2_schema_validator
+    keyword_validators = {
+        "__root__": keywords.RootValidator,
+        "components": keywords.ComponentsValidator,
+        "default": keywords.OpenAPIV30ValueValidator,
+        "operation": keywords.OperationValidator,
+        "parameter": keywords.OpenAPIV2ParameterValidator,
+        "parameters": keywords.ParametersValidator,
+        "paths": keywords.PathsValidator,
+        "path": keywords.PathValidator,
+        "response": keywords.OpenAPIV2ResponseValidator,
+        "responses": keywords.ResponsesValidator,
+        "schema": keywords.SchemaValidator,
+        "schemas": keywords.SchemasValidator,
+    }
+    root_keywords = ["paths", "components"]
 
-        names = []
 
-        parameters = None
-        if "parameters" in operation:
-            parameters = operation / "parameters"
-            yield from self._iter_parameters_errors(parameters)
-            names += list(self._get_path_param_names(parameters))
+class OpenAPIV30SpecValidator(SpecValidator):
+    schema_validator = openapi_v30_schema_validator
+    keyword_validators = {
+        "__root__": keywords.RootValidator,
+        "components": keywords.ComponentsValidator,
+        "content": keywords.ContentValidator,
+        "default": keywords.OpenAPIV30ValueValidator,
+        "mediaType": keywords.MediaTypeValidator,
+        "operation": keywords.OperationValidator,
+        "parameter": keywords.ParameterValidator,
+        "parameters": keywords.ParametersValidator,
+        "paths": keywords.PathsValidator,
+        "path": keywords.PathValidator,
+        "response": keywords.OpenAPIV3ResponseValidator,
+        "responses": keywords.ResponsesValidator,
+        "schema": keywords.SchemaValidator,
+        "schemas": keywords.SchemasValidator,
+    }
+    root_keywords = ["paths", "components"]
 
-        if path_parameters is not None:
-            names += list(self._get_path_param_names(path_parameters))
 
-        all_params = list(set(names))
-
-        for path in self._get_path_params_from_url(url):
-            if path not in all_params:
-                yield UnresolvableParameterError(
-                    "Path parameter '{}' for '{}' operation in '{}' "
-                    "was not resolved".format(path, name, url)
-                )
-        return
-
-    def _iter_responses_errors(
-        self, responses: SchemaPath
-    ) -> Iterator[ValidationError]:
-        for response_code, response in responses.items():
-            yield from self._iter_response_errors(response_code, response)
-
-    def _iter_response_errors(
-        self, response_code: str, response: SchemaPath
-    ) -> Iterator[ValidationError]:
-        # openapi 2
-        if "schema" in response:
-            schema = response / "schema"
-            yield from self._iter_schema_errors(schema)
-        # openapi 3
-        if "content" in response:
-            content = response / "content"
-            yield from self._iter_content_errors(content)
-
-    def _iter_content_errors(
-        self, content: SchemaPath
-    ) -> Iterator[ValidationError]:
-        for mimetype, media_type in content.items():
-            yield from self._iter_media_type_errors(mimetype, media_type)
-
-    def _iter_media_type_errors(
-        self, mimetype: str, media_type: SchemaPath
-    ) -> Iterator[ValidationError]:
-        if "schema" in media_type:
-            schema = media_type / "schema"
-            yield from self._iter_schema_errors(schema)
-
-    def _get_path_param_names(self, params: SchemaPath) -> Iterator[str]:
-        for param in params:
-            if param["in"] == "path":
-                yield param["name"]
-
-    def _get_path_params_from_url(self, url: str) -> Iterator[str]:
-        formatter = string.Formatter()
-        path_params = [item[1] for item in formatter.parse(url)]
-        return filter(None, path_params)
-
-    def _iter_parameters_errors(
-        self, parameters: SchemaPath
-    ) -> Iterator[ValidationError]:
-        seen = set()
-        for parameter in parameters:
-            yield from self._iter_parameter_errors(parameter)
-
-            key = (parameter["name"], parameter["in"])
-            if key in seen:
-                yield ParameterDuplicateError(
-                    f"Duplicate parameter `{parameter['name']}`"
-                )
-            seen.add(key)
-
-    def _iter_parameter_errors(
-        self, parameter: SchemaPath
-    ) -> Iterator[ValidationError]:
-        if "schema" in parameter:
-            schema = parameter / "schema"
-            yield from self._iter_schema_errors(schema)
-
-        if "default" in parameter:
-            # only possible in swagger 2.0
-            default = parameter.getkey("default")
-            if default is not None:
-                yield from self._iter_value_errors(parameter, default)
-
-    def _iter_value_errors(
-        self, schema: SchemaPath, value: Any
-    ) -> Iterator[ValidationError]:
-        with schema.resolve() as resolved:
-            validator = self.value_validator_class(
-                resolved.contents,
-                _resolver=resolved.resolver,
-                format_checker=self.value_validator_format_checker,
-            )
-            yield from validator.iter_errors(value)
-
-    def _iter_schema_errors(
-        self, schema: SchemaPath, require_properties: bool = True
-    ) -> Iterator[ValidationError]:
-        if not hasattr(schema.content(), "__getitem__"):
-            return
-
-        assert self.schema_ids_registry is not None
-        schema_id = id(schema.content())
-        if schema_id in self.schema_ids_registry:
-            return
-        self.schema_ids_registry.append(schema_id)
-
-        nested_properties = []
-        if "allOf" in schema:
-            all_of = schema / "allOf"
-            for inner_schema in all_of:
-                yield from self._iter_schema_errors(
-                    inner_schema,
-                    require_properties=False,
-                )
-                if "properties" not in inner_schema:
-                    continue
-                inner_schema_props = inner_schema / "properties"
-                inner_schema_props_keys = inner_schema_props.keys()
-                nested_properties += list(inner_schema_props_keys)
-
-        if "anyOf" in schema:
-            any_of = schema / "anyOf"
-            for inner_schema in any_of:
-                yield from self._iter_schema_errors(
-                    inner_schema,
-                    require_properties=False,
-                )
-
-        if "oneOf" in schema:
-            one_of = schema / "oneOf"
-            for inner_schema in one_of:
-                yield from self._iter_schema_errors(
-                    inner_schema,
-                    require_properties=False,
-                )
-
-        if "not" in schema:
-            not_schema = schema / "not"
-            yield from self._iter_schema_errors(
-                not_schema,
-                require_properties=False,
-            )
-
-        if "items" in schema:
-            array_schema = schema / "items"
-            yield from self._iter_schema_errors(
-                array_schema,
-                require_properties=False,
-            )
-
-        if "properties" in schema:
-            props = schema / "properties"
-            for _, prop_schema in props.items():
-                yield from self._iter_schema_errors(
-                    prop_schema,
-                    require_properties=False,
-                )
-
-        required = schema.getkey("required", [])
-        properties = schema.get("properties", {}).keys()
-        if "allOf" in schema:
-            extra_properties = list(
-                set(required) - set(properties) - set(nested_properties)
-            )
-        else:
-            extra_properties = list(set(required) - set(properties))
-
-        if extra_properties and require_properties:
-            yield ExtraParametersError(
-                f"Required list has not defined properties: {extra_properties}"
-            )
-
-        if "default" in schema:
-            default = schema["default"]
-            nullable = schema.get("nullable", False)
-            if default is not None or nullable is not True:
-                yield from self._iter_value_errors(schema, default)
-
-    def _iter_components_errors(
-        self, components: SchemaPath
-    ) -> Iterator[ValidationError]:
-        schemas = components.get("schemas", {})
-        yield from self._iter_schemas_errors(schemas)
-
-    def _iter_schemas_errors(
-        self, schemas: SchemaPath
-    ) -> Iterator[ValidationError]:
-        for _, schema in schemas.items():
-            yield from self._iter_schema_errors(schema)
+class OpenAPIV31SpecValidator(SpecValidator):
+    schema_validator = openapi_v31_schema_validator
+    keyword_validators = {
+        "__root__": keywords.RootValidator,
+        "components": keywords.ComponentsValidator,
+        "content": keywords.ContentValidator,
+        "default": keywords.OpenAPIV31ValueValidator,
+        "mediaType": keywords.MediaTypeValidator,
+        "operation": keywords.OperationValidator,
+        "parameter": keywords.ParameterValidator,
+        "parameters": keywords.ParametersValidator,
+        "paths": keywords.PathsValidator,
+        "path": keywords.PathValidator,
+        "response": keywords.OpenAPIV3ResponseValidator,
+        "responses": keywords.ResponsesValidator,
+        "schema": keywords.SchemaValidator,
+        "schemas": keywords.SchemasValidator,
+    }
+    root_keywords = ["paths", "components"]
