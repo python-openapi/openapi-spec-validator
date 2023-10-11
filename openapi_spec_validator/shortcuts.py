@@ -10,21 +10,29 @@ from jsonschema_spec.typing import Schema
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
-from openapi_spec_validator.validation.finders import SpecFinder
-from openapi_spec_validator.validation.finders import SpecVersion
+from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 from openapi_spec_validator.validation.protocols import SupportsValidation
 from openapi_spec_validator.validation.types import SpecValidatorType
 from openapi_spec_validator.validation.validators import SpecValidator
+from openapi_spec_validator.versions import consts as versions
+from openapi_spec_validator.versions.datatypes import SpecVersion
+from openapi_spec_validator.versions.exceptions import OpenAPIVersionNotFound
+from openapi_spec_validator.versions.shortcuts import get_spec_version
 
-SPECS: Mapping[SpecVersion, SpecValidatorType] = {
-    SpecVersion("swagger", "2.0"): OpenAPIV2SpecValidator,
-    SpecVersion("openapi", "3.0"): OpenAPIV30SpecValidator,
-    SpecVersion("openapi", "3.1"): OpenAPIV31SpecValidator,
+SPEC2VALIDATOR: Mapping[SpecVersion, SpecValidatorType] = {
+    versions.OPENAPIV2: OpenAPIV2SpecValidator,
+    versions.OPENAPIV30: OpenAPIV30SpecValidator,
+    versions.OPENAPIV31: OpenAPIV31SpecValidator,
 }
 
 
 def get_validator_cls(spec: Schema) -> SpecValidatorType:
-    return SpecFinder(SPECS).find(spec)
+    try:
+        spec_version = get_spec_version(spec)
+    # backward compatibility
+    except OpenAPIVersionNotFound:
+        raise ValidatorDetectError
+    return SPEC2VALIDATOR[spec_version]
 
 
 def validate_spec(
