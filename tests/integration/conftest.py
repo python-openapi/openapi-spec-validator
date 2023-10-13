@@ -3,8 +3,8 @@ from pathlib import PurePath
 from urllib.parse import urlunparse
 
 import pytest
-from jsonschema_spec.handlers.file import FilePathHandler
-from jsonschema_spec.handlers.urllib import UrllibHandler
+from jsonschema_path.handlers.file import FilePathHandler
+from jsonschema_path.handlers.urllib import UrllibHandler
 
 
 def spec_file_url(spec_file, schema="file"):

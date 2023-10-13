@@ -13,7 +13,7 @@ else:
     from importlib_resources import as_file
     from importlib_resources import files
 
-from jsonschema_spec.readers import FilePathReader
+from jsonschema_path.readers import FilePathReader
 
 
 def get_schema(version: str) -> Tuple[Mapping[Hashable, Any], str]:

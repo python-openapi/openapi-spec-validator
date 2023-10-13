@@ -1,4 +1,4 @@
-from jsonschema_spec.typing import Schema
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator.versions.consts import VERSIONS
 from openapi_spec_validator.versions.datatypes import SpecVersion

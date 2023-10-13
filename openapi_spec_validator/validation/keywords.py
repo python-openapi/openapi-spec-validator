@@ -9,7 +9,7 @@ from typing import cast
 from jsonschema._format import FormatChecker
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
-from jsonschema_spec.paths import SchemaPath
+from jsonschema_path.paths import SchemaPath
 from openapi_schema_validator import oas30_format_checker
 from openapi_schema_validator import oas31_format_checker
 from openapi_schema_validator.validators import OAS30Validator
