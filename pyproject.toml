@@ -56,7 +56,7 @@ jsonschema = "^4.18.0"
 openapi-schema-validator = "^0.6.0"
 python = "^3.8.0"
 importlib-resources = {version = ">=5.8,<7.0", python = "<3.9" }
-jsonschema-path = "^0.3.0"
+jsonschema-path = "^0.3.1"
 lazy-object-proxy = "^1.7.1"
 
 [tool.poetry.extras]

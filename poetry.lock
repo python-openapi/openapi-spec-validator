@@ -613,13 +613,13 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-path"
-version = "0.3.0"
+version = "0.3.1"
 description = "JSONSchema Spec with object-oriented paths"
 optional = false
 python-versions = ">=3.8.0,<4.0.0"
 files = [
-    {file = "jsonschema_path-0.3.0-py3-none-any.whl", hash = "sha256:f165924e5f61e8d6633fdd5a620620b1c1271e81c7592286357e54e2ceeecf77"},
-    {file = "jsonschema_path-0.3.0.tar.gz", hash = "sha256:4b2791105ec16e47e5d89c0d08220d3049b9e6dd735fc2e07a0132f5d6b769c7"},
+    {file = "jsonschema_path-0.3.1-py3-none-any.whl", hash = "sha256:06f01b1848a28963f49a17730e11204d252aa6ff5db4ef84ec77e5ac93cfa831"},
+    {file = "jsonschema_path-0.3.1.tar.gz", hash = "sha256:07ea584b5c9b41a614b4d011c5575955676f48d0abbfd93d9ea8e933018d716d"},
 ]
 
 [package.dependencies]
@@ -1728,4 +1728,4 @@ docs = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "0933a35821428ee7eb09dd3d77c2762a283c6e5fec5786d4bedbdfddd26c621c"
+content-hash = "a438d6b1d1eba8ef9369a1a8808825ae640f0920b93aafec2406b710bf01bd03"
