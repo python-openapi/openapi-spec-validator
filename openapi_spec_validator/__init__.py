@@ -1,6 +1,8 @@
 """OpenAPI spec validator module."""
+from openapi_spec_validator.shortcuts import validate
 from openapi_spec_validator.shortcuts import validate_spec
 from openapi_spec_validator.shortcuts import validate_spec_url
+from openapi_spec_validator.shortcuts import validate_url
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV3SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
@@ -25,6 +27,8 @@ __all__ = [
     "OpenAPIV3SpecValidator",
     "OpenAPIV30SpecValidator",
     "OpenAPIV31SpecValidator",
+    "validate",
+    "validate_url",
     "validate_spec",
     "validate_spec_url",
 ]

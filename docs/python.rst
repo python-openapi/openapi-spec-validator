@@ -5,15 +5,15 @@ By default, OpenAPI spec version is detected. To validate spec:
 
 .. code:: python
 
-    from openapi_spec_validator import validate_spec
+    from openapi_spec_validator import validate
     from openapi_spec_validator.readers import read_from_filename
 
     spec_dict, base_uri = read_from_filename('openapi.yaml')
 
-    # If no exception is raised by validate_spec(), the spec is valid.
-    validate_spec(spec_dict)
+    # If no exception is raised by validate(), the spec is valid.
+    validate(spec_dict)
 
-    validate_spec({'openapi': '3.1.0'})
+    validate({'openapi': '3.1.0'})
 
     Traceback (most recent call last):
     ...
@@ -23,16 +23,16 @@ Add ``base_uri`` to validate spec with relative files:
 
 .. code:: python
 
-    validate_spec(spec_dict, base_uri='file:///path/to/spec/openapi.yaml')
+    validate(spec_dict, base_uri='file:///path/to/spec/openapi.yaml')
 
 You can also validate spec from url:
 
 .. code:: python
 
-    from openapi_spec_validator import validate_spec_url
+    from openapi_spec_validator import validate_url
 
-    # If no exception is raised by validate_spec_url(), the spec is valid.
-    validate_spec_url('http://example.com/openapi.json')
+    # If no exception is raised by validate_url(), the spec is valid.
+    validate_url('http://example.com/openapi.json')
 
 In order to explicitly validate a:
 
@@ -40,11 +40,11 @@ In order to explicitly validate a:
 * OpenAPI 3.0 spec, import ``OpenAPIV30SpecValidator`` 
 * OpenAPI 3.1 spec, import ``OpenAPIV31SpecValidator`` 
 
-and pass the validator class to ``validate_spec`` or ``validate_spec_url`` function:
+and pass the validator class to ``validate`` or ``validate_url`` function:
 
 .. code:: python
 
-    validate_spec(spec_dict, cls=OpenAPIV31SpecValidator)
+    validate(spec_dict, cls=OpenAPIV31SpecValidator)
 
 You can also explicitly import ``OpenAPIV3SpecValidator`` which is a shortcut to the latest v3 release.
 

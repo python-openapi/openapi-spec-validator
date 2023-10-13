@@ -4,6 +4,7 @@ from typing import Mapping
 from typing import Optional
 from typing import Type
 
+from jsonschema_path import SchemaPath
 from jsonschema_path.handlers import all_urls_handler
 from jsonschema_path.typing import Schema
 
@@ -35,6 +36,26 @@ def get_validator_cls(spec: Schema) -> SpecValidatorType:
     return SPEC2VALIDATOR[spec_version]
 
 
+def validate(
+    spec: Schema,
+    base_uri: str = "",
+    cls: Optional[SpecValidatorType] = None,
+) -> None:
+    if cls is None:
+        cls = get_validator_cls(spec)
+    sp = SchemaPath.from_dict(spec, base_uri=base_uri)
+    v = cls(sp)
+    return v.validate()
+
+
+def validate_url(
+    spec_url: str,
+    cls: Optional[Type[SpecValidator]] = None,
+) -> None:
+    spec = all_urls_handler(spec_url)
+    return validate(spec, base_uri=spec_url, cls=cls)
+
+
 def validate_spec(
     spec: Schema,
     base_uri: str = "",
@@ -42,6 +63,10 @@ def validate_spec(
     cls: Optional[SpecValidatorType] = None,
     spec_url: Optional[str] = None,
 ) -> None:
+    warnings.warn(
+        "validate_spec shortcut is deprecated. Use validate instead.",
+        DeprecationWarning,
+    )
     if validator is not None:
         warnings.warn(
             "validator parameter is deprecated. Use cls instead.",
@@ -59,5 +84,15 @@ def validate_spec_url(
     validator: Optional[SupportsValidation] = None,
     cls: Optional[Type[SpecValidator]] = None,
 ) -> None:
-    spec = all_urls_handler(spec_url)
-    return validate_spec(spec, base_uri=spec_url, validator=validator, cls=cls)
+    warnings.warn(
+        "validate_spec_url shortcut is deprecated. Use validate_url instead.",
+        DeprecationWarning,
+    )
+    if validator is not None:
+        warnings.warn(
+            "validator parameter is deprecated. Use cls instead.",
+            DeprecationWarning,
+        )
+        spec = all_urls_handler(spec_url)
+        return validator.validate(spec, base_uri=spec_url)
+    return validate_url(spec_url, cls=cls)

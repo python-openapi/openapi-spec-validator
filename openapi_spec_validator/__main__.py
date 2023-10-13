@@ -9,7 +9,7 @@ from jsonschema.exceptions import best_match
 
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
-from openapi_spec_validator.shortcuts import get_validator_cls
+from openapi_spec_validator.shortcuts import validate
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
@@ -91,6 +91,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
 
         # choose the validator
         validators = {
+            "detect": None,
             "2.0": OpenAPIV2SpecValidator,
             "3.0": OpenAPIV30SpecValidator,
             "3.1": OpenAPIV31SpecValidator,
@@ -98,15 +99,11 @@ def main(args: Optional[Sequence[str]] = None) -> None:
             "3.0.0": OpenAPIV30SpecValidator,
             "3.1.0": OpenAPIV31SpecValidator,
         }
-        if args_parsed.schema == "detect":
-            validator_cls = get_validator_cls(spec)
-        else:
-            validator_cls = validators[args_parsed.schema]
+        validator_cls = validators[args_parsed.schema]
 
-        validator = validator_cls(spec, base_uri=base_uri)
         # validate
         try:
-            validator.validate()
+            validate(spec, base_uri=base_uri, cls=validator_cls)
         except ValidationError as exc:
             print_validationerror(filename, exc, args_parsed.errors)
             sys.exit(1)
