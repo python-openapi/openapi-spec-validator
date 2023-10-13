@@ -1,7 +1,7 @@
 import pytest
+from jsonschema_path import SchemaPath
 from referencing.exceptions import Unresolvable
 
-from jsonschema_path import SchemaPath
 from openapi_spec_validator import OpenAPIV2SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import OpenAPIV31SpecValidator
