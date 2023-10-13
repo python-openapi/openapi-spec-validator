@@ -27,7 +27,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "openapi-spec-validator"
-version = "0.7.0"
+version = "0.7.1"
 description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3 spec validator"
 authors = ["Artur Maciag <maciag.artur@gmail.com>"]
 license = "Apache-2.0"
