@@ -4,8 +4,8 @@ from typing import Mapping
 from typing import Optional
 from typing import Type
 
-from jsonschema_spec.handlers import all_urls_handler
-from jsonschema_spec.typing import Schema
+from jsonschema_path.handlers import all_urls_handler
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator

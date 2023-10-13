@@ -8,7 +8,7 @@ from typing import Optional
 from typing import Tuple
 
 from jsonschema.exceptions import ValidationError
-from jsonschema_spec.typing import Schema
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError

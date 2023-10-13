@@ -11,9 +11,9 @@ from typing import cast
 
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
-from jsonschema_spec.handlers import default_handlers
-from jsonschema_spec.paths import SchemaPath
-from jsonschema_spec.typing import Schema
+from jsonschema_path.handlers import default_handlers
+from jsonschema_path.paths import SchemaPath
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator.schemas import openapi_v2_schema_validator
 from openapi_spec_validator.schemas import openapi_v30_schema_validator

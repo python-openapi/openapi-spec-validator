@@ -1,7 +1,7 @@
 from re import compile
 from typing import List
 
-from jsonschema_spec.typing import Schema
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator.versions.datatypes import SpecVersion
 from openapi_spec_validator.versions.exceptions import OpenAPIVersionNotFound
