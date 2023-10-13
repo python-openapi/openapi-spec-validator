@@ -1,6 +1,7 @@
 import pytest
 from referencing.exceptions import Unresolvable
 
+from jsonschema_path import SchemaPath
 from openapi_spec_validator import OpenAPIV2SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import OpenAPIV31SpecValidator
@@ -23,7 +24,11 @@ class TestLocalOpenAPIv2Validator:
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
-        validator = OpenAPIV2SpecValidator(spec, base_uri=spec_url)
+        schema_path = SchemaPath.from_dict(
+            spec,
+            base_uri=spec_url,
+        )
+        validator = OpenAPIV2SpecValidator(schema_path)
 
         validator.validate()
 

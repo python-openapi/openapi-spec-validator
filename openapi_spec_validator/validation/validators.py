@@ -18,6 +18,7 @@ from jsonschema_path.typing import Schema
 from openapi_spec_validator.schemas import openapi_v2_schema_validator
 from openapi_spec_validator.schemas import openapi_v30_schema_validator
 from openapi_spec_validator.schemas import openapi_v31_schema_validator
+from openapi_spec_validator.schemas.types import AnySchema
 from openapi_spec_validator.validation import keywords
 from openapi_spec_validator.validation.decorators import unwraps_iter
 from openapi_spec_validator.validation.decorators import wraps_cached_iter
@@ -39,11 +40,10 @@ class SpecValidator:
 
     def __init__(
         self,
-        schema: Schema,
+        schema: AnySchema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
     ) -> None:
-        self.schema = schema
         if spec_url is not None:
             warnings.warn(
                 "spec_url parameter is deprecated. " "Use base_uri instead.",
@@ -52,11 +52,16 @@ class SpecValidator:
             base_uri = spec_url
         self.base_uri = base_uri
 
-        self.spec = SchemaPath.from_dict(
-            self.schema,
-            base_uri=self.base_uri,
-            handlers=self.resolver_handlers,
-        )
+        if isinstance(schema, SchemaPath):
+            self.schema_path = schema
+            self.schema = schema.contents()
+        else:
+            self.schema = schema
+            self.schema_path = SchemaPath.from_dict(
+                self.schema,
+                base_uri=self.base_uri,
+                handlers=self.resolver_handlers,
+            )
 
         self.keyword_validators_registry = KeywordValidatorRegistry(
             self.keyword_validators
@@ -84,12 +89,7 @@ class SpecValidator:
     def iter_errors(self) -> Iterator[ValidationError]:
         yield from self.schema_validator.iter_errors(self.schema)
 
-        spec = SchemaPath.from_dict(
-            self.schema,
-            base_uri=self.base_uri,
-            handlers=self.resolver_handlers,
-        )
-        yield from self.root_validator(spec)
+        yield from self.root_validator(self.schema_path)
 
 
 class OpenAPIV2SpecValidator(SpecValidator):
