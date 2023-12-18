@@ -1509,13 +1509,13 @@ test = ["cython", "filelock", "html5lib", "pytest (>=4.6)"]
 
 [[package]]
 name = "sphinx-immaterial"
-version = "0.11.9"
+version = "0.11.10"
 description = "Adaptation of mkdocs-material theme for the Sphinx documentation system"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sphinx_immaterial-0.11.9-py3-none-any.whl", hash = "sha256:7f4f295fbcb0dc09251893743d2404e39abbd0e3f8bd61fcb81a8665fd11d0f2"},
-    {file = "sphinx_immaterial-0.11.9.tar.gz", hash = "sha256:9ee37b549ce44271181abf1a0532a560e3976052700f050523054cf89e77ffd5"},
+    {file = "sphinx_immaterial-0.11.10-py3-none-any.whl", hash = "sha256:be5058b2857b0797887c30f82b20ceb244f30f4847f018c96dade8cc533c1125"},
+    {file = "sphinx_immaterial-0.11.10.tar.gz", hash = "sha256:235381da410c1661219057864337eed92a284b40babccaa65c151688ceeafaa7"},
 ]
 
 [package.dependencies]
