@@ -64,7 +64,7 @@ docs = ["sphinx", "sphinx-immaterial"]
 
 [tool.poetry.dev-dependencies]
 pre-commit =  "*"
-pytest = "^7.4.3"
+pytest = "^8.0.0"
 pytest-flake8 = "=1.1.1"
 pytest-cov = "^4.1.0"
 tox = "*"
