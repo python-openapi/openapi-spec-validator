@@ -144,7 +144,7 @@ class SchemaValidator(KeywordValidator):
                 set(required) - set(properties) - set(nested_properties)
             )
         else:
-            extra_properties = list(set(required) - set(properties))
+            extra_properties = []
 
         if extra_properties and require_properties:
             yield ExtraParametersError(

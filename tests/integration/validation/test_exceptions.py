@@ -202,7 +202,7 @@ class TestSpecValidatorIterErrors:
         errors_list = list(errors)
         assert errors_list == []
 
-    def test_extra_parameters_in_required(self):
+    def test_allow_extra_parameters_in_required(self):
         spec = {
             "openapi": "3.0.0",
             "info": {
@@ -225,10 +225,7 @@ class TestSpecValidatorIterErrors:
         errors = OpenAPIV30SpecValidator(spec).iter_errors()
 
         errors_list = list(errors)
-        assert errors_list[0].__class__ == ExtraParametersError
-        assert errors_list[0].message == (
-            "Required list has not defined properties: ['testparam1']"
-        )
+        assert len(errors_list) == 0
 
     def test_undocumented_parameter(self):
         spec = {
