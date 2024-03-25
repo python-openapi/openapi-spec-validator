@@ -366,24 +366,26 @@ toml = ["tomli"]
 
 [[package]]
 name = "deptry"
-version = "0.14.0"
+version = "0.15.0"
 description = "A command line utility to check for unused, missing and transitive dependencies in a Python project."
 optional = false
-python-versions = ">=3.8, <4.0"
+python-versions = ">=3.8"
 files = [
-    {file = "deptry-0.14.0-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:951d40e40cca6b538d8b1992e9532c082757598c73249469d3f6f90cf3344c9f"},
-    {file = "deptry-0.14.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:59e0808507ffb57a0ce9b8c40ecda7b4a235a0627f00485d8e6104bf71dc99f8"},
-    {file = "deptry-0.14.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b5e6b7485c3ece10eb94b2787258282275687a101587c6f88f65a6eadc65c4a4"},
-    {file = "deptry-0.14.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9d5a8299b9627dc32352caf99c5e8fdff0227539ccbe1535a6145649b5caa394"},
-    {file = "deptry-0.14.0-cp38-abi3-win_amd64.whl", hash = "sha256:d55654025b567739a57f9b6b8467a21c65a30c21e834b2d8cb225618b320874c"},
-    {file = "deptry-0.14.0.tar.gz", hash = "sha256:3415c65c0734f6dfafa1321c77c1c9fafb6d6f88d0f8441e5b2cfb5b3b41f71b"},
+    {file = "deptry-0.15.0-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:8a0fa28239f404f89f5999cf384d64afb9f7ebadfc87ed833f084360958f0832"},
+    {file = "deptry-0.15.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:e0b37fe5f25036367b71276b1e1f1a368bf3e5c188e9131de90a61d04760fc88"},
+    {file = "deptry-0.15.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:05ebce4266b8a6d392d9df9cd336762c690362cbfbfb4673d29da1d9dff55d78"},
+    {file = "deptry-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be723b484cff8da1065fa76925d873bbc3b266c072c80ab97e96f3f82973c253"},
+    {file = "deptry-0.15.0-cp38-abi3-win_amd64.whl", hash = "sha256:0646ef872039df5d4c37ea4a04e79f9ce707de79ca45e1d326ef4608156c8592"},
+    {file = "deptry-0.15.0-pp310-pypy310_pp73-macosx_10_12_x86_64.whl", hash = "sha256:5117dbf35704674bcd14c690633a959f9b9342874c5af8214bf3ec26cb17dfd2"},
+    {file = "deptry-0.15.0-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:78342d6410958a5486885d43d82237505a1e6e987a00afa8b80841d530c98d86"},
+    {file = "deptry-0.15.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8372e9a632e58487e1500d784aaa5ab389ae863c645a98d2246abb6405deebc7"},
+    {file = "deptry-0.15.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:c55e39ce3ebe66d9f99e67e3611993a359db93ce955a5c8d83314307e6101c0e"},
+    {file = "deptry-0.15.0.tar.gz", hash = "sha256:f8e0eadfdb56446693dd3398786c0a6921ce7c9001f0e7268282da0c66c3d1ac"},
 ]
 
 [package.dependencies]
-chardet = ">=4.0.0"
 click = ">=8.0.0,<9"
 colorama = {version = ">=0.4.6", markers = "sys_platform == \"win32\""}
-pathspec = ">=0.9.0"
 tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 
 [[package]]
@@ -1735,4 +1737,4 @@ docs = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "1ccd167c9429ec62095ee8706077e26a5d925ab14a9cd248c315bb17bce73146"
+content-hash = "3dfcc19599979b70546ed96711374b0014cfdd2b9882bbcfe8fc8c50658b2030"
