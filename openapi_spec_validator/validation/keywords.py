@@ -73,6 +73,26 @@ class SchemaValidator(KeywordValidator):
     def default_validator(self) -> ValueValidator:
         return cast(ValueValidator, self.registry["default"])
 
+    def _collect_properties(self, schema) -> set[str]:
+        """Return *all* property names reachable from this schema."""
+        props: set[str] = set()
+
+        if "properties" in schema:
+            props.update((schema / "properties").keys())
+
+        for kw in ("allOf", "anyOf", "oneOf"):
+            if kw in schema:
+                for sub in schema / kw:
+                    props.update(self._collect_properties(sub))
+
+        if "items" in schema:
+            props.update(self._collect_properties(schema / "items"))
+
+        if "not" in schema:
+            props.update(self._collect_properties(schema / "not"))
+
+        return props
+
     def __call__(
         self, schema: SchemaPath, require_properties: bool = True
     ) -> Iterator[ValidationError]:
@@ -89,15 +109,9 @@ class SchemaValidator(KeywordValidator):
         if "allOf" in schema:
             all_of = schema / "allOf"
             for inner_schema in all_of:
-                yield from self(
-                    inner_schema,
-                    require_properties=False,
-                )
-                if "properties" not in inner_schema:
-                    continue
-                inner_schema_props = inner_schema / "properties"
-                inner_schema_props_keys = inner_schema_props.keys()
-                nested_properties += list(inner_schema_props_keys)
+                yield from self(inner_schema, require_properties=False)
+                nested_properties += list(self._collect_properties(inner_schema))
+
 
         if "anyOf" in schema:
             any_of = schema / "anyOf"
