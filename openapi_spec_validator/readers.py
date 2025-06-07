@@ -1,8 +1,8 @@
 import sys
+from collections.abc import Hashable
 from os import path
 from pathlib import Path
 from typing import Any
-from typing import Hashable
 from typing import Mapping
 from typing import Tuple
 

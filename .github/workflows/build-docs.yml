@@ -11,10 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.12
 
       - name: Get full Python version
         id: full-python-version
@@ -44,7 +44,7 @@ jobs:
         run: |
           poetry run python -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs docs/_build/html -n -W
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload docs as artifact
         with:
           name: docs-html
