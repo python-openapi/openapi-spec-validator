@@ -27,7 +27,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "openapi-spec-validator"
-version = "0.7.2"
+version = "0.8.0b1"
 description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3 spec validator"
 authors = ["Artur Maciag <maciag.artur@gmail.com>"]
 license = "Apache-2.0"
@@ -113,7 +113,7 @@ message_template = "Version {new_version}"
 tag_template = "{new_version}"
 
 [tool.tbump.version]
-current = "0.7.2"
+current = "0.8.0b1"
 regex = '''
   (?P<major>\d+)
   \.
