@@ -66,7 +66,7 @@ docs = ["sphinx", "sphinx-immaterial"]
 pre-commit =  "*"
 pytest = "^8.2.2"
 pytest-flake8 = "=1.1.1"
-pytest-cov = "^4.1.0"
+pytest-cov = "^6.1.1"
 tox = "*"
 mypy = "^1.10"
 isort = "^5.13.2"
