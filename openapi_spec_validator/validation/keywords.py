@@ -73,7 +73,7 @@ class SchemaValidator(KeywordValidator):
     def default_validator(self) -> ValueValidator:
         return cast(ValueValidator, self.registry["default"])
 
-    def _collect_properties(self, schema) -> set[str]:
+    def _collect_properties(self, schema: SchemaPath) -> set[str]:
         """Return *all* property names reachable from this schema."""
         props: set[str] = set()
 
