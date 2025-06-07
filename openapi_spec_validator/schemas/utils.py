@@ -1,17 +1,11 @@
 """OpenAIP spec validator schemas utils module."""
-import sys
+from collections.abc import Hashable
+from importlib.resources import as_file
+from importlib.resources import files
 from os import path
 from typing import Any
-from typing import Hashable
 from typing import Mapping
 from typing import Tuple
-
-if sys.version_info >= (3, 9):
-    from importlib.resources import as_file
-    from importlib.resources import files
-else:
-    from importlib_resources import as_file
-    from importlib_resources import files
 
 from jsonschema_path.readers import FilePathReader
 
