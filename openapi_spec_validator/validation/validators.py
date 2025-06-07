@@ -53,7 +53,7 @@ class SpecValidator:
 
         if isinstance(schema, SchemaPath):
             self.schema_path = schema
-            self.schema = schema.contents()
+            self.schema = schema.read_value()
         else:
             self.schema = schema
             self.schema_path = SchemaPath.from_dict(
