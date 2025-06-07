@@ -87,7 +87,7 @@ pre-commit hook
 
    repos:
    -   repo: https://github.com/python-openapi/openapi-spec-validator
-       rev: 0.5.5 # The version to use or 'master' for latest
+       rev: 0.7.2 # The version to use or 'master' for latest
        hooks:
        -   id: openapi-spec-validator
 

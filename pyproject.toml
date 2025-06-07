@@ -124,10 +124,19 @@ regex = '''
 '''
 
 [[tool.tbump.file]]
+src = "docs/index.rst"
+
+[[tool.tbump.file]]
+src = "docs/hook.rst"
+
+[[tool.tbump.file]]
 src = "openapi_spec_validator/__init__.py"
 
 [[tool.tbump.file]]
 src = "Dockerfile"
+
+[[tool.tbump.file]]
+src = "README.rst"
 
 [[tool.tbump.file]]
 src = "pyproject.toml"
