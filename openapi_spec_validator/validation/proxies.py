@@ -62,7 +62,7 @@ class DetectValidatorProxy:
     def __init__(self, choices: Mapping[Tuple[str, str], SpecValidatorProxy]):
         self.choices = choices
 
-    def detect(self, instance: Mapping[Hashable, Any]) -> SpecValidatorProxy:
+    def detect(self, instance: Schema) -> SpecValidatorProxy:
         for (key, value), validator in self.choices.items():
             if key in instance and instance[key].startswith(value):
                 return validator
@@ -70,7 +70,7 @@ class DetectValidatorProxy:
 
     def validate(
         self,
-        instance: Mapping[Hashable, Any],
+        instance: Schema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
     ) -> None:
@@ -80,14 +80,14 @@ class DetectValidatorProxy:
         ):
             raise err
 
-    def is_valid(self, instance: Mapping[Hashable, Any]) -> bool:
+    def is_valid(self, instance: Schema) -> bool:
         validator = self.detect(instance)
         error = next(validator.iter_errors(instance), None)
         return error is None
 
     def iter_errors(
         self,
-        instance: Mapping[Hashable, Any],
+        instance: Schema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
     ) -> Iterator[OpenAPIValidationError]:
