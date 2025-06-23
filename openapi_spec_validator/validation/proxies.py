@@ -1,12 +1,9 @@
 """OpenAPI spec validator validation proxies module."""
 
 import warnings
-from collections.abc import Hashable
 from collections.abc import Iterator
 from collections.abc import Mapping
-from typing import Any
 from typing import Optional
-from typing import Tuple
 
 from jsonschema.exceptions import ValidationError
 from jsonschema_path.typing import Schema

@@ -3,7 +3,6 @@
 import warnings
 from collections.abc import Mapping
 from typing import Optional
-from typing import Type
 
 from jsonschema_path import SchemaPath
 from jsonschema_path.handlers import all_urls_handler

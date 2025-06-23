@@ -1,7 +1,6 @@
 import sys
 from os import path
 from pathlib import Path
-from typing import Tuple
 
 from jsonschema_path.handlers import all_urls_handler
 from jsonschema_path.handlers import file_handler

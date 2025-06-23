@@ -1,5 +1,4 @@
 from re import compile
-from typing import List
 
 from jsonschema_path.typing import Schema
 

@@ -1,5 +1,3 @@
-from typing import List
-
 from openapi_spec_validator.versions.datatypes import SpecVersion
 
 OPENAPIV2 = SpecVersion(
