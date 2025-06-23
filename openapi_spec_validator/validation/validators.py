@@ -2,10 +2,10 @@
 
 import logging
 import warnings
-from functools import lru_cache
 from collections.abc import Iterator
-from typing import List
 from collections.abc import Mapping
+from functools import lru_cache
+from typing import List
 from typing import Optional
 from typing import Type
 from typing import cast

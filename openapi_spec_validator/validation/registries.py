@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import DefaultDict
 from collections.abc import Mapping
+from typing import DefaultDict
 from typing import Type
 
 from openapi_spec_validator.validation.keywords import KeywordValidator

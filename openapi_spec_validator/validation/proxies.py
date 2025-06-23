@@ -2,9 +2,9 @@
 
 import warnings
 from collections.abc import Hashable
-from typing import Any
 from collections.abc import Iterator
 from collections.abc import Mapping
+from typing import Any
 from typing import Optional
 from typing import Tuple
 
