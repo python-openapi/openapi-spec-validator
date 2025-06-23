@@ -2,8 +2,8 @@
 import warnings
 from collections.abc import Hashable
 from typing import Any
-from typing import Iterator
-from typing import Mapping
+from collections.abc import Iterator
+from collections.abc import Mapping
 from typing import Optional
 from typing import Tuple
 
@@ -59,7 +59,7 @@ class SpecValidatorProxy:
 
 
 class DetectValidatorProxy:
-    def __init__(self, choices: Mapping[Tuple[str, str], SpecValidatorProxy]):
+    def __init__(self, choices: Mapping[tuple[str, str], SpecValidatorProxy]):
         self.choices = choices
 
     def detect(self, instance: Schema) -> SpecValidatorProxy:

@@ -1,8 +1,8 @@
 import string
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Sequence
-from typing import Iterator
+from collections.abc import Sequence
+from collections.abc import Iterator
 from typing import List
 from typing import Optional
 from typing import cast
@@ -68,7 +68,7 @@ class SchemaValidator(KeywordValidator):
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
 
-        self.schema_ids_registry: Optional[List[int]] = []
+        self.schema_ids_registry: Optional[list[int]] = []
 
     @property
     def default_validator(self) -> ValueValidator:
@@ -305,7 +305,7 @@ class OperationValidator(KeywordValidator):
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
 
-        self.operation_ids_registry: Optional[List[str]] = []
+        self.operation_ids_registry: Optional[list[str]] = []
 
     @property
     def responses_validator(self) -> ResponsesValidator:
@@ -356,8 +356,7 @@ class OperationValidator(KeywordValidator):
         for path in self._get_path_params_from_url(url):
             if path not in all_params:
                 yield UnresolvableParameterError(
-                    "Path parameter '{}' for '{}' operation in '{}' "
-                    "was not resolved".format(path, name, url)
+                    f"Path parameter '{path}' for '{name}' operation in '{url}' was not resolved"
                 )
         return
 

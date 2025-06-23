@@ -10,7 +10,7 @@ from openapi_spec_validator.versions.exceptions import OpenAPIVersionNotFound
 class SpecVersionFinder:
     pattern = compile(r"(?P<major>\d+)\.(?P<minor>\d+)(\..*)?")
 
-    def __init__(self, versions: List[SpecVersion]) -> None:
+    def __init__(self, versions: list[SpecVersion]) -> None:
         self.versions = versions
 
     def find(self, spec: Schema) -> SpecVersion:

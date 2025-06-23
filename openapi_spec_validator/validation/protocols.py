@@ -1,4 +1,4 @@
-from typing import Iterator
+from collections.abc import Iterator
 from typing import Optional
 from typing import Protocol
 from typing import runtime_checkable

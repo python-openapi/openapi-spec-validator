@@ -2,7 +2,7 @@ import logging
 import sys
 from argparse import ArgumentParser
 from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 
 from jsonschema.exceptions import ValidationError
 from jsonschema.exceptions import best_match

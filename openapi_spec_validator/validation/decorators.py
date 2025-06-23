@@ -3,8 +3,8 @@ import logging
 from functools import wraps
 from typing import Any
 from typing import Callable
-from typing import Iterable
-from typing import Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 from typing import TypeVar
 
 from jsonschema.exceptions import ValidationError

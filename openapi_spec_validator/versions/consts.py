@@ -20,4 +20,4 @@ OPENAPIV31 = SpecVersion(
     minor="1",
 )
 
-VERSIONS: List[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31]
+VERSIONS: list[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31]
