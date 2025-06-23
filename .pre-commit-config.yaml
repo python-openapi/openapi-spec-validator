@@ -17,12 +17,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: flynt
-        name: Convert to f-strings with flynt
-        entry: flynt
-        language: python
-        additional_dependencies: ['flynt==0.76']
-
       - id: black
         name: black
         entry: black
