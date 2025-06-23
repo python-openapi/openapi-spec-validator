@@ -15,15 +15,13 @@ repos:
       - id: pyupgrade
         args: ["--py39-plus"]
 
-  - repo: local
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.1.0
     hooks:
       - id: black
-        name: black
-        entry: black
-        language: system
-        require_serial: true
-        types: [python]
 
+  - repo: local
+    hooks:
       - id: isort
         name: isort
         entry: isort
