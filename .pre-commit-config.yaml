@@ -20,16 +20,13 @@ repos:
     hooks:
       - id: black
 
-  - repo: local
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
     hooks:
       - id: isort
-        name: isort
-        entry: isort
-        args: ['--filter-files']
-        language: system
-        require_serial: true
-        types: [python]
 
+  - repo: local
+    hooks:
       - id: pyflakes
         name: pyflakes
         entry: pyflakes
