@@ -25,11 +25,7 @@ repos:
     hooks:
       - id: isort
 
-  - repo: local
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
     hooks:
-      - id: pyflakes
-        name: pyflakes
-        entry: pyflakes
-        language: system
-        require_serial: true
-        types: [python]
+      - id: flake8
