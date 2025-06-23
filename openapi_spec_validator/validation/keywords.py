@@ -113,8 +113,9 @@ class SchemaValidator(KeywordValidator):
             all_of = schema / "allOf"
             for inner_schema in all_of:
                 yield from self(inner_schema, require_properties=False)
-                nested_properties += list(self._collect_properties(inner_schema))
-
+                nested_properties += list(
+                    self._collect_properties(inner_schema)
+                )
 
         if "anyOf" in schema:
             any_of = schema / "anyOf"
@@ -154,8 +155,12 @@ class SchemaValidator(KeywordValidator):
                     require_properties=False,
                 )
 
-        required = "required" in schema and (schema / "required").read_value() or []
-        properties = "properties" in schema and (schema / "properties").keys() or []
+        required = (
+            "required" in schema and (schema / "required").read_value() or []
+        )
+        properties = (
+            "properties" in schema and (schema / "properties").keys() or []
+        )
         if "allOf" in schema:
             extra_properties = list(
                 set(required) - set(properties) - set(nested_properties)

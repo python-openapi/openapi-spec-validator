@@ -1,4 +1,5 @@
 """OpenAPI spec validator shortcuts module."""
+
 import warnings
 from collections.abc import Mapping
 from typing import Optional

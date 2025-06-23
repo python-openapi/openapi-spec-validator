@@ -1,4 +1,5 @@
 """OpenAPI spec validator validation validators module."""
+
 import logging
 import warnings
 from functools import lru_cache

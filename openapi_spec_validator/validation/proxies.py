@@ -1,4 +1,5 @@
 """OpenAPI spec validator validation proxies module."""
+
 import warnings
 from collections.abc import Hashable
 from typing import Any

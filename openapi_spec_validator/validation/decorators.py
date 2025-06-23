@@ -1,4 +1,5 @@
 """OpenAPI spec validator validation decorators module."""
+
 import logging
 from functools import wraps
 from typing import Any
@@ -19,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 def wraps_errors(
-    func: Callable[..., Any]
+    func: Callable[..., Any],
 ) -> Callable[..., Iterator[ValidationError]]:
     @wraps(func)
     def wrapper(*args: Any, **kwds: Any) -> Iterator[ValidationError]:
@@ -35,7 +36,7 @@ def wraps_errors(
 
 
 def wraps_cached_iter(
-    func: Callable[[Args], Iterator[T]]
+    func: Callable[[Args], Iterator[T]],
 ) -> Callable[[Args], CachedIterable[T]]:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> CachedIterable[T]:
@@ -46,7 +47,7 @@ def wraps_cached_iter(
 
 
 def unwraps_iter(
-    func: Callable[[Args], Iterable[T]]
+    func: Callable[[Args], Iterable[T]],
 ) -> Callable[[Args], Iterator[T]]:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Iterator[T]:

@@ -1,4 +1,5 @@
 """OpenAIP spec validator schemas module."""
+
 from functools import partial
 
 from jsonschema.validators import Draft4Validator

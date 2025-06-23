@@ -10,21 +10,18 @@ from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 @runtime_checkable
 class SupportsValidation(Protocol):
-    def is_valid(self, instance: Schema) -> bool:
-        ...
+    def is_valid(self, instance: Schema) -> bool: ...
 
     def iter_errors(
         self,
         instance: Schema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
-    ) -> Iterator[OpenAPIValidationError]:
-        ...
+    ) -> Iterator[OpenAPIValidationError]: ...
 
     def validate(
         self,
         instance: Schema,
         base_uri: str = "",
         spec_url: Optional[str] = None,
-    ) -> None:
-        ...
+    ) -> None: ...
