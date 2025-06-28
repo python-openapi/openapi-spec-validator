@@ -1,8 +1,8 @@
 """OpenAPI spec validator shortcuts module."""
+
 import warnings
-from typing import Mapping
+from collections.abc import Mapping
 from typing import Optional
-from typing import Type
 
 from jsonschema_path import SchemaPath
 from jsonschema_path.handlers import all_urls_handler
@@ -50,7 +50,7 @@ def validate(
 
 def validate_url(
     spec_url: str,
-    cls: Optional[Type[SpecValidator]] = None,
+    cls: Optional[type[SpecValidator]] = None,
 ) -> None:
     spec = all_urls_handler(spec_url)
     return validate(spec, base_uri=spec_url, cls=cls)
@@ -82,7 +82,7 @@ def validate_spec(
 def validate_spec_url(
     spec_url: str,
     validator: Optional[SupportsValidation] = None,
-    cls: Optional[Type[SpecValidator]] = None,
+    cls: Optional[type[SpecValidator]] = None,
 ) -> None:
     warnings.warn(
         "validate_spec_url shortcut is deprecated. Use validate_url instead.",

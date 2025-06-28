@@ -1,5 +1,3 @@
-from typing import List
-
 from openapi_spec_validator.versions.datatypes import SpecVersion
 
 OPENAPIV2 = SpecVersion(
@@ -20,4 +18,4 @@ OPENAPIV31 = SpecVersion(
     minor="1",
 )
 
-VERSIONS: List[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31]
+VERSIONS: list[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31]
