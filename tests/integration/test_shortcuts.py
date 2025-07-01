@@ -56,7 +56,7 @@ class TestLiocalValidatev2Spec:
             "empty.yaml",
         ],
     )
-    def test_falied(self, factory, spec_file):
+    def test_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
 
@@ -97,7 +97,7 @@ class TestLocalValidatev30Spec:
             "empty.yaml",
         ],
     )
-    def test_falied(self, factory, spec_file):
+    def test_failed(self, factory, spec_file):
         spec_path = self.local_test_suite_file_path(spec_file)
         spec = factory.spec_from_file(spec_path)
 
