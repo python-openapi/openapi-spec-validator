@@ -6,8 +6,6 @@ OpenAPI Spec validator
      :target: https://hub.docker.com/r/pythonopenapi/openapi-spec-validator
 .. image:: https://img.shields.io/pypi/v/openapi-spec-validator.svg
      :target: https://pypi.python.org/pypi/openapi-spec-validator
-.. image:: https://travis-ci.org/python-openapi/openapi-spec-validator.svg?branch=master
-     :target: https://travis-ci.org/python-openapi/openapi-spec-validator
 .. image:: https://img.shields.io/codecov/c/github/python-openapi/openapi-spec-validator/master.svg?style=flat
      :target: https://codecov.io/github/python-openapi/openapi-spec-validator?branch=master
 .. image:: https://img.shields.io/pypi/pyversions/openapi-spec-validator.svg
