@@ -1,4 +1,5 @@
 """OpenAPI spec validator module."""
+
 from openapi_spec_validator.shortcuts import validate
 from openapi_spec_validator.shortcuts import validate_spec
 from openapi_spec_validator.shortcuts import validate_spec_url

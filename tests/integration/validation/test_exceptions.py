@@ -3,7 +3,6 @@ from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation.exceptions import (
     DuplicateOperationIDError,
 )
-from openapi_spec_validator.validation.exceptions import ExtraParametersError
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import (
     UnresolvableParameterError,

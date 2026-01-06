@@ -1,7 +1,6 @@
+from collections.abc import Iterable
+from collections.abc import Iterator
 from typing import Generic
-from typing import Iterable
-from typing import Iterator
-from typing import List
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -14,7 +13,7 @@ class CachedIterable(Iterable[T], Generic[T]):
     It should not be iterated by his own.
     """
 
-    cache: List[T]
+    cache: list[T]
     iter: Iterator[T]
     completed: bool
 

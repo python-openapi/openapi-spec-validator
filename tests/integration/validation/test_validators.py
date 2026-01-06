@@ -32,7 +32,7 @@ class TestLocalOpenAPIv2Validator:
 
         validator.validate()
 
-        assert validator.is_valid() == True
+        assert validator.is_valid()
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -49,7 +49,7 @@ class TestLocalOpenAPIv2Validator:
         with pytest.raises(OpenAPIValidationError):
             validator.validate()
 
-        assert validator.is_valid() == False
+        assert not validator.is_valid()
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -90,7 +90,7 @@ class TestLocalOpenAPIv30Validator:
 
         validator.validate()
 
-        assert validator.is_valid() == True
+        assert validator.is_valid()
 
     @pytest.mark.parametrize(
         "spec_file",
@@ -107,7 +107,7 @@ class TestLocalOpenAPIv30Validator:
         with pytest.raises(OpenAPIValidationError):
             validator.validate()
 
-        assert validator.is_valid() == False
+        assert not validator.is_valid()
 
     @pytest.mark.parametrize(
         "spec_file",

@@ -1,14 +1,14 @@
 """OpenAIP spec validator schemas utils module."""
+
 from importlib.resources import as_file
 from importlib.resources import files
 from os import path
-from typing import Tuple
 
 from jsonschema_path.readers import FilePathReader
 from jsonschema_path.typing import Schema
 
 
-def get_schema(version: str) -> Tuple[Schema, str]:
+def get_schema(version: str) -> tuple[Schema, str]:
     schema_path = f"resources/schemas/v{version}/schema.json"
     ref = files("openapi_spec_validator") / schema_path
     with as_file(ref) as resource_path:
