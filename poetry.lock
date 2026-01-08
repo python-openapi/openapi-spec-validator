@@ -2633,6 +2633,32 @@ typing-extensions = {version = ">=4.14.1", markers = "python_version < \"3.11\""
 virtualenv = ">=20.31.2"
 
 [[package]]
+name = "tox"
+version = "4.33.0"
+description = "tox is a generic virtualenv management and test command line tool"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+markers = "python_version >= \"3.10\""
+files = [
+    {file = "tox-4.33.0-py3-none-any.whl", hash = "sha256:8582ac5c3ca97095ce88ae6bcd310d22614350ea9751b0e4ad39acad7874e270"},
+    {file = "tox-4.33.0.tar.gz", hash = "sha256:a29244bce3f514f94043e173366aa191c8cf0106ec8ddd18ba53f985acd73cc4"},
+]
+
+[package.dependencies]
+cachetools = ">=6.2.4"
+chardet = ">=5.2"
+colorama = ">=0.4.6"
+filelock = ">=3.20.2"
+packaging = ">=25"
+platformdirs = ">=4.5.1"
+pluggy = ">=1.6"
+pyproject-api = ">=1.10"
+tomli = {version = ">=2.3", markers = "python_version < \"3.11\""}
+typing-extensions = {version = ">=4.15", markers = "python_version < \"3.11\""}
+virtualenv = ">=20.35.4"
+
+[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
