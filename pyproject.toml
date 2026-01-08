@@ -25,7 +25,7 @@ classifiers = [
 ]
 dependencies = [
     "jsonschema >=4.24.0,<4.25.0",
-    "openapi-schema-validator >=0.6.0,<0.7.0",
+    "openapi-schema-validator >=0.6.1,<0.7.0",
     "jsonschema-path >=0.4.0b1,<0.5.0",
     "lazy-object-proxy >=1.7.1,<2.0",
 ]
