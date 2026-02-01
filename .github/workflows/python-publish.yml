@@ -24,6 +24,8 @@ jobs:
 
       - name: Set up poetry
         uses: Gr1N/setup-poetry@v9
+        with:
+          poetry-version: "2.2.1"
 
       - name: Build
         run: poetry build
