@@ -689,18 +689,18 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-path"
-version = "0.4.0b2"
+version = "0.4.0b6"
 description = "JSONSchema Spec with object-oriented paths"
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 groups = ["main"]
 files = [
-    {file = "jsonschema_path-0.4.0b2-py3-none-any.whl", hash = "sha256:53b2d1eb6bedab3abf4aae158f9bbacf49f09a60f24eddc6a9554ac21b4445ba"},
-    {file = "jsonschema_path-0.4.0b2.tar.gz", hash = "sha256:6897f135d06f1be03ef9c98fa4c0f8d5a8e07945130901074bbfc516887f5b1f"},
+    {file = "jsonschema_path-0.4.0b6-py3-none-any.whl", hash = "sha256:6b988750daa9c078f41c828c4f780399166012facce60e6245c2620d8b6fbf18"},
+    {file = "jsonschema_path-0.4.0b6.tar.gz", hash = "sha256:e1b88f65545604d8e81221ba88148d85aafb99bd916bad5838a5614f914bd886"},
 ]
 
 [package.dependencies]
-pathable = ">=0.5.0b4,<0.6.0"
+pathable = ">=0.5.0b6,<0.6.0"
 PyYAML = ">=5.1"
 referencing = "<0.37.0"
 
@@ -1047,14 +1047,14 @@ files = [
 
 [[package]]
 name = "pathable"
-version = "0.5.0b4"
+version = "0.5.0b6"
 description = "Object-oriented paths"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "pathable-0.5.0b4-py3-none-any.whl", hash = "sha256:571d7e9970f717235155376073746deadb9af49fdcdeba0c1a66c79b1b4d7f7f"},
-    {file = "pathable-0.5.0b4.tar.gz", hash = "sha256:4d3badb9312b45311f96b79f3e9690b83a69a22a89b64a3199fd86d4c98c28b4"},
+    {file = "pathable-0.5.0b6-py3-none-any.whl", hash = "sha256:c66bafb0e93b790098e580a1c89e042a24148d6541098f18d24ae1fc77e1b335"},
+    {file = "pathable-0.5.0b6.tar.gz", hash = "sha256:a36763b534a213894ddbca01db5b869aca52779e89a193078304fb3706b94404"},
 ]
 
 [[package]]
