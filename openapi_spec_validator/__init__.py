@@ -15,7 +15,7 @@ from openapi_spec_validator.validation import openapi_v31_spec_validator
 
 __author__ = "Artur Maciag"
 __email__ = "maciag.artur@gmail.com"
-__version__ = "0.8.0b2"
+__version__ = "0.8.0b3"
 __url__ = "https://github.com/python-openapi/openapi-spec-validator"
 __license__ = "Apache License, Version 2.0"
 
