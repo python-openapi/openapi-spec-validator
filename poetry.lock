@@ -689,20 +689,21 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-path"
-version = "0.4.0b2"
+version = "0.4.0b8"
 description = "JSONSchema Spec with object-oriented paths"
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 groups = ["main"]
 files = [
-    {file = "jsonschema_path-0.4.0b2-py3-none-any.whl", hash = "sha256:53b2d1eb6bedab3abf4aae158f9bbacf49f09a60f24eddc6a9554ac21b4445ba"},
-    {file = "jsonschema_path-0.4.0b2.tar.gz", hash = "sha256:6897f135d06f1be03ef9c98fa4c0f8d5a8e07945130901074bbfc516887f5b1f"},
+    {file = "jsonschema_path-0.4.0b8-py3-none-any.whl", hash = "sha256:ba4592a4fe6f87c0e7eb4e880037dfdf82e6f5919e273ad98facdfac11fbaee2"},
+    {file = "jsonschema_path-0.4.0b8.tar.gz", hash = "sha256:fd7919687dd6afdb82005a7198d1a7b3e18a1e275ed351b160ba6a86b4054ef7"},
 ]
 
 [package.dependencies]
-pathable = ">=0.5.0b4,<0.6.0"
+pathable = ">=0.5.0b6,<0.6.0"
 PyYAML = ">=5.1"
 referencing = "<0.37.0"
+typing-extensions = {version = ">=4.10.0,<5.0.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 requests = ["requests (>=2.31.0,<3.0.0)"]
@@ -1047,14 +1048,14 @@ files = [
 
 [[package]]
 name = "pathable"
-version = "0.5.0b4"
+version = "0.5.0b6"
 description = "Object-oriented paths"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "pathable-0.5.0b4-py3-none-any.whl", hash = "sha256:571d7e9970f717235155376073746deadb9af49fdcdeba0c1a66c79b1b4d7f7f"},
-    {file = "pathable-0.5.0b4.tar.gz", hash = "sha256:4d3badb9312b45311f96b79f3e9690b83a69a22a89b64a3199fd86d4c98c28b4"},
+    {file = "pathable-0.5.0b6-py3-none-any.whl", hash = "sha256:c66bafb0e93b790098e580a1c89e042a24148d6541098f18d24ae1fc77e1b335"},
+    {file = "pathable-0.5.0b6.tar.gz", hash = "sha256:a36763b534a213894ddbca01db5b869aca52779e89a193078304fb3706b94404"},
 ]
 
 [[package]]
@@ -2124,4 +2125,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "5466a0738ebc5d3add1aa8bde081281e418bc09adb1f0ffac0f71753ac6fd267"
+content-hash = "9fb41ff3901501b1de5c456e91f0157771e421e4b4032356b2d7a31227fe1735"
