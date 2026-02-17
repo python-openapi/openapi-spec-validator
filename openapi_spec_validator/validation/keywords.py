@@ -366,8 +366,8 @@ class OperationValidator(KeywordValidator):
 
     def _get_path_param_names(self, params: SchemaPath) -> Iterator[str]:
         for param in params:
-            if param["in"] == "path":
-                yield param["name"]
+            if (param / "in").read_str() == "path":
+                yield (param / "name").read_str()
 
     def _get_path_params_from_url(self, url: str) -> Iterator[str]:
         formatter = string.Formatter()
