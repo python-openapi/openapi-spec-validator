@@ -7,7 +7,7 @@ authors = [
 ]
 license = "Apache-2.0"
 readme = "README.rst"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 keywords = ["openapi", "swagger", "schema"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -15,7 +15,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from typing import Optional
 from typing import Protocol
 from typing import runtime_checkable
 
@@ -16,12 +15,12 @@ class SupportsValidation(Protocol):
         self,
         instance: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> Iterator[OpenAPIValidationError]: ...
 
     def validate(
         self,
         instance: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> None: ...

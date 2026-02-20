@@ -3,12 +3,10 @@
 import warnings
 from collections.abc import Iterator
 from collections.abc import Mapping
-from typing import Optional
 
 from jsonschema.exceptions import ValidationError
 from jsonschema_path.typing import Schema
 
-from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 from openapi_spec_validator.validation.types import SpecValidatorType
 
@@ -18,7 +16,7 @@ class SpecValidatorProxy:
         self,
         cls: SpecValidatorType,
         deprecated: str = "SpecValidator",
-        use: Optional[str] = None,
+        use: str | None = None,
     ):
         self.cls = cls
 
@@ -29,7 +27,7 @@ class SpecValidatorProxy:
         self,
         schema: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> None:
         for err in self.iter_errors(
             schema,
@@ -46,7 +44,7 @@ class SpecValidatorProxy:
         self,
         schema: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> Iterator[ValidationError]:
         warnings.warn(
             f"{self.deprecated} is deprecated. Use {self.use} instead.",
@@ -70,7 +68,7 @@ class DetectValidatorProxy:
         self,
         instance: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> None:
         validator = self.detect(instance)
         for err in validator.iter_errors(
@@ -87,8 +85,8 @@ class DetectValidatorProxy:
         self,
         instance: Schema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
-    ) -> Iterator[OpenAPIValidationError]:
+        spec_url: str | None = None,
+    ) -> Iterator[ValidationError]:
         warnings.warn(
             "openapi_spec_validator_proxy is deprecated.",
             DeprecationWarning,

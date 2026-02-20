@@ -1,12 +1,10 @@
-from __future__ import annotations
-
+from collections import defaultdict
 from collections.abc import Mapping
-from typing import DefaultDict
 
 from openapi_spec_validator.validation.keywords import KeywordValidator
 
 
-class KeywordValidatorRegistry(DefaultDict[str, KeywordValidator]):
+class KeywordValidatorRegistry(defaultdict[str, KeywordValidator]):
     def __init__(
         self, keyword_validators: Mapping[str, type[KeywordValidator]]
     ):
