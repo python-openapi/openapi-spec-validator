@@ -2,7 +2,6 @@ import logging
 import sys
 from argparse import ArgumentParser
 from collections.abc import Sequence
-from typing import Optional
 
 from jsonschema.exceptions import ValidationError
 from jsonschema.exceptions import best_match
@@ -51,7 +50,7 @@ def print_validationerror(
             )
 
 
-def main(args: Optional[Sequence[str]] = None) -> None:
+def main(args: Sequence[str] | None = None) -> None:
     parser = ArgumentParser()
     parser.add_argument(
         "file",
@@ -78,7 +77,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     for filename in args_parsed.file:
         # choose source
         reader = read_from_filename
-        if filename in ["-", "/-"]:
+        if filename in {"-", "/-"}:
             filename = "stdin"
             reader = read_from_stdin
 

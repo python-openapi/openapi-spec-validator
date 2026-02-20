@@ -1,9 +1,9 @@
 import string
 from collections.abc import Iterator
+from collections.abc import Callable
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Optional
 from typing import cast
 
 from jsonschema._format import FormatChecker
@@ -38,7 +38,7 @@ class KeywordValidator:
 
 
 class ValueValidator(KeywordValidator):
-    value_validator_cls: Validator = NotImplemented
+    value_validator_cls: Callable[..., Validator] = NotImplemented
     value_validator_format_checker: FormatChecker = NotImplemented
 
     def __call__(
@@ -67,7 +67,7 @@ class SchemaValidator(KeywordValidator):
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
 
-        self.schema_ids_registry: Optional[list[int]] = []
+        self.schema_ids_registry: list[int] | None = []
 
     @property
     def default_validator(self) -> ValueValidator:
@@ -309,7 +309,7 @@ class OperationValidator(KeywordValidator):
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
 
-        self.operation_ids_registry: Optional[list[str]] = []
+        self.operation_ids_registry: list[str] | None = []
 
     @property
     def responses_validator(self) -> ResponsesValidator:
@@ -324,7 +324,7 @@ class OperationValidator(KeywordValidator):
         url: str,
         name: str,
         operation: SchemaPath,
-        path_parameters: Optional[SchemaPath],
+        path_parameters: SchemaPath | None,
     ) -> Iterator[ValidationError]:
         assert self.operation_ids_registry is not None
 

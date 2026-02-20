@@ -5,7 +5,6 @@ import warnings
 from collections.abc import Iterator
 from collections.abc import Mapping
 from functools import lru_cache
-from typing import Optional
 from typing import cast
 
 from jsonschema.exceptions import ValidationError
@@ -40,7 +39,7 @@ class SpecValidator:
         self,
         schema: AnySchema,
         base_uri: str = "",
-        spec_url: Optional[str] = None,
+        spec_url: str | None = None,
     ) -> None:
         if spec_url is not None:
             warnings.warn(

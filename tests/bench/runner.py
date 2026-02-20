@@ -18,13 +18,15 @@ import time
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any
+from collections.abc import Iterator
 
 from jsonschema_path import SchemaPath
+from jsonschema_path.typing import Schema
 
 from openapi_spec_validator import validate
 from openapi_spec_validator.readers import read_from_filename
-from openapi_spec_validator.schemas import _FORCE_PYTHON, _FORCE_RUST
+from openapi_spec_validator import schemas
 from openapi_spec_validator.shortcuts import get_validator_cls
 
 
@@ -37,35 +39,35 @@ class BenchResult:
     schemas_count: int
     repeats: int
     warmup: int
-    seconds: List[float]
+    seconds: list[float]
     success: bool
-    error: Optional[str] = None
+    error: str | None = None
 
     @cached_property
-    def median_s(self) -> Optional[float]:
+    def median_s(self) -> float | None:
         if self.seconds:
             return statistics.median(self.seconds)
         return None
 
     @cached_property
-    def mean_s(self) -> Optional[float]:
+    def mean_s(self) -> float | None:
         if self.seconds:
             return statistics.mean(self.seconds)
         return None
 
     @cached_property
-    def stdev_s(self) -> Optional[float]:
+    def stdev_s(self) -> float | None:
         if len(self.seconds) > 1:
             return statistics.pstdev(self.seconds)
         return None
 
     @cached_property
-    def validations_per_sec(self) -> Optional[float]:
+    def validations_per_sec(self) -> float | None:
         if self.median_s:
             return 1 / self.median_s
         return None
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "spec_name": self.spec_name,
             "spec_version": self.spec_version,
@@ -84,19 +86,19 @@ class BenchResult:
         }
 
 
-def count_paths(spec: dict) -> int:
+def count_paths(spec: Schema) -> int:
     """Count paths in OpenAPI spec."""
     return len(spec.get("paths", {}))
 
 
-def count_schemas(spec: dict) -> int:
+def count_schemas(spec: Schema) -> int:
     """Count schemas in OpenAPI spec."""
     components = spec.get("components", {})
     definitions = spec.get("definitions", {})  # OpenAPI 2.0
     return len(components.get("schemas", {})) + len(definitions)
 
 
-def get_spec_version(spec: dict) -> str:
+def get_spec_version(spec: Schema) -> str:
     """Detect OpenAPI version."""
     if "openapi" in spec:
         return spec["openapi"]
@@ -105,7 +107,7 @@ def get_spec_version(spec: dict) -> str:
     return "unknown"
 
 
-def run_once(spec: dict) -> float:
+def run_once(spec: Schema) -> float:
     """Run validation once and return elapsed time."""
     t0 = time.perf_counter()
     cls = get_validator_cls(spec)
@@ -133,7 +135,7 @@ def benchmark_spec_file(
 
 
 def benchmark_spec(
-    spec: dict,
+    spec: Schema,
     repeats: int = 7,
     warmup: int = 2,
     no_gc: bool = False,
@@ -155,17 +157,19 @@ def benchmark_spec(
         for _ in range(warmup):
             run_once(spec)
         
+        pr: cProfile.Profile | None = None
         if profile:
             print("\n🔬 Profiling mode enabled...")
             pr = cProfile.Profile()
             pr.enable()
 
         # Actual benchmark
-        seconds: List[float] = []
+        seconds: list[float] = []
         for _ in range(repeats):
             seconds.append(run_once(spec))
 
         if profile:
+            assert pr is not None
             pr.disable()
 
             # Print profile stats
@@ -209,7 +213,11 @@ def benchmark_spec(
         )
 
 
-def generate_synthetic_spec(paths: int, schemas: int, version: str = "3.0.0") -> dict:
+def generate_synthetic_spec(
+    paths: int,
+    schemas: int,
+    version: str = "3.0.0",
+) -> dict[str, Any]:
     """Generate synthetic OpenAPI spec for stress testing."""
     paths_obj = {}
     for i in range(paths):
@@ -247,14 +255,18 @@ def generate_synthetic_spec(paths: int, schemas: int, version: str = "3.0.0") ->
     }
 
 
-def get_synthetic_specs_iterator(configs: List[tuple[int, int, str]]) -> Iterator[dict]:
+def get_synthetic_specs_iterator(
+    configs: list[tuple[int, int, str]],
+) -> Iterator[tuple[dict[str, Any], str, float]]:
     """Iterator over synthetic specs based on provided configurations."""
     for paths, schemas, size in configs:
         spec = generate_synthetic_spec(paths, schemas)
         yield spec, f"synthetic_{size}", 0
 
 
-def get_specs_iterator(spec_files: List[Path]) -> Iterator[dict]:
+def get_specs_iterator(
+    spec_files: list[Path],
+) -> Iterator[tuple[Schema, str, float]]:
     """Iterator over provided spec files."""
     for spec_file in spec_files:
         spec, _ = read_from_filename(str(spec_file))
@@ -271,11 +283,11 @@ def main():
     parser.add_argument("--profile", type=str, help="Profile file path (cProfile)")
     args = parser.parse_args()
 
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
 
     print("Spec schema validator backend selection:")
-    print(f"  Force Python: {_FORCE_PYTHON}")
-    print(f"  Force Rust: {_FORCE_RUST}")
+    print(f"  Force Python: {getattr(schemas, '_FORCE_PYTHON', False)}")
+    print(f"  Force Rust: {getattr(schemas, '_FORCE_RUST', False)}")
 
     # Benchmark custom specs
     if args.specs:
