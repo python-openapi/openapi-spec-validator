@@ -1853,14 +1853,13 @@ test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=8.0)", "setuptools 
 
 [[package]]
 name = "sphinx-immaterial"
-version = "0.12.5"
+version = "0.13.9"
 description = "Adaptation of mkdocs-material theme for the Sphinx documentation system"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["docs"]
 files = [
-    {file = "sphinx_immaterial-0.12.5-py3-none-any.whl", hash = "sha256:4173b22ad343fd9c75b51baf305851d89b98b94603c474b428e30e8c8476673b"},
-    {file = "sphinx_immaterial-0.12.5.tar.gz", hash = "sha256:a7c0c4be3dcb4960eb7b299dfee07cdf8a02bf56821f5d0d62e5d31b7b7b5ec5"},
+    {file = "sphinx_immaterial-0.13.9-py3-none-any.whl", hash = "sha256:5ea92d2ddc6befcd0fedbd3e6766ea4746e94d9a8a5cc0ab092a946e1fde4254"},
 ]
 
 [package.dependencies]
@@ -1869,7 +1868,7 @@ markupsafe = "*"
 pydantic = ">=2.4"
 pydantic-extra-types = "*"
 requests = "*"
-sphinx = ">=4.5"
+sphinx = ">=6"
 typing-extensions = "*"
 
 [package.extras]
@@ -2216,4 +2215,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "e96d59287bc1fc9ea36457eae832736fb5ce5a5d690422464f81f701946a77be"
+content-hash = "9e75e6898283818dc6fa0792ca408607fe7da1fa1e68ef0f3ab7213958131e4c"
