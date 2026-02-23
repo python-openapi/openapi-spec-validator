@@ -687,20 +687,20 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-path"
-version = "0.4.0b8"
+version = "0.4.2"
 description = "JSONSchema Spec with object-oriented paths"
 optional = false
-python-versions = "<4.0.0,>=3.9.0"
+python-versions = "<4.0.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "jsonschema_path-0.4.0b8-py3-none-any.whl", hash = "sha256:ba4592a4fe6f87c0e7eb4e880037dfdf82e6f5919e273ad98facdfac11fbaee2"},
-    {file = "jsonschema_path-0.4.0b8.tar.gz", hash = "sha256:fd7919687dd6afdb82005a7198d1a7b3e18a1e275ed351b160ba6a86b4054ef7"},
+    {file = "jsonschema_path-0.4.2-py3-none-any.whl", hash = "sha256:9c3d88e727cc4f1a88e51dbbed4211dbcd815d27799d2685efd904435c3d39e7"},
+    {file = "jsonschema_path-0.4.2.tar.gz", hash = "sha256:5f5ff183150030ea24bb51cf1ddac9bf5dbf030272e2792a7ffe8262f7eea2a5"},
 ]
 
 [package.dependencies]
-pathable = ">=0.5.0b6,<0.6.0"
+pathable = ">=0.5.0,<0.6.0"
 PyYAML = ">=5.1"
-referencing = "<0.37.0"
+referencing = "<0.38.0"
 
 [package.extras]
 requests = ["requests (>=2.31.0,<3.0.0)"]
@@ -1046,19 +1046,19 @@ files = [
 
 [[package]]
 name = "openapi-schema-validator"
-version = "0.6.3"
+version = "0.7.0"
 description = "OpenAPI schema validation for Python"
 optional = false
-python-versions = "<4.0.0,>=3.8.0"
+python-versions = "<4.0.0,>=3.10.0"
 groups = ["main"]
 files = [
-    {file = "openapi_schema_validator-0.6.3-py3-none-any.whl", hash = "sha256:f3b9870f4e556b5a62a1c39da72a6b4b16f3ad9c73dc80084b1b11e74ba148a3"},
-    {file = "openapi_schema_validator-0.6.3.tar.gz", hash = "sha256:f37bace4fc2a5d96692f4f8b31dc0f8d7400fd04f3a937798eaf880d425de6ee"},
+    {file = "openapi_schema_validator-0.7.0-py3-none-any.whl", hash = "sha256:dc3e91e97cbfa75c59272a25455d56ba5a9fb9ebcb7cb4be219a7a11543d0494"},
+    {file = "openapi_schema_validator-0.7.0.tar.gz", hash = "sha256:003e93f61cfce036c1fbcf4f6d04f047332591e780100ba4a9fcd649458a09a8"},
 ]
 
 [package.dependencies]
 jsonschema = ">=4.19.1,<5.0.0"
-jsonschema-specifications = ">=2023.5.2"
+jsonschema-specifications = ">=2024.10.1"
 rfc3339-validator = "*"
 
 [[package]]
@@ -1075,14 +1075,14 @@ files = [
 
 [[package]]
 name = "pathable"
-version = "0.5.0b6"
+version = "0.5.0"
 description = "Object-oriented paths"
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "pathable-0.5.0b6-py3-none-any.whl", hash = "sha256:c66bafb0e93b790098e580a1c89e042a24148d6541098f18d24ae1fc77e1b335"},
-    {file = "pathable-0.5.0b6.tar.gz", hash = "sha256:a36763b534a213894ddbca01db5b869aca52779e89a193078304fb3706b94404"},
+    {file = "pathable-0.5.0-py3-none-any.whl", hash = "sha256:646e3d09491a6351a0c82632a09c02cdf70a252e73196b36d8a15ba0a114f0a6"},
+    {file = "pathable-0.5.0.tar.gz", hash = "sha256:d81938348a1cacb525e7c75166270644782c0fb9c8cecc16be033e71427e0ef1"},
 ]
 
 [[package]]
@@ -2204,4 +2204,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "1f4cbc58813cc50740ff5f921011c901945dcb9cac494585d1a3dc54dcb663bd"
+content-hash = "21771f71d953a75d0abf74609179e0ed5de59781dbac8ddda0fd196e02d98c69"
