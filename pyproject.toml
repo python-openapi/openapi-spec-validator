@@ -48,7 +48,7 @@ include = [
 
 [tool.poetry.group.docs.dependencies]
 sphinx = ">=5.3,<8.0"
-sphinx-immaterial = ">=0.11,<0.13"
+sphinx-immaterial = ">=0.11,<0.14"
 
 [tool.poetry.group.dev.dependencies]
 tbump = "^6.11.0"
