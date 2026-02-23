@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from jsonschema.exceptions import ValidationError
 from jsonschema.exceptions import best_match
 
+from openapi_spec_validator import __version__
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
 from openapi_spec_validator.shortcuts import validate
@@ -51,7 +52,7 @@ def print_validationerror(
 
 
 def main(args: Sequence[str] | None = None) -> None:
-    parser = ArgumentParser()
+    parser = ArgumentParser(prog="openapi-spec-validator")
     parser.add_argument(
         "file",
         nargs="+",
@@ -71,6 +72,11 @@ def main(args: Sequence[str] | None = None) -> None:
         default="detect",
         metavar="{detect,2.0,3.0,3.1}",
         help="OpenAPI schema version (default: detect).",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     args_parsed = parser.parse_args(args)
 
