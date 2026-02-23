@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from openapi_spec_validator import __version__
 from openapi_spec_validator.__main__ import main
 
 
@@ -190,3 +191,13 @@ def test_schema_stdin(capsys):
     out, err = capsys.readouterr()
     assert not err
     assert "stdin: OK\n" in out
+
+
+def test_version(capsys):
+    """Test --version flag outputs correct version."""
+    testargs = ["--version"]
+    with pytest.raises(SystemExit):
+        main(testargs)
+    out, err = capsys.readouterr()
+    assert not err
+    assert out.strip() == f"openapi-spec-validator {__version__}"
