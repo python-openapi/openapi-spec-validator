@@ -10,23 +10,23 @@ Usage:
 import argparse
 import cProfile
 import gc
-from io import StringIO
 import json
 import pstats
 import statistics
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import cached_property
+from io import StringIO
 from pathlib import Path
 from typing import Any
-from collections.abc import Iterator
 
 from jsonschema_path import SchemaPath
 from jsonschema_path.typing import Schema
 
+from openapi_spec_validator import schemas
 from openapi_spec_validator import validate
 from openapi_spec_validator.readers import read_from_filename
-from openapi_spec_validator import schemas
 from openapi_spec_validator.shortcuts import get_validator_cls
 
 
@@ -128,7 +128,10 @@ def benchmark_spec_file(
     spec_size_kb = spec_path.stat().st_size / 1024
     spec, _ = read_from_filename(str(spec_path))
     return benchmark_spec(
-        spec, repeats, warmup, no_gc,
+        spec,
+        repeats,
+        warmup,
+        no_gc,
         spec_name=spec_name,
         spec_size_kb=spec_size_kb,
     )
@@ -148,15 +151,17 @@ def benchmark_spec(
         spec_version = get_spec_version(spec)
         paths_count = count_paths(spec)
         schemas_count = count_schemas(spec)
-        print(f"⚡ Benchmarking {spec_name} spec (version {spec_version}, {paths_count} paths, {schemas_count} schemas)...")
-        
+        print(
+            f"⚡ Benchmarking {spec_name} spec (version {spec_version}, {paths_count} paths, {schemas_count} schemas)..."
+        )
+
         if no_gc:
             gc.disable()
-        
+
         # Warmup
         for _ in range(warmup):
             run_once(spec)
-        
+
         pr: cProfile.Profile | None = None
         if profile:
             print("\n🔬 Profiling mode enabled...")
@@ -174,10 +179,10 @@ def benchmark_spec(
 
             # Print profile stats
             s = StringIO()
-            ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+            ps = pstats.Stats(pr, stream=s).sort_stats("cumulative")
             ps.print_stats(30)
             print(s.getvalue())
-    
+
             # Save profile data
             pr.dump_stats(profile)
             print(f"💾 Profile data saved to {profile}")
@@ -185,7 +190,7 @@ def benchmark_spec(
 
         if no_gc:
             gc.enable()
-        
+
         return BenchResult(
             spec_name=spec_name,
             spec_version=spec_version,
@@ -197,7 +202,7 @@ def benchmark_spec(
             seconds=seconds,
             success=True,
         )
-    
+
     except Exception as e:
         return BenchResult(
             spec_name=spec_name,
@@ -228,14 +233,16 @@ def generate_synthetic_spec(
                         "description": "Success",
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": f"#/components/schemas/Schema{i % schemas}"}
+                                "schema": {
+                                    "$ref": f"#/components/schemas/Schema{i % schemas}"
+                                }
                             }
-                        }
+                        },
                     }
                 }
             }
         }
-    
+
     schemas_obj = {}
     for i in range(schemas):
         schemas_obj[f"Schema{i}"] = {
@@ -243,15 +250,20 @@ def generate_synthetic_spec(
             "properties": {
                 "id": {"type": "integer"},
                 "name": {"type": "string"},
-                "nested": {"$ref": f"#/components/schemas/Schema{(i + 1) % schemas}"}
-            }
+                "nested": {
+                    "$ref": f"#/components/schemas/Schema{(i + 1) % schemas}"
+                },
+            },
         }
-    
+
     return {
         "openapi": version,
-        "info": {"title": f"Synthetic API ({paths} paths, {schemas} schemas)", "version": "1.0.0"},
+        "info": {
+            "title": f"Synthetic API ({paths} paths, {schemas} schemas)",
+            "version": "1.0.0",
+        },
         "paths": paths_obj,
-        "components": {"schemas": schemas_obj}
+        "components": {"schemas": schemas_obj},
     }
 
 
@@ -274,13 +286,28 @@ def get_specs_iterator(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Benchmark openapi-spec-validator")
-    parser.add_argument("specs", type=Path, nargs='*', help="File(s) with custom specs to benchmark, otherwise use synthetic specs.")
-    parser.add_argument("--repeats", type=int, default=1, help="Number of benchmark repeats")
-    parser.add_argument("--warmup", type=int, default=0, help="Number of warmup runs")
-    parser.add_argument("--no-gc", action="store_true", help="Disable GC during benchmark")
+    parser = argparse.ArgumentParser(
+        description="Benchmark openapi-spec-validator"
+    )
+    parser.add_argument(
+        "specs",
+        type=Path,
+        nargs="*",
+        help="File(s) with custom specs to benchmark, otherwise use synthetic specs.",
+    )
+    parser.add_argument(
+        "--repeats", type=int, default=1, help="Number of benchmark repeats"
+    )
+    parser.add_argument(
+        "--warmup", type=int, default=0, help="Number of warmup runs"
+    )
+    parser.add_argument(
+        "--no-gc", action="store_true", help="Disable GC during benchmark"
+    )
     parser.add_argument("--output", type=str, help="Output JSON file path")
-    parser.add_argument("--profile", type=str, help="Profile file path (cProfile)")
+    parser.add_argument(
+        "--profile", type=str, help="Profile file path (cProfile)"
+    )
     args = parser.parse_args()
 
     results: list[dict[str, Any]] = []
@@ -291,7 +318,9 @@ def main():
 
     # Benchmark custom specs
     if args.specs:
-        print(f"\n🔍 Testing with custom specs {[str(spec) for spec in args.specs]}")
+        print(
+            f"\n🔍 Testing with custom specs {[str(spec) for spec in args.specs]}"
+        )
         spec_iterator = get_specs_iterator(args.specs)
 
     # Synthetic specs for stress testing
@@ -318,7 +347,9 @@ def main():
         )
         results.append(result.as_dict())
         if result.success:
-            print(f"   ✅ {result.median_s:.4f}s, {result.validations_per_sec:.2f} val/s")
+            print(
+                f"   ✅ {result.median_s:.4f}s, {result.validations_per_sec:.2f} val/s"
+            )
         else:
             print(f"   ❌ Error: {result.error}")
 
@@ -331,10 +362,10 @@ def main():
         },
         "results": results,
     }
-    
+
     print(f"\n📊 Summary: {len(results)} specs benchmarked")
     print(json.dumps(output, indent=2))
-    
+
     if args.output:
         with open(args.output, "w") as f:
             json.dump(output, f, indent=2)

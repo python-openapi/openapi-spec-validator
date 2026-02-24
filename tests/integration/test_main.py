@@ -193,6 +193,34 @@ def test_schema_stdin(capsys):
     assert "stdin: OK\n" in out
 
 
+def test_malformed_schema_stdin(capsys):
+    """Malformed schema from STDIN reports validation error."""
+    spec_io = StringIO(
+        """
+openapi: 3.1.0
+info:
+  version: "1"
+  title: "Title"
+components:
+  schemas:
+    Component:
+      type: object
+      properties:
+        name: string
+"""
+    )
+
+    testargs = ["--schema", "3.1.0", "-"]
+    with mock.patch("openapi_spec_validator.__main__.sys.stdin", spec_io):
+        with pytest.raises(SystemExit):
+            main(testargs)
+
+    out, err = capsys.readouterr()
+    assert not err
+    assert "stdin: Validation Error:" in out
+    assert "stdin: OK" not in out
+
+
 def test_version(capsys):
     """Test --version flag outputs correct version."""
     testargs = ["--version"]
