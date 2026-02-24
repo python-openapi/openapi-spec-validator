@@ -268,6 +268,46 @@ class TestSpecValidatorIterErrors:
             "'/test/{param1}/{param2}' was not resolved"
         )
 
+    def test_extra_path_parameter_not_present_in_path(self):
+        spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Test Api",
+                "version": "0.0.1",
+            },
+            "paths": {
+                "/test": {
+                    "get": {
+                        "responses": {
+                            "default": {
+                                "description": "default response",
+                            },
+                        },
+                        "parameters": [
+                            {
+                                "name": "param1",
+                                "in": "path",
+                                "required": True,
+                                "schema": {
+                                    "type": "integer",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        }
+
+        errors = OpenAPIV30SpecValidator(spec).iter_errors()
+
+        errors_list = list(errors)
+        assert len(errors_list) == 1
+        assert errors_list[0].__class__ == UnresolvableParameterError
+        assert errors_list[0].message == (
+            "Path parameter 'param1' for 'get' operation in '/test' "
+            "was not resolved"
+        )
+
     def test_default_value_wrong_type(self):
         spec = {
             "openapi": "3.0.0",
