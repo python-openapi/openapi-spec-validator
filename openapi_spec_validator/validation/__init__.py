@@ -7,6 +7,7 @@ from openapi_spec_validator.validation.validators import (
 from openapi_spec_validator.validation.validators import (
     OpenAPIV31SpecValidator,
 )
+from openapi_spec_validator.validation.validators import SpecValidator
 
 __all__ = [
     "openapi_v2_spec_validator",
@@ -18,6 +19,7 @@ __all__ = [
     "OpenAPIV3SpecValidator",
     "OpenAPIV30SpecValidator",
     "OpenAPIV31SpecValidator",
+    "SpecValidator",
 ]
 
 # v2.0 spec

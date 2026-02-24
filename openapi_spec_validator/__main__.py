@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from argparse import ArgumentParser
 from collections.abc import Sequence
@@ -9,10 +10,12 @@ from jsonschema.exceptions import best_match
 from openapi_spec_validator import __version__
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
+from openapi_spec_validator.shortcuts import get_validator_cls
 from openapi_spec_validator.shortcuts import validate
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
+from openapi_spec_validator.validation import SpecValidator
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -30,25 +33,40 @@ def print_error(filename: str, exc: Exception) -> None:
 
 
 def print_validationerror(
-    filename: str, exc: ValidationError, errors: str = "best-match"
+    filename: str,
+    exc: ValidationError,
+    subschema_errors: str = "best-match",
+    index: int | None = None,
 ) -> None:
-    print(f"{filename}: Validation Error: {exc}")
+    if index is None:
+        print(f"{filename}: Validation Error: {exc}")
+    else:
+        print(f"{filename}: Validation Error: [{index}] {exc}")
     if exc.cause:
         print("\n# Cause\n")
         print(exc.cause)
     if not exc.context:
         return
-    if errors == "all":
+    if subschema_errors == "all":
         print("\n\n# Due to one of those errors\n")
         print("\n\n\n".join("## " + str(e) for e in exc.context))
-    elif errors == "best-match":
+    elif subschema_errors == "best-match":
         print("\n\n# Probably due to this subschema error\n")
         print("## " + str(best_match(exc.context)))
         if len(exc.context) > 1:
             print(
                 f"\n({len(exc.context) - 1} more subschemas errors,",
-                "use --errors=all to see them.)",
+                "use --subschema-errors=all to see them.)",
             )
+
+
+def should_warn_deprecated() -> bool:
+    return os.getenv("OPENAPI_SPEC_VALIDATOR_WARN_DEPRECATED", "1") != "0"
+
+
+def warn_deprecated(message: str) -> None:
+    if should_warn_deprecated():
+        print(f"DeprecationWarning: {message}", file=sys.stderr)
 
 
 def main(args: Sequence[str] | None = None) -> None:
@@ -59,11 +77,26 @@ def main(args: Sequence[str] | None = None) -> None:
         help="Validate specified file(s).",
     )
     parser.add_argument(
-        "--errors",
+        "--subschema-errors",
         choices=("best-match", "all"),
-        default="best-match",
-        help="""Control error reporting. Defaults to "best-match", """
+        default=None,
+        help="""Control subschema error details. Defaults to "best-match", """
         """use "all" to get all subschema errors.""",
+    )
+    parser.add_argument(
+        "--validation-errors",
+        choices=("first", "all"),
+        default="first",
+        help="""Control validation errors count. Defaults to "first", """
+        """use "all" to get all validation errors.""",
+    )
+    parser.add_argument(
+        "--errors",
+        "--error",
+        dest="deprecated_subschema_errors",
+        choices=("best-match", "all"),
+        default=None,
+        help="Deprecated alias for --subschema-errors.",
     )
     parser.add_argument(
         "--schema",
@@ -80,6 +113,22 @@ def main(args: Sequence[str] | None = None) -> None:
     )
     args_parsed = parser.parse_args(args)
 
+    subschema_errors = args_parsed.subschema_errors
+    if args_parsed.deprecated_subschema_errors is not None:
+        if args_parsed.subschema_errors is None:
+            subschema_errors = args_parsed.deprecated_subschema_errors
+            warn_deprecated(
+                "--errors/--error is deprecated. "
+                "Use --subschema-errors instead."
+            )
+        else:
+            warn_deprecated(
+                "--errors/--error is deprecated and ignored when "
+                "--subschema-errors is provided."
+            )
+    if subschema_errors is None:
+        subschema_errors = "best-match"
+
     for filename in args_parsed.file:
         # choose source
         reader = read_from_filename
@@ -95,7 +144,7 @@ def main(args: Sequence[str] | None = None) -> None:
             sys.exit(1)
 
         # choose the validator
-        validators = {
+        validators: dict[str, type[SpecValidator] | None] = {
             "detect": None,
             "2.0": OpenAPIV2SpecValidator,
             "3.0": OpenAPIV30SpecValidator,
@@ -108,9 +157,27 @@ def main(args: Sequence[str] | None = None) -> None:
 
         # validate
         try:
+            if args_parsed.validation_errors == "all":
+                if validator_cls is None:
+                    validator_cls = get_validator_cls(spec)
+                validator = validator_cls(spec, base_uri=base_uri)
+                errors = list(validator.iter_errors())
+                if errors:
+                    for idx, err in enumerate(errors, start=1):
+                        print_validationerror(
+                            filename,
+                            err,
+                            subschema_errors,
+                            index=idx,
+                        )
+                    print(f"{filename}: {len(errors)} validation errors found")
+                    sys.exit(1)
+                print_ok(filename)
+                continue
+
             validate(spec, base_uri=base_uri, cls=validator_cls)
         except ValidationError as exc:
-            print_validationerror(filename, exc, args_parsed.errors)
+            print_validationerror(filename, exc, subschema_errors)
             sys.exit(1)
         except Exception as exc:
             print_error(filename, exc)
