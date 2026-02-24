@@ -392,10 +392,17 @@ class OperationValidator(KeywordValidator):
         if path_parameters is not None:
             names += list(self._get_path_param_names(path_parameters))
 
-        all_params = list(set(names))
+        all_params = set(names)
+        url_params = set(self._get_path_params_from_url(url))
 
-        for path in self._get_path_params_from_url(url):
+        for path in sorted(url_params):
             if path not in all_params:
+                yield UnresolvableParameterError(
+                    f"Path parameter '{path}' for '{name}' operation in '{url}' was not resolved"
+                )
+
+        for path in sorted(all_params):
+            if path not in url_params:
                 yield UnresolvableParameterError(
                     f"Path parameter '{path}' for '{name}' operation in '{url}' was not resolved"
                 )
