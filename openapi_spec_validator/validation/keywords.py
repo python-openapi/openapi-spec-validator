@@ -1,12 +1,14 @@
 import string
-from collections.abc import Iterator
 from collections.abc import Callable
+from collections.abc import Iterator
+from collections.abc import Mapping
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
 
 from jsonschema._format import FormatChecker
+from jsonschema.exceptions import SchemaError
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 from jsonschema_path.paths import SchemaPath
@@ -19,6 +21,7 @@ from openapi_spec_validator.validation.exceptions import (
     DuplicateOperationIDError,
 )
 from openapi_spec_validator.validation.exceptions import ExtraParametersError
+from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import (
     ParameterDuplicateError,
 )
@@ -67,7 +70,11 @@ class SchemaValidator(KeywordValidator):
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
 
-        self.schema_ids_registry: list[int] | None = []
+        # recursion/visit dedupe registry
+        self.visited_schema_ids: list[int] | None = []
+        # meta-schema-check dedupe registry
+        # to avoid validating the same schema multiple times
+        self.meta_checked_schema_ids: list[int] | None = []
 
     @property
     def default_validator(self) -> ValueValidator:
@@ -95,23 +102,48 @@ class SchemaValidator(KeywordValidator):
         return props
 
     def __call__(
-        self, schema: SchemaPath, require_properties: bool = True
+        self,
+        schema: SchemaPath,
+        require_properties: bool = True,
+        meta_checked: bool = False,
     ) -> Iterator[ValidationError]:
         schema_value = schema.read_value()
-        if not hasattr(schema_value, "__getitem__"):
+        if not isinstance(schema_value, (Mapping, bool)):
+            yield OpenAPIValidationError(
+                f"{schema_value!r} is not of type 'object', 'boolean'"
+            )
             return
 
-        assert self.schema_ids_registry is not None
+        if not meta_checked:
+            assert self.meta_checked_schema_ids is not None
+            schema_id = id(schema_value)
+            if schema_id not in self.meta_checked_schema_ids:
+                try:
+                    schema_check = getattr(
+                        self.default_validator.value_validator_cls,
+                        "check_schema",
+                    )
+                    schema_check(schema_value)
+                except (SchemaError, ValidationError) as err:
+                    yield OpenAPIValidationError.create_from(err)
+                    return
+                self.meta_checked_schema_ids.append(schema_id)
+
+        assert self.visited_schema_ids is not None
         schema_id = id(schema_value)
-        if schema_id in self.schema_ids_registry:
+        if schema_id in self.visited_schema_ids:
             return
-        self.schema_ids_registry.append(schema_id)
+        self.visited_schema_ids.append(schema_id)
 
         nested_properties = []
         if "allOf" in schema:
             all_of = schema / "allOf"
             for inner_schema in all_of:
-                yield from self(inner_schema, require_properties=False)
+                yield from self(
+                    inner_schema,
+                    require_properties=False,
+                    meta_checked=True,
+                )
                 nested_properties += list(
                     self._collect_properties(inner_schema)
                 )
@@ -122,6 +154,7 @@ class SchemaValidator(KeywordValidator):
                 yield from self(
                     inner_schema,
                     require_properties=False,
+                    meta_checked=True,
                 )
 
         if "oneOf" in schema:
@@ -130,6 +163,7 @@ class SchemaValidator(KeywordValidator):
                 yield from self(
                     inner_schema,
                     require_properties=False,
+                    meta_checked=True,
                 )
 
         if "not" in schema:
@@ -137,6 +171,7 @@ class SchemaValidator(KeywordValidator):
             yield from self(
                 not_schema,
                 require_properties=False,
+                meta_checked=True,
             )
 
         if "items" in schema:
@@ -144,6 +179,7 @@ class SchemaValidator(KeywordValidator):
             yield from self(
                 array_schema,
                 require_properties=False,
+                meta_checked=True,
             )
 
         if "properties" in schema:
@@ -152,6 +188,7 @@ class SchemaValidator(KeywordValidator):
                 yield from self(
                     prop_schema,
                     require_properties=False,
+                    meta_checked=True,
                 )
 
         required = (
