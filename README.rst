@@ -104,7 +104,10 @@ Python package
     # If no exception is raised by validate(), the spec is valid.
     validate(spec_dict)
 
-    validate({'openapi': '3.1.0'})
+    # Example of an intentionally invalid spec.
+    invalid_spec = {'openapi': '3.1.0'}
+
+    validate(invalid_spec)
 
     Traceback (most recent call last):
         ...
