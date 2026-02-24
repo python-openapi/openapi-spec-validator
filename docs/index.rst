@@ -63,6 +63,10 @@ Usage
 
                docker run -v path/to/openapi.yaml:/openapi.yaml --rm pythonopenapi/openapi-spec-validator /openapi.yaml
 
+             .. code-block:: bash
+
+                docker run -v path/to/openapi.yaml:/openapi.yaml --rm pythonopenapi/openapi-spec-validator --validation-errors all /openapi.yaml
+
          .. md-tab-item:: Python interpreter
 
             .. code-block:: bash

@@ -101,7 +101,7 @@ def test_errors_on_missing_description_full(capsys):
     """An error is obviously printed given an empty schema."""
     testargs = [
         "./tests/integration/data/v3.0/missing-description.yaml",
-        "--errors=all",
+        "--subschema-errors=all",
         "--schema=3.0.0",
     ]
     with pytest.raises(SystemExit):
@@ -219,6 +219,98 @@ components:
     assert not err
     assert "stdin: Validation Error:" in out
     assert "stdin: OK" not in out
+
+
+def test_errors_all_lists_all_validation_errors(capsys):
+    spec_io = StringIO(
+        """
+openapi: 3.0.0
+"""
+    )
+
+    testargs = ["--validation-errors", "all", "--schema", "3.0.0", "-"]
+    with mock.patch("openapi_spec_validator.__main__.sys.stdin", spec_io):
+        with pytest.raises(SystemExit):
+            main(testargs)
+
+    out, err = capsys.readouterr()
+    assert not err
+    assert "stdin: Validation Error: [1]" in out
+    assert "stdin: Validation Error: [2]" in out
+    assert "'info' is a required property" in out
+    assert "'paths' is a required property" in out
+    assert "stdin: 2 validation errors found" in out
+
+
+def test_error_alias_controls_subschema_errors_and_warns(capsys):
+    testargs = [
+        "./tests/integration/data/v3.0/missing-description.yaml",
+        "--error",
+        "all",
+        "--schema=3.0.0",
+    ]
+    with pytest.raises(SystemExit):
+        main(testargs)
+
+    out, err = capsys.readouterr()
+    assert "'$ref' is a required property" in out
+    assert "validation errors found" not in out
+    assert (
+        "DeprecationWarning: --errors/--error is deprecated. "
+        "Use --subschema-errors instead."
+    ) in err
+
+
+def test_error_alias_warning_can_be_disabled(capsys):
+    testargs = [
+        "./tests/integration/data/v3.0/missing-description.yaml",
+        "--error",
+        "all",
+        "--schema=3.0.0",
+    ]
+    with mock.patch.dict(
+        "openapi_spec_validator.__main__.os.environ",
+        {"OPENAPI_SPEC_VALIDATOR_WARN_DEPRECATED": "0"},
+        clear=False,
+    ):
+        with pytest.raises(SystemExit):
+            main(testargs)
+
+    out, err = capsys.readouterr()
+    assert "'$ref' is a required property" in out
+    assert not err
+
+
+def test_deprecated_error_ignored_when_new_flag_used(capsys):
+    spec_io = StringIO(
+        """
+openapi: 3.0.0
+"""
+    )
+
+    testargs = [
+        "--error",
+        "all",
+        "--subschema-errors",
+        "best-match",
+        "--validation-errors",
+        "all",
+        "--schema",
+        "3.0.0",
+        "-",
+    ]
+    with mock.patch("openapi_spec_validator.__main__.sys.stdin", spec_io):
+        with pytest.raises(SystemExit):
+            main(testargs)
+
+    out, err = capsys.readouterr()
+    assert "stdin: Validation Error: [1]" in out
+    assert "# Probably due to this subschema error" not in out
+    assert (
+        "DeprecationWarning: --errors/--error is deprecated and ignored when "
+        "--subschema-errors is provided."
+    ) in err
+    assert "stdin: 2 validation errors found" in out
 
 
 def test_version(capsys):
