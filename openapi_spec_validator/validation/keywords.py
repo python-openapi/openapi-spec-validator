@@ -246,38 +246,71 @@ class SchemaValidator(KeywordValidator):
 class OpenAPIV31SchemaValidator(SchemaValidator):
     default_jsonschema_dialect_id = OAS31_BASE_DIALECT_URI
 
+    def __init__(self, registry: "KeywordValidatorRegistry"):
+        super().__init__(registry)
+        self._validator_classes_by_dialect: dict[
+            str, type[Validator] | None
+        ] = {}
+
     def _get_schema_checker(
         self, schema: SchemaPath, schema_value: Any
     ) -> Callable[[Any], None]:
-        if isinstance(schema_value, Mapping):
-            schema_to_check = dict(schema_value)
-            if "$schema" in schema_to_check:
-                dialect_source = schema_to_check
-            else:
-                jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
-                dialect_source = {"$schema": jsonschema_dialect_id}
-                schema_to_check = {
-                    **schema_to_check,
-                    "$schema": jsonschema_dialect_id,
-                }
-        else:
-            jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
-            dialect_source = {"$schema": jsonschema_dialect_id}
-            schema_to_check = schema_value
-
-        validator_cls = validator_for(
-            dialect_source,
-            default=cast(Any, None),
+        dialect_id = self._get_schema_dialect_id(
+            schema,
+            schema_value,
         )
+
+        validator_cls = self._get_validator_class_for_dialect(dialect_id)
         if validator_cls is None:
-            raise ValueError(
-                f"Unknown JSON Schema dialect: {dialect_source['$schema']!r}"
-            )
+            raise ValueError(f"Unknown JSON Schema dialect: {dialect_id!r}")
+
         return partial(
             check_openapi_schema,
             validator_cls,
             format_checker=oas31_format_checker,
         )
+
+    def _get_schema_dialect_id(
+        self, schema: SchemaPath, schema_value: Any
+    ) -> str:
+        if isinstance(schema_value, Mapping):
+            schema_to_check = dict(schema_value)
+            if "$schema" in schema_to_check:
+                dialect_value = schema_to_check["$schema"]
+                if not isinstance(dialect_value, str):
+                    raise ValueError(
+                        "Unknown JSON Schema dialect: " f"{dialect_value!r}"
+                    )
+                dialect_id = dialect_value
+            else:
+                jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
+                schema_to_check = {
+                    **schema_to_check,
+                    "$schema": jsonschema_dialect_id,
+                }
+                dialect_id = jsonschema_dialect_id
+        else:
+            jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
+            schema_to_check = schema_value
+            dialect_id = jsonschema_dialect_id
+
+        return dialect_id
+
+    def _get_validator_class_for_dialect(
+        self, dialect_id: str
+    ) -> type[Validator] | None:
+        if dialect_id in self._validator_classes_by_dialect:
+            return self._validator_classes_by_dialect[dialect_id]
+
+        validator_cls = cast(
+            type[Validator] | None,
+            validator_for(
+                {"$schema": dialect_id},
+                default=cast(Any, None),
+            ),
+        )
+        self._validator_classes_by_dialect[dialect_id] = validator_cls
+        return validator_cls
 
     def _get_jsonschema_dialect_id(self, schema: SchemaPath) -> str:
         schema_root = self._get_schema_root(schema)

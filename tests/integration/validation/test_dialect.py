@@ -1,4 +1,5 @@
 from openapi_spec_validator import OpenAPIV31SpecValidator
+from openapi_spec_validator.validation import keywords as validation_keywords
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
@@ -87,3 +88,76 @@ def test_boolean_schema_uses_root_json_schema_dialect():
     errors = list(OpenAPIV31SpecValidator(spec).iter_errors())
 
     assert errors == []
+
+
+def test_meta_schema_checker_cache_reuses_known_dialect(monkeypatch):
+    spec: dict[str, object] = {
+        "openapi": "3.1.0",
+        "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+        "info": {
+            "title": "Test API",
+            "version": "0.0.1",
+        },
+        "paths": {},
+        "components": {
+            "schemas": {
+                "A": {"type": "object"},
+                "B": {"type": "object"},
+            },
+        },
+    }
+
+    original_validator_for = validation_keywords.validator_for
+    calls = {"count": 0}
+
+    def counting_validator_for(*args, **kwargs):
+        calls["count"] += 1
+        return original_validator_for(*args, **kwargs)
+
+    monkeypatch.setattr(
+        validation_keywords,
+        "validator_for",
+        counting_validator_for,
+    )
+
+    errors = list(OpenAPIV31SpecValidator(spec).iter_errors())
+
+    assert errors == []
+    assert calls["count"] == 1
+
+
+def test_meta_schema_checker_cache_reuses_unknown_dialect(monkeypatch):
+    spec: dict[str, object] = {
+        "openapi": "3.1.0",
+        "jsonSchemaDialect": "https://example.com/custom",
+        "info": {
+            "title": "Test API",
+            "version": "0.0.1",
+        },
+        "paths": {},
+        "components": {
+            "schemas": {
+                "A": {"type": "object"},
+                "B": {"type": "object"},
+            },
+        },
+    }
+
+    original_validator_for = validation_keywords.validator_for
+    calls = {"count": 0}
+
+    def counting_validator_for(*args, **kwargs):
+        calls["count"] += 1
+        return original_validator_for(*args, **kwargs)
+
+    monkeypatch.setattr(
+        validation_keywords,
+        "validator_for",
+        counting_validator_for,
+    )
+
+    errors = list(OpenAPIV31SpecValidator(spec).iter_errors())
+
+    assert len(errors) == 2
+    assert all("Unknown JSON Schema dialect" in err.message for err in errors)
+    assert calls["count"] == 1
