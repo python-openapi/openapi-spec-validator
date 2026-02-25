@@ -244,10 +244,9 @@ class SchemaValidator(KeywordValidator):
 
 
 class OpenAPIV31SchemaValidator(SchemaValidator):
-    default_jsonschema_dialect_id = OAS31_BASE_DIALECT_URI
-
     def __init__(self, registry: "KeywordValidatorRegistry"):
         super().__init__(registry)
+        self._default_jsonschema_dialect_id: str | None = None
         self._validator_classes_by_dialect: dict[
             str, type[Validator] | None
         ] = {}
@@ -283,14 +282,18 @@ class OpenAPIV31SchemaValidator(SchemaValidator):
                     )
                 dialect_id = dialect_value
             else:
-                jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
+                jsonschema_dialect_id = (
+                    self._get_default_jsonschema_dialect_id(schema)
+                )
                 schema_to_check = {
                     **schema_to_check,
                     "$schema": jsonschema_dialect_id,
                 }
                 dialect_id = jsonschema_dialect_id
         else:
-            jsonschema_dialect_id = self._get_jsonschema_dialect_id(schema)
+            jsonschema_dialect_id = self._get_default_jsonschema_dialect_id(
+                schema
+            )
             schema_to_check = schema_value
             dialect_id = jsonschema_dialect_id
 
@@ -312,14 +315,19 @@ class OpenAPIV31SchemaValidator(SchemaValidator):
         self._validator_classes_by_dialect[dialect_id] = validator_cls
         return validator_cls
 
-    def _get_jsonschema_dialect_id(self, schema: SchemaPath) -> str:
-        schema_root = self._get_schema_root(schema)
-        try:
-            return (schema_root // "jsonSchemaDialect").read_str()
-        except KeyError:
-            return self.default_jsonschema_dialect_id
+    def _get_default_jsonschema_dialect_id(self, schema: SchemaPath) -> str:
+        if self._default_jsonschema_dialect_id is not None:
+            return self._default_jsonschema_dialect_id
 
-    def _get_schema_root(self, schema: SchemaPath) -> SchemaPath:
+        spec_root = self._get_spec_root(schema)
+        dialect_id = (spec_root / "jsonSchemaDialect").read_str(
+            default=OAS31_BASE_DIALECT_URI
+        )
+
+        self._default_jsonschema_dialect_id = dialect_id
+        return dialect_id
+
+    def _get_spec_root(self, schema: SchemaPath) -> SchemaPath:
         # jsonschema-path currently has no public API for root traversal.
         return schema._clone_with_parts(())
 
