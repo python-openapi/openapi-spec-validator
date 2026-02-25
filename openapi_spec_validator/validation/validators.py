@@ -144,7 +144,7 @@ class OpenAPIV31SpecValidator(SpecValidator):
         "path": keywords.PathValidator,
         "response": keywords.OpenAPIV3ResponseValidator,
         "responses": keywords.ResponsesValidator,
-        "schema": keywords.SchemaValidator,
+        "schema": keywords.OpenAPIV31SchemaValidator,
         "schemas": keywords.SchemasValidator,
     }
     root_keywords = ["paths", "components"]

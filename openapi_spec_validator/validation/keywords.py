@@ -3,6 +3,7 @@ from collections.abc import Callable
 from collections.abc import Iterator
 from collections.abc import Mapping
 from collections.abc import Sequence
+from functools import partial
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
@@ -11,11 +12,13 @@ from jsonschema._format import FormatChecker
 from jsonschema.exceptions import SchemaError
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
+from jsonschema.validators import validator_for
 from jsonschema_path.paths import SchemaPath
 from openapi_schema_validator import oas30_format_checker
 from openapi_schema_validator import oas31_format_checker
 from openapi_schema_validator.validators import OAS30Validator
 from openapi_schema_validator.validators import OAS31Validator
+from openapi_schema_validator.validators import check_openapi_schema
 
 from openapi_spec_validator.validation.exceptions import (
     DuplicateOperationIDError,
@@ -33,6 +36,8 @@ if TYPE_CHECKING:
     from openapi_spec_validator.validation.registries import (
         KeywordValidatorRegistry,
     )
+
+OAS31_BASE_DIALECT_URI = "https://spec.openapis.org/oas/3.1/dialect/base"
 
 
 class KeywordValidator:
@@ -101,6 +106,32 @@ class SchemaValidator(KeywordValidator):
 
         return props
 
+    def _get_schema_checker(
+        self, schema: SchemaPath, schema_value: Any
+    ) -> Callable[[Any], None]:
+        return cast(
+            Callable[[Any], None],
+            getattr(
+                self.default_validator.value_validator_cls,
+                "check_schema",
+            ),
+        )
+
+    def _validate_schema_meta(
+        self, schema: SchemaPath, schema_value: Any
+    ) -> OpenAPIValidationError | None:
+        try:
+            schema_checker = self._get_schema_checker(schema, schema_value)
+        except ValueError as exc:
+            return OpenAPIValidationError(str(exc))
+        try:
+            schema_checker(schema_value)
+        except (SchemaError, ValidationError) as err:
+            return cast(
+                OpenAPIValidationError, OpenAPIValidationError.create_from(err)
+            )
+        return None
+
     def __call__(
         self,
         schema: SchemaPath,
@@ -114,23 +145,17 @@ class SchemaValidator(KeywordValidator):
             )
             return
 
+        schema_id = id(schema_value)
         if not meta_checked:
             assert self.meta_checked_schema_ids is not None
-            schema_id = id(schema_value)
             if schema_id not in self.meta_checked_schema_ids:
-                try:
-                    schema_check = getattr(
-                        self.default_validator.value_validator_cls,
-                        "check_schema",
-                    )
-                    schema_check(schema_value)
-                except (SchemaError, ValidationError) as err:
-                    yield OpenAPIValidationError.create_from(err)
-                    return
                 self.meta_checked_schema_ids.append(schema_id)
+                err = self._validate_schema_meta(schema, schema_value)
+                if err is not None:
+                    yield err
+                    return
 
         assert self.visited_schema_ids is not None
-        schema_id = id(schema_value)
         if schema_id in self.visited_schema_ids:
             return
         self.visited_schema_ids.append(schema_id)
@@ -216,6 +241,95 @@ class SchemaValidator(KeywordValidator):
                 nullable_value = (schema / "nullable").read_value()
             if default_value is not None or nullable_value is not True:
                 yield from self.default_validator(schema, default_value)
+
+
+class OpenAPIV31SchemaValidator(SchemaValidator):
+    def __init__(self, registry: "KeywordValidatorRegistry"):
+        super().__init__(registry)
+        self._default_jsonschema_dialect_id: str | None = None
+        self._validator_classes_by_dialect: dict[
+            str, type[Validator] | None
+        ] = {}
+
+    def _get_schema_checker(
+        self, schema: SchemaPath, schema_value: Any
+    ) -> Callable[[Any], None]:
+        dialect_id = self._get_schema_dialect_id(
+            schema,
+            schema_value,
+        )
+
+        validator_cls = self._get_validator_class_for_dialect(dialect_id)
+        if validator_cls is None:
+            raise ValueError(f"Unknown JSON Schema dialect: {dialect_id!r}")
+
+        return partial(
+            check_openapi_schema,
+            validator_cls,
+            format_checker=oas31_format_checker,
+        )
+
+    def _get_schema_dialect_id(
+        self, schema: SchemaPath, schema_value: Any
+    ) -> str:
+        if isinstance(schema_value, Mapping):
+            schema_to_check = dict(schema_value)
+            if "$schema" in schema_to_check:
+                dialect_value = schema_to_check["$schema"]
+                if not isinstance(dialect_value, str):
+                    raise ValueError(
+                        "Unknown JSON Schema dialect: " f"{dialect_value!r}"
+                    )
+                dialect_id = dialect_value
+            else:
+                jsonschema_dialect_id = (
+                    self._get_default_jsonschema_dialect_id(schema)
+                )
+                schema_to_check = {
+                    **schema_to_check,
+                    "$schema": jsonschema_dialect_id,
+                }
+                dialect_id = jsonschema_dialect_id
+        else:
+            jsonschema_dialect_id = self._get_default_jsonschema_dialect_id(
+                schema
+            )
+            schema_to_check = schema_value
+            dialect_id = jsonschema_dialect_id
+
+        return dialect_id
+
+    def _get_validator_class_for_dialect(
+        self, dialect_id: str
+    ) -> type[Validator] | None:
+        if dialect_id in self._validator_classes_by_dialect:
+            return self._validator_classes_by_dialect[dialect_id]
+
+        validator_cls = cast(
+            type[Validator] | None,
+            validator_for(
+                {"$schema": dialect_id},
+                default=cast(Any, None),
+            ),
+        )
+        self._validator_classes_by_dialect[dialect_id] = validator_cls
+        return validator_cls
+
+    def _get_default_jsonschema_dialect_id(self, schema: SchemaPath) -> str:
+        if self._default_jsonschema_dialect_id is not None:
+            return self._default_jsonschema_dialect_id
+
+        spec_root = self._get_spec_root(schema)
+        dialect_id = (spec_root / "jsonSchemaDialect").read_str(
+            default=OAS31_BASE_DIALECT_URI
+        )
+
+        self._default_jsonschema_dialect_id = dialect_id
+        return dialect_id
+
+    def _get_spec_root(self, schema: SchemaPath) -> SchemaPath:
+        # jsonschema-path currently has no public API for root traversal.
+        return schema._clone_with_parts(())
 
 
 class SchemasValidator(KeywordValidator):
