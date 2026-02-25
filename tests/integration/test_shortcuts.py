@@ -1,9 +1,12 @@
 import pytest
 
 from openapi_spec_validator import OpenAPIV2SpecValidator
+from openapi_spec_validator import OpenAPIV3SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
+from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
+from openapi_spec_validator import openapi_v32_spec_validator
 from openapi_spec_validator import validate
 from openapi_spec_validator import validate_spec
 from openapi_spec_validator import validate_spec_url
@@ -106,6 +109,29 @@ class TestLocalValidatev30Spec:
         with pytest.warns(DeprecationWarning):
             with pytest.raises(OpenAPIValidationError):
                 validate_spec(spec, validator=openapi_v30_spec_validator)
+
+
+class TestLocalValidatev32Spec:
+    LOCAL_SOURCE_DIRECTORY = "data/v3.2/"
+
+    def local_test_suite_file_path(self, test_file):
+        return f"{self.LOCAL_SOURCE_DIRECTORY}{test_file}"
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "petstore.yaml",
+        ],
+    )
+    def test_valid(self, factory, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+
+        validate(spec)
+        validate(spec, cls=OpenAPIV3SpecValidator)
+        validate(spec, cls=OpenAPIV32SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec(spec, validator=openapi_v32_spec_validator)
 
 
 @pytest.mark.network

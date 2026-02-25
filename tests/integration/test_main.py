@@ -38,6 +38,28 @@ def test_schema_v31(capsys):
     assert "./tests/integration/data/v3.1/petstore.yaml: OK\n" in out
 
 
+def test_schema_v32_detect(capsys):
+    """Test schema v3.2 is detected"""
+    testargs = ["./tests/integration/data/v3.2/petstore.yaml"]
+    main(testargs)
+    out, err = capsys.readouterr()
+    assert not err
+    assert "./tests/integration/data/v3.2/petstore.yaml: OK\n" in out
+
+
+def test_schema_v32(capsys):
+    """No errors when calling proper v3.2 file."""
+    testargs = [
+        "--schema",
+        "3.2.0",
+        "./tests/integration/data/v3.2/petstore.yaml",
+    ]
+    main(testargs)
+    out, err = capsys.readouterr()
+    assert not err
+    assert "./tests/integration/data/v3.2/petstore.yaml: OK\n" in out
+
+
 def test_schema_v30(capsys):
     """No errors when calling proper v3.0 file."""
     testargs = [

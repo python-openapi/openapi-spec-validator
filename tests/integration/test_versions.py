@@ -1,8 +1,13 @@
 import pytest
 
+import openapi_spec_validator.versions as versions_module
 from openapi_spec_validator.versions import consts as versions
 from openapi_spec_validator.versions.exceptions import OpenAPIVersionNotFound
 from openapi_spec_validator.versions.shortcuts import get_spec_version
+
+
+def test_versions_module_exports_openapiv32():
+    assert versions_module.OPENAPIV32 == versions.OPENAPIV32
 
 
 class TestGetSpecVersion:
@@ -31,6 +36,8 @@ class TestGetSpecVersion:
             ("openapi", "3.0.2", versions.OPENAPIV30),
             ("openapi", "3.0.3", versions.OPENAPIV30),
             ("openapi", "3.1.0", versions.OPENAPIV31),
+            ("openapi", "3.2.0", versions.OPENAPIV32),
+            ("openapi", "3.2.1", versions.OPENAPIV32),
         ],
     )
     def test_valid(self, keyword, version, expected):

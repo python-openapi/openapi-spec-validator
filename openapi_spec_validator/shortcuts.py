@@ -10,6 +10,7 @@ from jsonschema_path.typing import Schema
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
+from openapi_spec_validator.validation import OpenAPIV32SpecValidator
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 from openapi_spec_validator.validation.protocols import SupportsValidation
 from openapi_spec_validator.validation.types import SpecValidatorType
@@ -23,6 +24,7 @@ SPEC2VALIDATOR: Mapping[SpecVersion, SpecValidatorType] = {
     versions.OPENAPIV2: OpenAPIV2SpecValidator,
     versions.OPENAPIV30: OpenAPIV30SpecValidator,
     versions.OPENAPIV31: OpenAPIV31SpecValidator,
+    versions.OPENAPIV32: OpenAPIV32SpecValidator,
 }
 
 

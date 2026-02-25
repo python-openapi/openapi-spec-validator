@@ -1045,14 +1045,14 @@ files = [
 
 [[package]]
 name = "openapi-schema-validator"
-version = "0.7.2"
+version = "0.8.0"
 description = "OpenAPI schema validation for Python"
 optional = false
 python-versions = "<4.0.0,>=3.10.0"
 groups = ["main"]
 files = [
-    {file = "openapi_schema_validator-0.7.2-py3-none-any.whl", hash = "sha256:8f92a1442000f8e15beffdd33b59620523237d56a2f2e783c07e4f4c20d88fbd"},
-    {file = "openapi_schema_validator-0.7.2.tar.gz", hash = "sha256:8515cafc62c3f6374c3d0517f1b0ea69650f07fd81d759238199eac2d26eef0c"},
+    {file = "openapi_schema_validator-0.8.0-py3-none-any.whl", hash = "sha256:2769ccc58ce6e99a469cafdd7c6b660624a2b05c7052b85e56e6a6f0d7d58742"},
+    {file = "openapi_schema_validator-0.8.0.tar.gz", hash = "sha256:5828e9f11bddf8efbbfa50f178783572219fbf0d92f85561bda04ebf5bcefe17"},
 ]
 
 [package.dependencies]
@@ -1060,6 +1060,9 @@ jsonschema = ">=4.19.1,<5.0.0"
 jsonschema-specifications = ">=2024.10.1"
 referencing = ">=0.37.0,<0.38.0"
 rfc3339-validator = "*"
+
+[package.extras]
+ecma-regex = ["regress (>=2025.10.1)"]
 
 [[package]]
 name = "packaging"
@@ -2222,4 +2225,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "2351557df9ba38427c372cdc99fd542b2eb4233946c787ebed01f1d5cf3dffff"
+content-hash = "ccdc2656740ecd911fc8e7bb645557688fd257f251dd21e5a13305c5aa8730a4"

@@ -7,6 +7,9 @@ from openapi_spec_validator.validation.validators import (
 from openapi_spec_validator.validation.validators import (
     OpenAPIV31SpecValidator,
 )
+from openapi_spec_validator.validation.validators import (
+    OpenAPIV32SpecValidator,
+)
 from openapi_spec_validator.validation.validators import SpecValidator
 
 __all__ = [
@@ -14,11 +17,13 @@ __all__ = [
     "openapi_v3_spec_validator",
     "openapi_v30_spec_validator",
     "openapi_v31_spec_validator",
+    "openapi_v32_spec_validator",
     "openapi_spec_validator_proxy",
     "OpenAPIV2SpecValidator",
     "OpenAPIV3SpecValidator",
     "OpenAPIV30SpecValidator",
     "OpenAPIV31SpecValidator",
+    "OpenAPIV32SpecValidator",
     "SpecValidator",
 ]
 
@@ -43,9 +48,16 @@ openapi_v31_spec_validator = SpecValidatorProxy(
     use="OpenAPIV31SpecValidator",
 )
 
+# v3.2 spec
+openapi_v32_spec_validator = SpecValidatorProxy(
+    OpenAPIV32SpecValidator,
+    deprecated="openapi_v32_spec_validator",
+    use="OpenAPIV32SpecValidator",
+)
+
 # alias to the latest v3 version
-openapi_v3_spec_validator = openapi_v31_spec_validator
-OpenAPIV3SpecValidator = OpenAPIV31SpecValidator
+openapi_v3_spec_validator = openapi_v32_spec_validator
+OpenAPIV3SpecValidator = OpenAPIV32SpecValidator
 
 # detect version spec
 openapi_spec_validator_proxy = DetectValidatorProxy(
@@ -53,5 +65,6 @@ openapi_spec_validator_proxy = DetectValidatorProxy(
         ("swagger", "2.0"): openapi_v2_spec_validator,
         ("openapi", "3.0"): openapi_v30_spec_validator,
         ("openapi", "3.1"): openapi_v31_spec_validator,
+        ("openapi", "3.2"): openapi_v32_spec_validator,
     },
 )

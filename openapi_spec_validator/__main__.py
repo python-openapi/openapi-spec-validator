@@ -15,6 +15,7 @@ from openapi_spec_validator.shortcuts import validate
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
+from openapi_spec_validator.validation import OpenAPIV32SpecValidator
 from openapi_spec_validator.validation import SpecValidator
 
 logger = logging.getLogger(__name__)
@@ -55,8 +56,8 @@ def print_validationerror(
         print("## " + str(best_match(exc.context)))
         if len(exc.context) > 1:
             print(
-                f"\n({len(exc.context) - 1} more subschemas errors,",
-                "use --subschema-errors=all to see them.)",
+                f"\n({len(exc.context) - 1} more subschemas errors, "
+                "use --subschema-errors=all to see them.)"
             )
 
 
@@ -101,9 +102,18 @@ def main(args: Sequence[str] | None = None) -> None:
     parser.add_argument(
         "--schema",
         type=str,
-        choices=["detect", "2.0", "3.0", "3.1", "3.0.0", "3.1.0"],
+        choices=[
+            "detect",
+            "2.0",
+            "3.0",
+            "3.1",
+            "3.2",
+            "3.0.0",
+            "3.1.0",
+            "3.2.0",
+        ],
         default="detect",
-        metavar="{detect,2.0,3.0,3.1}",
+        metavar="{detect,2.0,3.0,3.1,3.2}",
         help="OpenAPI schema version (default: detect).",
     )
     parser.add_argument(
@@ -149,9 +159,11 @@ def main(args: Sequence[str] | None = None) -> None:
             "2.0": OpenAPIV2SpecValidator,
             "3.0": OpenAPIV30SpecValidator,
             "3.1": OpenAPIV31SpecValidator,
+            "3.2": OpenAPIV32SpecValidator,
             # backward compatibility
             "3.0.0": OpenAPIV30SpecValidator,
             "3.1.0": OpenAPIV31SpecValidator,
+            "3.2.0": OpenAPIV32SpecValidator,
         }
         validator_cls = validators[args_parsed.schema]
 

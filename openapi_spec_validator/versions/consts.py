@@ -18,4 +18,10 @@ OPENAPIV31 = SpecVersion(
     minor="1",
 )
 
-VERSIONS: list[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31]
+OPENAPIV32 = SpecVersion(
+    keyword="openapi",
+    major="3",
+    minor="2",
+)
+
+VERSIONS: list[SpecVersion] = [OPENAPIV2, OPENAPIV30, OPENAPIV31, OPENAPIV32]
