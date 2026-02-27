@@ -26,6 +26,7 @@ from jsonschema_path.typing import Schema
 from openapi_spec_validator import schemas
 from openapi_spec_validator import validate
 from openapi_spec_validator.readers import read_from_filename
+from openapi_spec_validator.settings import OpenAPISpecValidatorSettings
 
 
 @dataclass
@@ -305,10 +306,11 @@ def main():
     args = parser.parse_args()
 
     results: list[dict[str, Any]] = []
+    settings = OpenAPISpecValidatorSettings()
 
     print("Spec schema validator backend selection:")
-    print(f"  Force Python: {getattr(schemas, '_FORCE_PYTHON', False)}")
-    print(f"  Force Rust: {getattr(schemas, '_FORCE_RUST', False)}")
+    print("  Configured backend mode: " f"{settings.schema_validator_backend}")
+    print(f"  Effective backend: {schemas.get_validator_backend()}")
 
     # Benchmark custom specs
     if args.specs:

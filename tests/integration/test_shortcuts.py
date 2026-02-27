@@ -1,3 +1,6 @@
+import importlib
+import os
+
 import pytest
 
 from openapi_spec_validator import OpenAPIV2SpecValidator
@@ -7,12 +10,14 @@ from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
 from openapi_spec_validator import openapi_v32_spec_validator
+from openapi_spec_validator import schemas as schemas_module
 from openapi_spec_validator import shortcuts as shortcuts_module
 from openapi_spec_validator import validate
 from openapi_spec_validator import validate_spec
 from openapi_spec_validator import validate_spec_url
 from openapi_spec_validator import validate_url
 from openapi_spec_validator.settings import RESOLVED_CACHE_MAXSIZE_DEFAULT
+from openapi_spec_validator.settings import OpenAPISpecValidatorSettings
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 
@@ -73,6 +78,63 @@ def test_validate_uses_default_resolved_cache_on_invalid_env(monkeypatch):
     validate(spec, cls=OpenAPIV30SpecValidator)
 
     assert captured["resolved_cache_maxsize"] == RESOLVED_CACHE_MAXSIZE_DEFAULT
+
+
+@pytest.mark.parametrize(
+    "backend",
+    ["auto", "jsonschema", "jsonschema-rs"],
+)
+def test_schema_validator_backend_env_valid_values(monkeypatch, backend):
+    monkeypatch.setenv(
+        "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+        backend,
+    )
+
+    settings = OpenAPISpecValidatorSettings()
+
+    assert settings.schema_validator_backend == backend
+
+
+def test_schema_validator_backend_env_invalid_value_warns(monkeypatch):
+    monkeypatch.setenv(
+        "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+        "invalid-value",
+    )
+
+    with pytest.warns(
+        UserWarning,
+        match="OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+    ):
+        settings = OpenAPISpecValidatorSettings()
+
+    assert settings.schema_validator_backend == "auto"
+
+
+def test_schema_validator_backend_jsonschema_disables_rust(monkeypatch):
+    previous_backend = os.getenv(
+        "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND"
+    )
+
+    monkeypatch.setenv(
+        "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+        "jsonschema",
+    )
+
+    reloaded = importlib.reload(schemas_module)
+
+    assert reloaded.get_validator_backend() == "jsonschema"
+
+    if previous_backend is None:
+        monkeypatch.delenv(
+            "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+            raising=False,
+        )
+    else:
+        monkeypatch.setenv(
+            "OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND",
+            previous_backend,
+        )
+    importlib.reload(schemas_module)
 
 
 class TestLocalValidateSpecUrl:

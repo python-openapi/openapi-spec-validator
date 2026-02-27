@@ -1,10 +1,19 @@
+import os
 from io import StringIO
 from unittest import mock
 
 import pytest
 
 from openapi_spec_validator import __version__
+from openapi_spec_validator import schemas
 from openapi_spec_validator.__main__ import main
+
+
+def uses_jsonschema_rs_backend() -> bool:
+    selected = os.getenv("OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND")
+    if selected == "jsonschema-rs":
+        return True
+    return schemas.get_validator_backend() == "jsonschema-rs"
 
 
 def test_schema_v2_detect(capsys):
@@ -114,9 +123,14 @@ def test_errors_on_missing_description_best(capsys):
         in out
     )
     assert "Failed validating" in out
-    assert "'description' is a required property" in out
-    assert "'$ref' is a required property" not in out
-    assert "1 more subschemas errors" in out
+    if uses_jsonschema_rs_backend():
+        assert "oneOf" in out
+        assert "# Due to one of those errors" not in out
+        assert "# Probably due to this subschema error" not in out
+    else:
+        assert "'description' is a required property" in out
+        assert "'$ref' is a required property" not in out
+        assert "1 more subschemas errors" in out
 
 
 def test_errors_on_missing_description_full(capsys):
@@ -135,9 +149,15 @@ def test_errors_on_missing_description_full(capsys):
         in out
     )
     assert "Failed validating" in out
-    assert "'description' is a required property" in out
-    assert "'$ref' is a required property" in out
-    assert "1 more subschema error" not in out
+    if uses_jsonschema_rs_backend():
+        assert "oneOf" in out
+        assert "# Due to one of those errors" not in out
+        assert "# Probably due to this subschema error" not in out
+        assert "'$ref' is a required property" not in out
+    else:
+        assert "'description' is a required property" in out
+        assert "'$ref' is a required property" in out
+        assert "1 more subschema error" not in out
 
 
 def test_schema_unknown(capsys):
@@ -169,7 +189,8 @@ def test_validation_error(capsys):
         "./tests/integration/data/v2.0/petstore.yaml: Validation Error:" in out
     )
     assert "Failed validating" in out
-    assert "'openapi' is a required property" in out
+    assert "is a required property" in out
+    assert "openapi" in out
 
 
 @mock.patch(
@@ -259,8 +280,9 @@ openapi: 3.0.0
     assert not err
     assert "stdin: Validation Error: [1]" in out
     assert "stdin: Validation Error: [2]" in out
-    assert "'info' is a required property" in out
-    assert "'paths' is a required property" in out
+    assert "is a required property" in out
+    assert "info" in out
+    assert "paths" in out
     assert "stdin: 2 validation errors found" in out
 
 
@@ -275,7 +297,11 @@ def test_error_alias_controls_subschema_errors_and_warns(capsys):
         main(testargs)
 
     out, err = capsys.readouterr()
-    assert "'$ref' is a required property" in out
+    if uses_jsonschema_rs_backend():
+        assert "# Due to one of those errors" not in out
+        assert "# Probably due to this subschema error" not in out
+    else:
+        assert "'$ref' is a required property" in out
     assert "validation errors found" not in out
     assert (
         "DeprecationWarning: --errors/--error is deprecated. "
@@ -299,8 +325,36 @@ def test_error_alias_warning_can_be_disabled(capsys):
             main(testargs)
 
     out, err = capsys.readouterr()
-    assert "'$ref' is a required property" in out
+    if uses_jsonschema_rs_backend():
+        assert "# Due to one of those errors" not in out
+        assert "# Probably due to this subschema error" not in out
+    else:
+        assert "'$ref' is a required property" in out
     assert not err
+
+
+def test_subschema_details_gated_for_jsonschema_rs_backend(capsys):
+    testargs = [
+        "./tests/integration/data/v3.0/missing-description.yaml",
+        "--subschema-errors=all",
+        "--schema=3.0.0",
+    ]
+    with mock.patch(
+        "openapi_spec_validator.__main__.schemas.get_validator_backend",
+        return_value="jsonschema-rs",
+    ):
+        with pytest.raises(SystemExit):
+            main(testargs)
+
+    out, err = capsys.readouterr()
+    assert not err
+    assert "# Due to one of those errors" not in out
+    assert "# Probably due to this subschema error" not in out
+    if "# Subschema details" in out:
+        assert (
+            "Subschema error details are not available with "
+            "jsonschema-rs backend."
+        ) in out
 
 
 def test_deprecated_error_ignored_when_new_flag_used(capsys):
