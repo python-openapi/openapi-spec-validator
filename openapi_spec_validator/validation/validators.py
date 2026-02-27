@@ -17,6 +17,7 @@ from openapi_spec_validator.schemas import openapi_v30_schema_validator
 from openapi_spec_validator.schemas import openapi_v31_schema_validator
 from openapi_spec_validator.schemas import openapi_v32_schema_validator
 from openapi_spec_validator.schemas.types import AnySchema
+from openapi_spec_validator.settings import OpenAPISpecValidatorSettings
 from openapi_spec_validator.validation import keywords
 from openapi_spec_validator.validation.decorators import unwraps_iter
 from openapi_spec_validator.validation.decorators import wraps_cached_iter
@@ -54,11 +55,13 @@ class SpecValidator:
             self.schema_path = schema
             self.schema = schema.read_value()
         else:
+            settings = OpenAPISpecValidatorSettings()
             self.schema = schema
             self.schema_path = SchemaPath.from_dict(
                 self.schema,
                 base_uri=self.base_uri,
                 handlers=self.resolver_handlers,
+                resolved_cache_maxsize=settings.resolved_cache_maxsize,
             )
 
         self.keyword_validators_registry = KeywordValidatorRegistry(

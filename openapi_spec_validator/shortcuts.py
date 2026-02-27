@@ -7,6 +7,7 @@ from jsonschema_path import SchemaPath
 from jsonschema_path.handlers import all_urls_handler
 from jsonschema_path.typing import Schema
 
+from openapi_spec_validator.settings import OpenAPISpecValidatorSettings
 from openapi_spec_validator.validation import OpenAPIV2SpecValidator
 from openapi_spec_validator.validation import OpenAPIV30SpecValidator
 from openapi_spec_validator.validation import OpenAPIV31SpecValidator
@@ -44,7 +45,12 @@ def validate(
 ) -> None:
     if cls is None:
         cls = get_validator_cls(spec)
-    sp = SchemaPath.from_dict(spec, base_uri=base_uri)
+    settings = OpenAPISpecValidatorSettings()
+    sp = SchemaPath.from_dict(
+        spec,
+        base_uri=base_uri,
+        resolved_cache_maxsize=settings.resolved_cache_maxsize,
+    )
     v = cls(sp)
     return v.validate()
 

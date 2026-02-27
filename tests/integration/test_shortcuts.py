@@ -7,10 +7,12 @@ from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
 from openapi_spec_validator import openapi_v32_spec_validator
+from openapi_spec_validator import shortcuts as shortcuts_module
 from openapi_spec_validator import validate
 from openapi_spec_validator import validate_spec
 from openapi_spec_validator import validate_spec_url
 from openapi_spec_validator import validate_url
+from openapi_spec_validator.settings import RESOLVED_CACHE_MAXSIZE_DEFAULT
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from openapi_spec_validator.validation.exceptions import ValidatorDetectError
 
@@ -21,6 +23,56 @@ class TestValidateSpec:
 
         with pytest.raises(ValidatorDetectError):
             validate(spec)
+
+
+def test_validate_uses_resolved_cache_maxsize_env(monkeypatch):
+    captured: dict[str, int] = {}
+    original_from_dict = shortcuts_module.SchemaPath.from_dict
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "0.0.1"},
+        "paths": {},
+    }
+
+    def fake_from_dict(cls, *args, **kwargs):
+        captured["resolved_cache_maxsize"] = kwargs["resolved_cache_maxsize"]
+        return original_from_dict(*args, **kwargs)
+
+    monkeypatch.setenv("OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE", "256")
+    monkeypatch.setattr(
+        shortcuts_module.SchemaPath,
+        "from_dict",
+        classmethod(fake_from_dict),
+    )
+
+    validate(spec, cls=OpenAPIV30SpecValidator)
+
+    assert captured["resolved_cache_maxsize"] == 256
+
+
+def test_validate_uses_default_resolved_cache_on_invalid_env(monkeypatch):
+    captured: dict[str, int] = {}
+    original_from_dict = shortcuts_module.SchemaPath.from_dict
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "0.0.1"},
+        "paths": {},
+    }
+
+    def fake_from_dict(cls, *args, **kwargs):
+        captured["resolved_cache_maxsize"] = kwargs["resolved_cache_maxsize"]
+        return original_from_dict(*args, **kwargs)
+
+    monkeypatch.setenv("OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE", "-1")
+    monkeypatch.setattr(
+        shortcuts_module.SchemaPath,
+        "from_dict",
+        classmethod(fake_from_dict),
+    )
+
+    validate(spec, cls=OpenAPIV30SpecValidator)
+
+    assert captured["resolved_cache_maxsize"] == RESOLVED_CACHE_MAXSIZE_DEFAULT
 
 
 class TestLocalValidateSpecUrl:

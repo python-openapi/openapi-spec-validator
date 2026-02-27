@@ -21,13 +21,11 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
-from jsonschema_path import SchemaPath
 from jsonschema_path.typing import Schema
 
 from openapi_spec_validator import schemas
 from openapi_spec_validator import validate
 from openapi_spec_validator.readers import read_from_filename
-from openapi_spec_validator.shortcuts import get_validator_cls
 
 
 @dataclass
@@ -110,11 +108,7 @@ def get_spec_version(spec: Schema) -> str:
 def run_once(spec: Schema) -> float:
     """Run validation once and return elapsed time."""
     t0 = time.perf_counter()
-    cls = get_validator_cls(spec)
-    sp = SchemaPath.from_dict(spec)
-    v = cls(sp)
-    v.validate()
-    # validate(spec)
+    validate(spec)
     return time.perf_counter() - t0
 
 
@@ -271,8 +265,8 @@ def get_synthetic_specs_iterator(
     configs: list[tuple[int, int, str]],
 ) -> Iterator[tuple[dict[str, Any], str, float]]:
     """Iterator over synthetic specs based on provided configurations."""
-    for paths, schemas, size in configs:
-        spec = generate_synthetic_spec(paths, schemas)
+    for paths, schema_count, size in configs:
+        spec = generate_synthetic_spec(paths, schema_count)
         yield spec, f"synthetic_{size}", 0
 
 
@@ -348,7 +342,10 @@ def main():
         results.append(result.as_dict())
         if result.success:
             print(
-                f"   ✅ {result.median_s:.4f}s, {result.validations_per_sec:.2f} val/s"
+                "   ✅ {:.4f}s, {:.2f} val/s".format(
+                    result.median_s,
+                    result.validations_per_sec,
+                )
             )
         else:
             print(f"   ❌ Error: {result.error}")

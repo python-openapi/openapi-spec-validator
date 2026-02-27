@@ -68,3 +68,8 @@ CLI (Command Line Interface)
 Legacy note:
    ``--errors`` / ``--error`` are deprecated and emit warnings by default.
    Set ``OPENAPI_SPEC_VALIDATOR_WARN_DEPRECATED=0`` to silence warnings.
+
+Performance note:
+   You can tune resolved-path caching with
+   ``OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE``.
+   Default is ``128``; set ``0`` to disable.

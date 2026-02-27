@@ -6,6 +6,8 @@ from openapi_spec_validator import OpenAPIV2SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import OpenAPIV31SpecValidator
 from openapi_spec_validator import OpenAPIV32SpecValidator
+from openapi_spec_validator.settings import RESOLVED_CACHE_MAXSIZE_DEFAULT
+from openapi_spec_validator.validation import validators as validators_module
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
@@ -65,6 +67,60 @@ class TestLocalOpenAPIv2Validator:
 
         with pytest.raises(Unresolvable):
             OpenAPIV2SpecValidator(spec, base_uri=spec_url).validate()
+
+
+def test_spec_validator_uses_resolved_cache_maxsize_env(monkeypatch):
+    captured: dict[str, int] = {}
+    original_from_dict = validators_module.SchemaPath.from_dict
+
+    def fake_from_dict(cls, *args, **kwargs):
+        captured["resolved_cache_maxsize"] = kwargs["resolved_cache_maxsize"]
+        return original_from_dict(*args, **kwargs)
+
+    monkeypatch.setenv("OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE", "64")
+    monkeypatch.setattr(
+        validators_module.SchemaPath,
+        "from_dict",
+        classmethod(fake_from_dict),
+    )
+
+    OpenAPIV30SpecValidator(
+        {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "0.0.1"},
+            "paths": {},
+        }
+    )
+
+    assert captured["resolved_cache_maxsize"] == 64
+
+
+def test_spec_validator_uses_default_resolved_cache_on_invalid_env(
+    monkeypatch,
+):
+    captured: dict[str, int] = {}
+    original_from_dict = validators_module.SchemaPath.from_dict
+
+    def fake_from_dict(cls, *args, **kwargs):
+        captured["resolved_cache_maxsize"] = kwargs["resolved_cache_maxsize"]
+        return original_from_dict(*args, **kwargs)
+
+    monkeypatch.setenv("OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE", "bad")
+    monkeypatch.setattr(
+        validators_module.SchemaPath,
+        "from_dict",
+        classmethod(fake_from_dict),
+    )
+
+    OpenAPIV30SpecValidator(
+        {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "0.0.1"},
+            "paths": {},
+        }
+    )
+
+    assert captured["resolved_cache_maxsize"] == RESOLVED_CACHE_MAXSIZE_DEFAULT
 
 
 class TestLocalOpenAPIv30Validator:
