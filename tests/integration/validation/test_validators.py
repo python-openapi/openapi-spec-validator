@@ -257,6 +257,122 @@ class TestLocalOpenAPIv32Validator:
 
         assert not errors
 
+    def test_tag_hierarchy_is_valid(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "tags": [
+                {
+                    "name": "external",
+                    "kind": "audience",
+                },
+                {
+                    "name": "partner",
+                    "parent": "external",
+                    "kind": "audience",
+                },
+                {
+                    "name": "partner-updates",
+                    "parent": "partner",
+                    "kind": "nav",
+                },
+            ],
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert not errors
+
+    def test_tag_hierarchy_fails_for_unknown_parent(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "tags": [
+                {
+                    "name": "partner",
+                    "parent": "external",
+                },
+            ],
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert len(errors) == 1
+        assert (
+            errors[0].message
+            == "Tag 'partner' references unknown parent tag 'external'"
+        )
+
+    def test_tag_hierarchy_fails_for_circular_reference(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "tags": [
+                {
+                    "name": "a",
+                    "parent": "b",
+                },
+                {
+                    "name": "b",
+                    "parent": "c",
+                },
+                {
+                    "name": "c",
+                    "parent": "a",
+                },
+            ],
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert errors
+        assert any(
+            err.message == "Circular tag hierarchy detected: a -> b -> c -> a"
+            for err in errors
+        )
+
 
 def test_oas31_query_operation_is_not_semantically_traversed():
     spec = {
@@ -310,6 +426,106 @@ def test_oas31_additional_operations_are_not_semantically_traversed():
 
     assert errors
     assert all("Path parameter 'item_id'" not in err.message for err in errors)
+
+
+@pytest.mark.parametrize(
+    "spec,validator_cls",
+    [
+        (
+            {
+                "swagger": "2.0",
+                "info": {
+                    "title": "Tag API",
+                    "version": "1.0.0",
+                },
+                "tags": [
+                    {
+                        "name": "pets",
+                    },
+                    {
+                        "name": "pets",
+                        "description": "duplicate by name",
+                    },
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "responses": {
+                                "200": {
+                                    "description": "ok",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            OpenAPIV2SpecValidator,
+        ),
+        (
+            {
+                "openapi": "3.0.3",
+                "info": {
+                    "title": "Tag API",
+                    "version": "1.0.0",
+                },
+                "tags": [
+                    {
+                        "name": "pets",
+                    },
+                    {
+                        "name": "pets",
+                    },
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "responses": {
+                                "200": {
+                                    "description": "ok",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            OpenAPIV30SpecValidator,
+        ),
+        (
+            {
+                "openapi": "3.1.0",
+                "info": {
+                    "title": "Tag API",
+                    "version": "1.0.0",
+                },
+                "tags": [
+                    {
+                        "name": "pets",
+                    },
+                    {
+                        "name": "pets",
+                    },
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "responses": {
+                                "200": {
+                                    "description": "ok",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            OpenAPIV31SpecValidator,
+        ),
+    ],
+)
+def test_oas2_oas3_duplicate_top_level_tags_are_invalid(spec, validator_cls):
+    errors = list(validator_cls(spec).iter_errors())
+
+    assert errors
+    assert any(err.message == "Duplicate tag name 'pets'" for err in errors)
 
 
 @pytest.mark.network
