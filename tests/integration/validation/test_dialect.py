@@ -1,4 +1,5 @@
 from openapi_spec_validator import OpenAPIV31SpecValidator
+from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator.validation import keywords as validation_keywords
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
@@ -6,9 +7,10 @@ from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 def make_spec(
     component_schema: dict[str, object] | bool,
     json_schema_dialect: str | None = None,
+    openapi_version: str = "3.1.0",
 ) -> dict[str, object]:
     spec: dict[str, object] = {
-        "openapi": "3.1.0",
+        "openapi": openapi_version,
         "info": {
             "title": "Test API",
             "version": "0.0.1",
@@ -161,3 +163,40 @@ def test_meta_schema_checker_cache_reuses_unknown_dialect(monkeypatch):
     assert len(errors) == 2
     assert all("Unknown JSON Schema dialect" in err.message for err in errors)
     assert calls["count"] == 1
+
+
+def test_oas32_default_root_json_schema_dialect_is_honored():
+    spec = make_spec(
+        {"type": "object"},
+        json_schema_dialect="https://json-schema.org/draft/2020-12/schema",
+        openapi_version="3.2.0",
+    )
+
+    errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+    assert errors == []
+
+
+def test_oas32_uses_default_dialect_when_jsonschema_dialect_is_missing():
+    spec = make_spec(
+        {"type": "object"},
+        openapi_version="3.2.0",
+    )
+
+    errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+    assert errors == []
+
+
+def test_oas32_unknown_dialect_raises_error():
+    spec = make_spec(
+        {"type": "object"},
+        json_schema_dialect="https://example.com/custom",
+        openapi_version="3.2.0",
+    )
+
+    errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], OpenAPIValidationError)
+    assert "Unknown JSON Schema dialect" in errors[0].message

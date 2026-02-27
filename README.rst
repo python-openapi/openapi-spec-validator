@@ -22,7 +22,8 @@ OpenAPI Spec Validator is a CLI, pre-commit hook and python package that validat
 against the `OpenAPI 2.0 (aka Swagger)
 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__,
 `OpenAPI 3.0 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md>`__
-and `OpenAPI 3.1 <https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md>`__
+`OpenAPI 3.1 <https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md>`__
+and `OpenAPI 3.2 <https://spec.openapis.org/oas/v3.2.0.html>`__
 specification. The validator aims to check for full compliance with the Specification.
 
 
@@ -119,9 +120,9 @@ Related projects
 ################
 
 * `openapi-core <https://github.com/python-openapi/openapi-core>`__
-   Python library that adds client-side and server-side support for the OpenAPI v3.0 and OpenAPI v3.1 specification.
+   Python library that adds client-side and server-side support for the OpenAPI v3.0, OpenAPI v3.1 and OpenAPI v3.2 specification.
 * `openapi-schema-validator <https://github.com/python-openapi/openapi-schema-validator>`__
-   Python library that validates schema against the OpenAPI Schema Specification v3.0 and OpenAPI Schema Specification v3.1.
+   Python library that validates schema against the OpenAPI Schema Specification v3.0, OpenAPI Schema Specification v3.1 and OpenAPI Schema Specification v3.2.
 
 License
 #######

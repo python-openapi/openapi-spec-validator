@@ -45,7 +45,7 @@ CLI (Command Line Interface)
 
    usage: openapi-spec-validator [-h] [--subschema-errors {best-match,all}]
                                  [--validation-errors {first,all}]
-                                 [--errors {best-match,all}] [--schema {detect,2.0,3.0,3.1}]
+                                  [--errors {best-match,all}] [--schema {detect,2.0,3.0,3.1,3.2}]
                                  [--version] file [file ...]
    
    positional arguments:
@@ -61,7 +61,7 @@ CLI (Command Line Interface)
                            use "all" to get all validation errors.
      --errors {best-match,all}, --error {best-match,all}
                            Deprecated alias for --subschema-errors.
-     --schema {detect,2.0,3.0,3.1}
+      --schema {detect,2.0,3.0,3.1,3.2}
                            OpenAPI schema version (default: detect).
      --version             show program's version number and exit
 

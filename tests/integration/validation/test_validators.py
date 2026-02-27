@@ -5,6 +5,7 @@ from referencing.exceptions import Unresolvable
 from openapi_spec_validator import OpenAPIV2SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import OpenAPIV31SpecValidator
+from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
 
@@ -122,6 +123,193 @@ class TestLocalOpenAPIv30Validator:
 
         with pytest.raises(Unresolvable):
             OpenAPIV30SpecValidator(spec, base_uri=spec_url).validate()
+
+
+class TestLocalOpenAPIv32Validator:
+    LOCAL_SOURCE_DIRECTORY = "data/v3.2/"
+
+    def local_test_suite_file_path(self, test_file):
+        return f"{self.LOCAL_SOURCE_DIRECTORY}{test_file}"
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "petstore.yaml",
+        ],
+    )
+    def test_valid(self, factory, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+        validator = OpenAPIV32SpecValidator(spec, base_uri=spec_url)
+
+        validator.validate()
+
+        assert validator.is_valid()
+
+    def test_query_operation_is_semantically_validated(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Query API",
+                "version": "1.0.0",
+            },
+            "paths": {
+                "/items/{item_id}": {
+                    "query": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert len(errors) == 1
+        assert "Path parameter 'item_id'" in errors[0].message
+
+    def test_additional_operations_are_semantically_validated(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Additional API",
+                "version": "1.0.0",
+            },
+            "paths": {
+                "/items/{item_id}": {
+                    "additionalOperations": {
+                        "CUSTOM": {
+                            "responses": {
+                                "200": {
+                                    "description": "ok",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert len(errors) == 1
+        assert "Path parameter 'item_id'" in errors[0].message
+
+    def test_top_level_duplicate_tags_are_invalid(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "tags": [
+                {
+                    "name": "pets",
+                },
+                {
+                    "name": "pets",
+                },
+            ],
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert len(errors) == 1
+        assert errors[0].message == "Duplicate tag name 'pets'"
+
+    def test_operation_tags_without_root_declaration_are_valid(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "tags": ["pets", "animals"],
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert not errors
+
+
+def test_oas31_query_operation_is_not_semantically_traversed():
+    spec = {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "Query API",
+            "version": "1.0.0",
+        },
+        "paths": {
+            "/items/{item_id}": {
+                "query": {
+                    "responses": {
+                        "200": {
+                            "description": "ok",
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+    errors = list(OpenAPIV31SpecValidator(spec).iter_errors())
+
+    assert errors
+    assert all("Path parameter 'item_id'" not in err.message for err in errors)
+
+
+def test_oas31_additional_operations_are_not_semantically_traversed():
+    spec = {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "Additional API",
+            "version": "1.0.0",
+        },
+        "paths": {
+            "/items/{item_id}": {
+                "additionalOperations": {
+                    "CUSTOM": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+    errors = list(OpenAPIV31SpecValidator(spec).iter_errors())
+
+    assert errors
+    assert all("Path parameter 'item_id'" not in err.message for err in errors)
 
 
 @pytest.mark.network

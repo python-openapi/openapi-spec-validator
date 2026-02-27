@@ -15,6 +15,7 @@ from jsonschema_path.paths import SchemaPath
 from openapi_spec_validator.schemas import openapi_v2_schema_validator
 from openapi_spec_validator.schemas import openapi_v30_schema_validator
 from openapi_spec_validator.schemas import openapi_v31_schema_validator
+from openapi_spec_validator.schemas import openapi_v32_schema_validator
 from openapi_spec_validator.schemas.types import AnySchema
 from openapi_spec_validator.validation import keywords
 from openapi_spec_validator.validation.decorators import unwraps_iter
@@ -102,8 +103,9 @@ class OpenAPIV2SpecValidator(SpecValidator):
         "path": keywords.PathValidator,
         "response": keywords.OpenAPIV2ResponseValidator,
         "responses": keywords.ResponsesValidator,
-        "schema": keywords.SchemaValidator,
+        "schema": keywords.OpenAPIV30SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
     }
     root_keywords = ["paths", "components"]
 
@@ -123,8 +125,9 @@ class OpenAPIV30SpecValidator(SpecValidator):
         "path": keywords.PathValidator,
         "response": keywords.OpenAPIV3ResponseValidator,
         "responses": keywords.ResponsesValidator,
-        "schema": keywords.SchemaValidator,
+        "schema": keywords.OpenAPIV30SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
     }
     root_keywords = ["paths", "components"]
 
@@ -146,5 +149,28 @@ class OpenAPIV31SpecValidator(SpecValidator):
         "responses": keywords.ResponsesValidator,
         "schema": keywords.OpenAPIV31SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
+    }
+    root_keywords = ["paths", "components"]
+
+
+class OpenAPIV32SpecValidator(SpecValidator):
+    schema_validator = openapi_v32_schema_validator
+    keyword_validators = {
+        "__root__": keywords.RootValidator,
+        "components": keywords.ComponentsValidator,
+        "content": keywords.ContentValidator,
+        "default": keywords.OpenAPIV32ValueValidator,
+        "mediaType": keywords.MediaTypeValidator,
+        "operation": keywords.OperationValidator,
+        "parameter": keywords.ParameterValidator,
+        "parameters": keywords.ParametersValidator,
+        "paths": keywords.PathsValidator,
+        "path": keywords.OpenAPIV32PathValidator,
+        "response": keywords.OpenAPIV3ResponseValidator,
+        "responses": keywords.ResponsesValidator,
+        "schema": keywords.OpenAPIV32SchemaValidator,
+        "schemas": keywords.SchemasValidator,
+        "tags": keywords.OpenAPIV32TagsValidator,
     }
     root_keywords = ["paths", "components"]
