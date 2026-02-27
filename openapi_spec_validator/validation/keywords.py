@@ -642,6 +642,65 @@ class ComponentsValidator(KeywordValidator):
             yield from self.schemas_validator(schemas)
 
 
+class TagsValidator(KeywordValidator):
+    def __call__(self, tags: SchemaPath) -> Iterator[ValidationError]:
+        seen: set[str] = set()
+        for tag in tags:
+            tag_name = (tag / "name").read_str()
+            if tag_name in seen:
+                yield OpenAPIValidationError(
+                    f"Duplicate tag name '{tag_name}'"
+                )
+            seen.add(tag_name)
+
+
+class OpenAPIV32TagsValidator(TagsValidator):
+    def __call__(self, tags: SchemaPath) -> Iterator[ValidationError]:
+        yield from super().__call__(tags)
+
+        seen: set[str] = set()
+        parent_by_tag_name: dict[str, str | None] = {}
+        for tag in tags:
+            tag_name = (tag / "name").read_str()
+            seen.add(tag_name)
+
+            if "parent" in tag:
+                parent_by_tag_name[tag_name] = (tag / "parent").read_str()
+            else:
+                parent_by_tag_name[tag_name] = None
+
+        for tag_name, parent in parent_by_tag_name.items():
+            if parent is not None and parent not in seen:
+                yield OpenAPIValidationError(
+                    f"Tag '{tag_name}' references unknown parent tag '{parent}'"
+                )
+
+        reported_cycles: set[str] = set()
+        for start_tag_name in parent_by_tag_name:
+            tag_name = start_tag_name
+            trail: list[str] = []
+            trail_pos: dict[str, int] = {}
+
+            while True:
+                if tag_name in trail_pos:
+                    cycle = trail[trail_pos[tag_name] :] + [tag_name]
+                    cycle_str = " -> ".join(cycle)
+                    if cycle_str not in reported_cycles:
+                        reported_cycles.add(cycle_str)
+                        yield OpenAPIValidationError(
+                            f"Circular tag hierarchy detected: {cycle_str}"
+                        )
+                    break
+
+                trail_pos[tag_name] = len(trail)
+                trail.append(tag_name)
+
+                parent = parent_by_tag_name.get(tag_name)
+                if parent is None or parent not in seen:
+                    break
+                tag_name = parent
+
+
 class RootValidator(KeywordValidator):
     @property
     def paths_validator(self) -> PathsValidator:
@@ -652,6 +711,11 @@ class RootValidator(KeywordValidator):
         return cast(ComponentsValidator, self.registry["components"])
 
     def __call__(self, spec: SchemaPath) -> Iterator[ValidationError]:
+        if "tags" in spec and "tags" in self.registry.keyword_validators:
+            tags = spec / "tags"
+            tags_validator = cast(Any, self.registry["tags"])
+            yield from tags_validator(tags)
+
         if "paths" in spec:
             paths = spec / "paths"
             yield from self.paths_validator(paths)

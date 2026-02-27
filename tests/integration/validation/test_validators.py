@@ -199,6 +199,64 @@ class TestLocalOpenAPIv32Validator:
         assert len(errors) == 1
         assert "Path parameter 'item_id'" in errors[0].message
 
+    def test_top_level_duplicate_tags_are_invalid(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "tags": [
+                {
+                    "name": "pets",
+                },
+                {
+                    "name": "pets",
+                },
+            ],
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert len(errors) == 1
+        assert errors[0].message == "Duplicate tag name 'pets'"
+
+    def test_operation_tags_without_root_declaration_are_valid(self):
+        spec = {
+            "openapi": "3.2.0",
+            "info": {
+                "title": "Tag API",
+                "version": "1.0.0",
+            },
+            "paths": {
+                "/pets": {
+                    "get": {
+                        "tags": ["pets", "animals"],
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        errors = list(OpenAPIV32SpecValidator(spec).iter_errors())
+
+        assert not errors
+
 
 def test_oas31_query_operation_is_not_semantically_traversed():
     spec = {

@@ -105,6 +105,7 @@ class OpenAPIV2SpecValidator(SpecValidator):
         "responses": keywords.ResponsesValidator,
         "schema": keywords.OpenAPIV30SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
     }
     root_keywords = ["paths", "components"]
 
@@ -126,6 +127,7 @@ class OpenAPIV30SpecValidator(SpecValidator):
         "responses": keywords.ResponsesValidator,
         "schema": keywords.OpenAPIV30SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
     }
     root_keywords = ["paths", "components"]
 
@@ -147,6 +149,7 @@ class OpenAPIV31SpecValidator(SpecValidator):
         "responses": keywords.ResponsesValidator,
         "schema": keywords.OpenAPIV31SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.TagsValidator,
     }
     root_keywords = ["paths", "components"]
 
@@ -168,5 +171,6 @@ class OpenAPIV32SpecValidator(SpecValidator):
         "responses": keywords.ResponsesValidator,
         "schema": keywords.OpenAPIV32SchemaValidator,
         "schemas": keywords.SchemasValidator,
+        "tags": keywords.OpenAPIV32TagsValidator,
     }
     root_keywords = ["paths", "components"]
