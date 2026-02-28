@@ -26,8 +26,10 @@ classifiers = [
 dependencies = [
     "jsonschema >=4.24.0,<4.25.0",
     "openapi-schema-validator >=0.7.3,<0.9.0",
-    "jsonschema-path >=0.4.2,<0.5.0",
+    "jsonschema-path >=0.4.3,<0.5.0",
     "lazy-object-proxy >=1.7.1,<2.0",
+    "pydantic-settings (>=2.0.0,<3.0.0)",
+    "pydantic (>=2.0.0,<3.0.0)",
 ]
 
 [project.urls]

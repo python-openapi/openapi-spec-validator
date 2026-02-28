@@ -116,6 +116,21 @@ Python package
 
 For more details, read about `Python package <https://openapi-spec-validator.readthedocs.io/en/latest/python.html>`__.
 
+Performance tuning
+******************
+
+You can tune resolved-path caching with an environment variable:
+
+.. code-block:: bash
+
+    OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE=2048
+
+Rules:
+
+* Default is ``128``.
+* Set ``0`` to disable the resolved cache.
+* Invalid values (non-integer or negative) fall back to ``128``.
+
 Related projects
 ################
 

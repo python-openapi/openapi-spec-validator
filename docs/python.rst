@@ -59,3 +59,19 @@ If you want to iterate through validation errors:
     from openapi_spec_validator import OpenAPIV32SpecValidator
 
     errors_iterator = OpenAPIV32SpecValidator(spec).iter_errors()
+
+Resolved path cache
+-------------------
+
+``openapi-spec-validator`` can configure the ``jsonschema-path`` resolved
+path cache through an environment variable:
+
+.. code-block:: bash
+
+   OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE=2048
+
+Rules:
+
+* Default is ``128``.
+* Set ``0`` to disable the resolved cache.
+* Invalid values (non-integer or negative) fall back to ``128``.
