@@ -73,3 +73,7 @@ Performance note:
    You can tune resolved-path caching with
    ``OPENAPI_SPEC_VALIDATOR_RESOLVED_CACHE_MAXSIZE``.
    Default is ``128``; set ``0`` to disable.
+   
+   You can also select schema validator backend with
+   ``OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND``
+   (``auto``/``jsonschema``/``jsonschema-rs``).

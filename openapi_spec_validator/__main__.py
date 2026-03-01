@@ -8,6 +8,7 @@ from jsonschema.exceptions import ValidationError
 from jsonschema.exceptions import best_match
 
 from openapi_spec_validator import __version__
+from openapi_spec_validator import schemas
 from openapi_spec_validator.readers import read_from_filename
 from openapi_spec_validator.readers import read_from_stdin
 from openapi_spec_validator.shortcuts import get_validator_cls
@@ -38,6 +39,7 @@ def print_validationerror(
     exc: ValidationError,
     subschema_errors: str = "best-match",
     index: int | None = None,
+    supports_subschema_details: bool = True,
 ) -> None:
     if index is None:
         print(f"{filename}: Validation Error: {exc}")
@@ -47,6 +49,13 @@ def print_validationerror(
         print("\n# Cause\n")
         print(exc.cause)
     if not exc.context:
+        return
+    if not supports_subschema_details:
+        print("\n\n# Subschema details\n")
+        print(
+            "Subschema error details are not available "
+            "with jsonschema-rs backend."
+        )
         return
     if subschema_errors == "all":
         print("\n\n# Due to one of those errors\n")
@@ -139,6 +148,10 @@ def main(args: Sequence[str] | None = None) -> None:
     if subschema_errors is None:
         subschema_errors = "best-match"
 
+    supports_subschema_details = (
+        schemas.get_validator_backend() != "jsonschema-rs"
+    )
+
     for filename in args_parsed.file:
         # choose source
         reader = read_from_filename
@@ -181,6 +194,9 @@ def main(args: Sequence[str] | None = None) -> None:
                             err,
                             subschema_errors,
                             index=idx,
+                            supports_subschema_details=(
+                                supports_subschema_details
+                            ),
                         )
                     print(f"{filename}: {len(errors)} validation errors found")
                     sys.exit(1)
@@ -189,7 +205,12 @@ def main(args: Sequence[str] | None = None) -> None:
 
             validate(spec, base_uri=base_uri, cls=validator_cls)
         except ValidationError as exc:
-            print_validationerror(filename, exc, subschema_errors)
+            print_validationerror(
+                filename,
+                exc,
+                subschema_errors,
+                supports_subschema_details=supports_subschema_details,
+            )
             sys.exit(1)
         except Exception as exc:
             print_error(filename, exc)
