@@ -57,7 +57,7 @@ class JsonschemaRsValidatorWrapper:
 
         Args:
             schema: JSON Schema to validate against
-            cls: JSON Schema validator
+            validator: JSON Schema validator
         """
         if not HAS_JSONSCHEMA_RS:
             raise ImportError(
@@ -149,10 +149,7 @@ def create_validator(schema: dict[str, Any]) -> JsonschemaRsValidatorWrapper:
     module = _get_jsonschema_rs_module()
     validator_cls: Any = module.validator_cls_for(schema)
 
-    validator = validator_cls(
-        schema,
-        validate_formats=True,
-    )
+    validator = validator_cls(schema)
     return JsonschemaRsValidatorWrapper(schema, validator=validator)
 
 

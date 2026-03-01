@@ -309,7 +309,7 @@ def main():
     settings = OpenAPISpecValidatorSettings()
 
     print("Spec schema validator backend selection:")
-    print("  Configured backend mode: " f"{settings.schema_validator_backend}")
+    print(f"  Configured backend mode: {settings.schema_validator_backend}")
     print(f"  Effective backend: {schemas.get_validator_backend()}")
 
     # Benchmark custom specs

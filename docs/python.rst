@@ -83,5 +83,6 @@ Schema validator backend can be selected with:
    OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND=jsonschema-rs
 
 Allowed values are ``auto`` (default), ``jsonschema``, and
-``jsonschema-rs``.
+``jsonschema-rs`` (requires the ``jsonschema-rs`` Python package to be
+installed, for example via ``pip install jsonschema-rs``).
 Invalid values raise a warning and fall back to ``auto``.
