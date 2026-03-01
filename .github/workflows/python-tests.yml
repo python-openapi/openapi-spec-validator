@@ -10,12 +10,20 @@ on:
 
 jobs:
   tests:
-    name: "py${{ matrix.python-version }}-${{ matrix.os }}"
+    name: "py${{ matrix.python-version }}-${{ matrix.os }}-${{ matrix.backend }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         os: [windows-latest, ubuntu-latest]
+        backend: ['jsonschema']
+        include:
+          - python-version: '3.12'
+            os: ubuntu-latest
+            backend: 'jsonschema-rs'
+          - python-version: '3.13'
+            os: windows-latest
+            backend: 'jsonschema-rs'
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -49,9 +57,14 @@ jobs:
       - name: Install dependencies
         run: poetry install --all-extras
 
+      - name: Install jsonschema-rs
+        if: matrix.backend != 'jsonschema'
+        run: poetry run pip install ${{ matrix.backend }}
+
       - name: Test
         env:
           PYTEST_ADDOPTS: "--color=yes"
+          OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND: ${{ matrix.backend }}
         run: poetry run pytest
 
       - name: Static type check

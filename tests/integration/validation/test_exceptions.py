@@ -20,11 +20,14 @@ class TestSpecValidatorIterErrors:
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == "'openapi' is a required property"
+        assert "openapi" in errors_list[0].message
+        assert "is a required property" in errors_list[0].message
         assert errors_list[1].__class__ == OpenAPIValidationError
-        assert errors_list[1].message == "'info' is a required property"
+        assert "info" in errors_list[1].message
+        assert "is a required property" in errors_list[1].message
         assert errors_list[2].__class__ == OpenAPIValidationError
-        assert errors_list[2].message == "'paths' is a required property"
+        assert "paths" in errors_list[2].message
+        assert "is a required property" in errors_list[2].message
 
     def test_info_empty(self):
         spec = {
@@ -37,7 +40,8 @@ class TestSpecValidatorIterErrors:
 
         errors_list = list(errors)
         assert errors_list[0].__class__ == OpenAPIValidationError
-        assert errors_list[0].message == "'title' is a required property"
+        assert "title" in errors_list[0].message
+        assert "is a required property" in errors_list[0].message
 
     def test_minimalistic(self):
         spec = {

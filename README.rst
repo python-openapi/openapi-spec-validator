@@ -131,6 +131,23 @@ Rules:
 * Set ``0`` to disable the resolved cache.
 * Invalid values (non-integer or negative) fall back to ``128``.
 
+You can also choose schema validator backend:
+
+.. code-block:: bash
+
+    OPENAPI_SPEC_VALIDATOR_SCHEMA_VALIDATOR_BACKEND=jsonschema-rs
+
+Allowed values are ``auto`` (default), ``jsonschema``, and
+``jsonschema-rs``.
+Invalid values raise a warning and fall back to ``auto``.
+
+If you select the ``jsonschema-rs`` backend, make sure the optional
+``jsonschema-rs`` package is installed:
+
+.. code-block:: bash
+
+    pip install jsonschema-rs
+
 Related projects
 ################
 
