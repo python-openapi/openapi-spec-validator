@@ -141,6 +141,13 @@ Allowed values are ``auto`` (default), ``jsonschema``, and
 ``jsonschema-rs``.
 Invalid values raise a warning and fall back to ``auto``.
 
+If you select the ``jsonschema-rs`` backend, make sure the optional
+``jsonschema-rs`` package is installed:
+
+.. code-block:: bash
+
+    pip install jsonschema-rs
+
 Related projects
 ################
 
