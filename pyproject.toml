@@ -49,7 +49,7 @@ include = [
 ]
 
 [tool.poetry.group.docs.dependencies]
-sphinx = ">=5.3,<8.0"
+sphinx = ">=5.3,<9.0"
 sphinx-immaterial = ">=0.11,<0.14"
 
 [tool.poetry.group.dev.dependencies]
