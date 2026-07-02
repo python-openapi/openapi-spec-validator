@@ -6,9 +6,11 @@ import pytest
 from openapi_spec_validator import OpenAPIV2SpecValidator
 from openapi_spec_validator import OpenAPIV3SpecValidator
 from openapi_spec_validator import OpenAPIV30SpecValidator
+from openapi_spec_validator import OpenAPIV31SpecValidator
 from openapi_spec_validator import OpenAPIV32SpecValidator
 from openapi_spec_validator import openapi_v2_spec_validator
 from openapi_spec_validator import openapi_v30_spec_validator
+from openapi_spec_validator import openapi_v31_spec_validator
 from openapi_spec_validator import openapi_v32_spec_validator
 from openapi_spec_validator import schemas as schemas_module
 from openapi_spec_validator import shortcuts as shortcuts_module
@@ -223,6 +225,31 @@ class TestLocalValidatev30Spec:
         with pytest.warns(DeprecationWarning):
             with pytest.raises(OpenAPIValidationError):
                 validate_spec(spec, validator=openapi_v30_spec_validator)
+
+
+class TestLocalValidatev31Spec:
+    LOCAL_SOURCE_DIRECTORY = "data/v3.1/"
+
+    def local_test_suite_file_path(self, test_file):
+        return f"{self.LOCAL_SOURCE_DIRECTORY}{test_file}"
+
+    @pytest.mark.parametrize(
+        "spec_file",
+        [
+            "xquik-search.yaml",
+        ],
+    )
+    def test_valid(self, factory, spec_file):
+        spec_path = self.local_test_suite_file_path(spec_file)
+        spec = factory.spec_from_file(spec_path)
+        spec_url = factory.spec_file_url(spec_path)
+
+        validate(spec)
+        with pytest.warns(DeprecationWarning):
+            validate_spec(spec, spec_url=spec_url)
+        validate(spec, cls=OpenAPIV31SpecValidator)
+        with pytest.warns(DeprecationWarning):
+            validate_spec(spec, validator=openapi_v31_spec_validator)
 
 
 class TestLocalValidatev32Spec:
