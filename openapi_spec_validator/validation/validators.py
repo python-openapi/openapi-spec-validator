@@ -7,6 +7,8 @@ from collections.abc import Mapping
 from functools import lru_cache
 from typing import cast
 
+from referencing.exceptions import Unresolvable
+
 from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 from jsonschema_path.handlers import default_handlers
@@ -69,11 +71,17 @@ class SpecValidator:
         )
 
     def validate(self) -> None:
-        for err in self.iter_errors():
-            raise err
+        try:
+            for err in self.iter_errors():
+                raise err
+        except Unresolvable as exc:
+            raise ValidationError(str(exc)) from exc
 
     def is_valid(self) -> bool:
-        error = next(self.iter_errors(), None)
+        try:
+            error = next(self.iter_errors(), None)
+        except Unresolvable:
+            return False
         return error is None
 
     @property

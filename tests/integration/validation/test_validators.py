@@ -1,4 +1,5 @@
 import pytest
+from jsonschema.exceptions import ValidationError
 from jsonschema_path import SchemaPath
 from referencing.exceptions import Unresolvable
 
@@ -65,7 +66,7 @@ class TestLocalOpenAPIv2Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
-        with pytest.raises(Unresolvable):
+        with pytest.raises(ValidationError):
             OpenAPIV2SpecValidator(spec, base_uri=spec_url).validate()
 
 
@@ -177,7 +178,7 @@ class TestLocalOpenAPIv30Validator:
         spec = factory.spec_from_file(spec_path)
         spec_url = factory.spec_file_url(spec_path)
 
-        with pytest.raises(Unresolvable):
+        with pytest.raises(ValidationError):
             OpenAPIV30SpecValidator(spec, base_uri=spec_url).validate()
 
 
