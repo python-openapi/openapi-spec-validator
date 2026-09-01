@@ -13,9 +13,8 @@ FROM python:3.14.5-alpine
 
 ARG OPENAPI_SPEC_VALIDATOR_VERSION
 
-COPY --from=builder /wheels /wheels
 RUN apk add --no-cache libgcc
-RUN pip install --no-cache-dir --pre --find-links /wheels openapi-spec-validator==${OPENAPI_SPEC_VALIDATOR_VERSION} && \
-    rm -r /wheels
+RUN --mount=type=bind,from=builder,source=/wheels,target=/wheels \
+    pip install --no-cache-dir --pre --find-links /wheels openapi-spec-validator==${OPENAPI_SPEC_VALIDATOR_VERSION}
 
 ENTRYPOINT ["openapi-spec-validator"]
