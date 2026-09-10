@@ -2,9 +2,9 @@
 
 import logging
 import warnings
+from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Mapping
-from functools import lru_cache
 from typing import cast
 
 from jsonschema.exceptions import ValidationError
@@ -19,6 +19,7 @@ from openapi_spec_validator.schemas import openapi_v32_schema_validator
 from openapi_spec_validator.schemas.types import AnySchema
 from openapi_spec_validator.settings import OpenAPISpecValidatorSettings
 from openapi_spec_validator.validation import keywords
+from openapi_spec_validator.validation.caches import CachedIterable
 from openapi_spec_validator.validation.decorators import unwraps_iter
 from openapi_spec_validator.validation.decorators import wraps_cached_iter
 from openapi_spec_validator.validation.decorators import wraps_errors
@@ -67,6 +68,7 @@ class SpecValidator:
         self.keyword_validators_registry = KeywordValidatorRegistry(
             self.keyword_validators
         )
+        self._cached_errors: CachedIterable[ValidationError] | None = None
 
     def validate(self) -> None:
         for err in self.iter_errors():
@@ -83,14 +85,18 @@ class SpecValidator:
             self.keyword_validators_registry["__root__"],
         )
 
-    @unwraps_iter
-    @lru_cache(maxsize=None)
     @wraps_cached_iter
     @wraps_errors
-    def iter_errors(self) -> Iterator[ValidationError]:
+    def _iter_errors(self) -> Iterator[ValidationError]:
         yield from self.schema_validator.iter_errors(self.schema)
 
         yield from self.root_validator(self.schema_path)
+
+    @unwraps_iter
+    def iter_errors(self) -> Iterable[ValidationError]:
+        if getattr(self, "_cached_errors", None) is None:
+            self._cached_errors = self._iter_errors()
+        return self._cached_errors
 
 
 class OpenAPIV2SpecValidator(SpecValidator):
