@@ -665,3 +665,33 @@ class TestRemoteOpenAPIv31Validator:
 
         with pytest.raises(OpenAPIValidationError):
             OpenAPIV31SpecValidator(spec, base_uri=spec_url).validate()
+
+
+def test_validator_iter_errors_instance_caching():
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Sample", "version": "1.0.0"},
+        "paths": {},
+    }
+    validator = OpenAPIV30SpecValidator(spec)
+    errors_1 = list(validator.iter_errors())
+    errors_2 = list(validator.iter_errors())
+    assert errors_1 == errors_2 == []
+
+
+def test_validator_instance_garbage_collected():
+    import gc
+    import weakref
+
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Sample", "version": "1.0.0"},
+        "paths": {},
+    }
+    validator = OpenAPIV30SpecValidator(spec)
+    list(validator.iter_errors())
+    ref = weakref.ref(validator)
+    del validator
+    gc.collect()
+
+    assert ref() is None
