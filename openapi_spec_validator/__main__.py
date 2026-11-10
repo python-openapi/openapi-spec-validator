@@ -152,6 +152,7 @@ def main(args: Sequence[str] | None = None) -> None:
         schemas.get_validator_backend() != "jsonschema-rs"
     )
 
+    read_failed = False
     for filename in args_parsed.file:
         # choose source
         reader = read_from_filename
@@ -163,8 +164,9 @@ def main(args: Sequence[str] | None = None) -> None:
         try:
             spec, base_uri = reader(filename)
         except Exception as exc:
-            print(exc)
-            sys.exit(1)
+            print_error(filename, exc)
+            read_failed = True
+            continue
 
         # choose the validator
         validators: dict[str, type[SpecValidator] | None] = {
@@ -217,6 +219,9 @@ def main(args: Sequence[str] | None = None) -> None:
             sys.exit(2)
         else:
             print_ok(filename)
+
+    if read_failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

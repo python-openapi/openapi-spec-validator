@@ -221,6 +221,20 @@ def test_nonexisting_file(capsys):
     assert "No such file: i_dont_exist.yaml\n" in out
 
 
+def test_read_error_names_file_and_continues(capsys):
+    """A file that cannot be read is named and does not stop the rest."""
+    testargs = [
+        "i_dont_exist.yaml",
+        "./tests/integration/data/v3.1/petstore.yaml",
+    ]
+    with pytest.raises(SystemExit):
+        main(testargs)
+    out, err = capsys.readouterr()
+    assert not err
+    assert "i_dont_exist.yaml: Error: No such file: i_dont_exist.yaml\n" in out
+    assert "./tests/integration/data/v3.1/petstore.yaml: OK\n" in out
+
+
 def test_schema_stdin(capsys):
     """Test schema from STDIN"""
     spes_path = "./tests/integration/data/v3.0/petstore.yaml"
